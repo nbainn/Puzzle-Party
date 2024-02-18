@@ -1,0 +1,14 @@
+PeerJS to handle frontend connectinos between clients
+
+Node.JS runtime environment with Express framework for central server
+
+HTTP requests (with query paramters) in order to access stuff on the central server
+such as room and word/description information
+
+Might be faster to give the server an HTTP request with a seed as a query paramter and
+have the server generate the puzzle as a 2D array with an array of descriptions sent back
+to the host clients
+
+Peer to peer is ALL frontend when they enter a game and no longer require server/database information
+
+Backend is the central server/database used for conencting peers and getting database information
