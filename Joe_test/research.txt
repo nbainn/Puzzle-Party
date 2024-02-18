@@ -14,3 +14,5 @@ Peer to peer is ALL frontend when they enter a game and no longer require server
 Backend is the central server/database used for conencting peers and getting database information
 
 central server will be our own peer server, which we will still be using peerJS
+
+test to update username
