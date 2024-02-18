@@ -1,19 +1,26 @@
 const express = require('../config/node_modules/express');
 const app = express();
+const path = require('path');
 const port = 3000;
 
-// ********
-// We dont actually need this, this is just so that live server works with http requests
+// Enable CORS for all routes
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route handler for the root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Endpoint to handle GET requests
 app.get('/api/data', (req, res) => {
-  // Send a JSON response
   res.json({ message: 'Hello from the server!' });
 });
 
