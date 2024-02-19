@@ -50,11 +50,12 @@
       // If we left the argument blank, it would have used the defualt servers for peer ID assignment
       // since we specified our own peer JS server, it will assign an ID and manage the peer there
       // This gives us a lot more control over what we want our IDs to be
-      const peer = new Peer({
+      /*const peer = new Peer({
         host: "localhost",
         port: 3000,
         path: "/myapp",
-      });
+      });*/
+      const peer = new Peer();
 
       // When the peer is created, output the peer ID
       peer.on("open", (id) => {
