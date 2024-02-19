@@ -4,29 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PeerJS Example</title>
+    <!--This src could be replaced with the peerJS URL, but we also have the file on
+    our server that we downloaded, so we grab it from there-->
     <script src="../peer.min.js"></script>
   </head>
   <body>
+    <!--Button to make a simple http request to the server-->
     <h1>Simple Client</h1>
     <button onclick="requestData()">Request Data</button>
     <p id="response"></p>
 
+    <!--Text box and button for entering peer ID-->
     <label for="peerIdInput">Enter Peer ID:</label>
     <input type="text" id="peerIdInput" placeholder="Peer ID" />
 
     <button onclick="connectPeer()">Connect</button>
     <p id="enter"></p>
 
+    <!--Text box and button for sending a message to peer-->
     <label for="messageInput">Enter a message!</label>
     <input type="text" id="messageInput" placeholder="message" />
 
     <button onclick="sendMessage()">Send</button>
     <p id="enter"></p>
 
+    <!--Wherer message is displayed when received-->
     <label for="peerOutputLabel">Other Peer Said:</label>
     <p id="message"></p>
 
     <script>
+      // This function makes a simple http request using the path we defined on the server
+      // It returns a simple string from the server, which is then displayed
       function requestData() {
         // Make a simple HTTP GET request using the Fetch API
         fetch("http://localhost:3000/api/data")
@@ -38,17 +46,26 @@
           .catch((error) => console.error("Error:", error));
       }
 
+      // A new peer is created
+      // If we left the argument blank, it would have used the defualt servers for peer ID assignment
+      // since we specified our own peer JS server, it will assign an ID and manage the peer there
+      // This gives us a lot more control over what we want our IDs to be
       const peer = new Peer({
         host: "localhost",
         port: 3000,
         path: "/myapp",
       });
 
+      // When the peer is created, output the peer ID
       peer.on("open", (id) => {
         console.log("My peer ID is: " + id);
       });
 
+      // connection is used to hold the values needed to define a connection to another peer
       let connection = null;
+      // connectPeer grabs the ID input through text box
+      // It then creates a connectoin based on that ID, and if a connection is successful,
+      // it will send hi to the other peer
       function connectPeer() {
         const otherPeerId = document.getElementById("peerIdInput").value;
 
@@ -66,12 +83,17 @@
         });
       }
 
+      // If someone else connects to this peer, then create a new connection object based
+      // on their peer ID so that communication can be sent back
+      // Connect function is run for the sender's id so that they recieve the peer.on signal as well
+      // Can be rewritten better lol
       peer.on("connection", function (conn) {
         if (connection == null) {
           connection = peer.connect(conn.peer);
         }
         console.log(connection);
         console.log("connection ??");
+        // When data is received, update the appropriate element to display the message
         conn.on("data", function (data) {
           // Will print 'hi!'
           console.log("receiving data");
@@ -80,6 +102,7 @@
         });
       });
 
+      // Sends a message from the input box through the connection
       function sendMessage() {
         console.log("sending a message");
         const message = document.getElementById("messageInput").value;
