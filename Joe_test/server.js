@@ -18,6 +18,9 @@ app.use((req, res, next) => {
   next();
 });*/
 
+// Serve static files from the 'config' directory
+app.use(express.static(path.join(__dirname, "../config")));
+
 // Serve static files from the 'public' folder
 // What this does is allow server.js to grab index.html (or other files)
 // from the public folder and give them to the client
