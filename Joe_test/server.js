@@ -19,11 +19,14 @@ app.use((req, res, next) => {
 });*/
 
 // Serve static files from the 'config' directory
+// Explaination below, basically adding all config files to same directory as server.js
 app.use(express.static(path.join(__dirname, "../config")));
 
 // Serve static files from the 'public' folder
 // What this does is allow server.js to grab index.html (or other files)
 // from the public folder and give them to the client
+// This also puts all files in the public folder on the same level as server.js,
+// so you can access index.html by typing localhost:3000/index.html instead of localhost:3000/public/index.html
 app.use(express.static(path.join(__dirname, "public")));
 
 // Route handler for the root path
@@ -33,7 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // The single "/" represents the root directy of the server, which is
 // the initial request sent
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile("index.html");
 });
 
 // If you were to go to localhost:3000/api/data (arbitrary path), then the server
