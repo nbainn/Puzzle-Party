@@ -1,28 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Client</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PeerJS Example</title>
+    <script src="../peer.min.js"></script>
+  </head>
+  <body>
+    <h1>Simple Client</h1>
+    <button onclick="requestData()">Request Data</button>
+    <p id="response"></p>
 
-  <h1>Simple Client</h1>
-  <button onclick="requestData()">Request Data</button>
-  <p id="response"></p>
+    <label for="peerIdInput">Enter Peer ID:</label>
+    <input type="text" id="peerIdInput" placeholder="Peer ID" />
 
-  <script>
-    function requestData() {
-      // Make a simple HTTP GET request using the Fetch API
-      fetch('http://localhost:3000/api/data')
-        .then(response => response.json())
-        .then(data => {
-          // Display the server response
-          document.getElementById('response').textContent = data.message;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-  </script>
+    <button onclick="connectPeer()">Connect</button>
+    <p id="enter"></p>
 
-</body>
+    <label for="messageInput">Enter a message!</label>
+    <input type="text" id="messageInput" placeholder="message" />
+
+    <button onclick="sendMessage()">Send</button>
+    <p id="enter"></p>
+
+    <label for="peerOutputLabel">Other Peer Said:</label>
+    <p id="message"></p>
+
+    <script>
+      function requestData() {
+        // Make a simple HTTP GET request using the Fetch API
+        fetch("http://localhost:3000/api/data")
+          .then((response) => response.json())
+          .then((data) => {
+            // Display the server response
+            document.getElementById("response").textContent = data.message;
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      const peer = new Peer({
+        host: "localhost",
+        port: 3000,
+        path: "/myapp",
+      });
+
+      peer.on("open", (id) => {
+        console.log("My peer ID is: " + id);
+      });
+
+      let connection = null;
+      function connectPeer() {
+        const otherPeerId = document.getElementById("peerIdInput").value;
+
+        // You can use the 'peerId' variable to connect to the specified peer
+        console.log("Connecting to Peer ID:", otherPeerId);
+
+        // Add your connection logic here
+        // Connect to another peer
+        connection = peer.connect(otherPeerId);
+
+        connection.on("open", function () {
+          // here you have conn.id
+          connection.send("hi!");
+          console.log("sent hi");
+        });
+      }
+
+      peer.on("connection", function (conn) {
+        if (connection == null) {
+          connection = peer.connect(conn.peer);
+        }
+        console.log(connection);
+        console.log("connection ??");
+        conn.on("data", function (data) {
+          // Will print 'hi!'
+          console.log("receiving data");
+          console.log(data);
+          document.getElementById("message").textContent = data;
+        });
+      });
+
+      function sendMessage() {
+        console.log("sending a message");
+        const message = document.getElementById("messageInput").value;
+        connection.send(message);
+      }
+    </script>
+  </body>
 </html>
