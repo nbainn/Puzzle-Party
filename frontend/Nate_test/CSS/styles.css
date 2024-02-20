@@ -1,0 +1,148 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Bubblegum Sans', cursive; /* random cute, rounded font */
+    background-color: #fcb0d1;
+}
+
+.game-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr; 
+    grid-template-rows: auto 1fr; /* crossword puzzle space can expand */
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 10px;
+    gap: 10px;
+}
+
+.players-list, .crossword-container, .hints-chat-container {
+    background: #fff;
+    border: 2px solid #000; 
+    padding: 10px;
+    overflow: auto;
+}
+
+.players-list {
+    grid-row: 1 / span 2;
+    background: #ffe9f0;
+}
+
+.player {
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.crossword-container {
+    grid-column: 2;
+    grid-row: 1 / span 2; 
+    background: #fff7e9;
+}
+
+.hints-chat-container {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #ffe9f0;
+}
+
+.hints {
+    flex-grow: 2; /* allow hints to take up more space */
+    border-bottom: 2px solid #000; 
+    margin-bottom: 10px; 
+}
+
+.hint-title {
+    text-decoration: underline;
+    margin-bottom: 10px;
+}
+
+.across, .down {
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 18px;
+    color: #000;
+}
+
+.chat-container {
+    flex-grow: 1; /* chat takes up remaining space */
+    background: #e3f2fd;
+    border-top: 2px solid #000; 
+    padding: 10px; 
+}
+
+.chat-messages {
+    height: calc(100% - 48px); 
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.message {
+    background: #c8e6c9;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 8px; 
+    color: #000;
+}
+
+.chat-input {
+    width: calc(100% - 20px); 
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 8px; 
+    margin-top: 10px; 
+    font-family: 'Bubblegum Sans', cursive;
+    font-size: 1rem;
+    background-color: #ffffff; 
+    color: #000; 
+}
+
+/* Add responsiveness to layout for smaller screens */
+@media (max-width: 768px) {
+    .game-container {
+        grid-template-columns: 1fr; /* stack containers on small screens */
+        grid-template-rows: auto auto 1fr;
+    }
+
+    .players-list,
+    .hints-chat-container {
+        grid-column: 1;
+    }
+
+    .crossword-container {
+        grid-row: 3;
+    }
+
+    .hints-chat-container {
+        grid-row: 2;
+    }
+
+    .chat-container {
+        order: 3; /* ensure chat at bottom on small screens */
+    }
+}
+
+/* additional styling (readability, etc.) */
+.players-list .player {
+    padding: 5px;
+    border-bottom: 1px solid #000; /* separation between player names */
+}
+
+.hint-title, .across h2, .down h2 {
+    font-size: 1.25rem; /* increase size */
+    margin: 10px 0; /* add more space around titles */
+}
+
+.across p, .down p {
+    padding-left: 20px; /* indent clues */
+    margin: 5px 0; /* add space between clues */
+    font-size: 1rem; /* adjust font size for clues */
+}
+
+/* Ensure all text is easily readable */
+p, h2, .player, .message, .chat-input {
+    color: #333; /* darker text for better contrast */
+}
