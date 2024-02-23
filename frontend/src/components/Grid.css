@@ -1,0 +1,19 @@
+.crossword-container {
+    background: #fff7e9;
+    border: 2px solid #000;
+    padding: 10px;
+    overflow: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* Placeholder styles until actual grid is implemented */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Placeholder content styles */
+  .crossword-placeholder {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
