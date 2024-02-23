@@ -1,7 +1,7 @@
 .chat-container {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 0px;
   left: 10px;
   height: 30%;
   max-height: 30%;
@@ -16,7 +16,7 @@
 }
 
 .chat-messages {
-  overflow-y: auto; /* Enable scrolling for overflow */
+  overflow-y: auto;
   display: flex;
   flex-direction: column-reverse; /* Newest messages at the bottom */
   padding: 10px;
@@ -25,7 +25,7 @@
 }
 
 .message {
-  background: #dbe6c8; 
+  background: #e9ddff; 
   margin-bottom: 8px;
   padding: 8px;
   border-radius: 4px;
