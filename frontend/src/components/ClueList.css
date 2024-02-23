@@ -1,0 +1,22 @@
+.hints {
+    flex-grow: 2;
+    background: #ffe9f0;
+    border-bottom: 2px solid #000;
+    padding: 10px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .across h2, .down h2 {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #000;
+  }
+  
+  .across p, .down p {
+    padding-left: 20px;
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
