@@ -98,7 +98,7 @@ const testDbConnection = async () => {
         console.error('Error synchronizing models:', err);
     });
 
-    console.log(Character === sequelize.models.Character);
+/*     console.log(Character === sequelize.models.Character);
     const character = Character.build({ id: 0, index: 0, value: "a", 
       isParent: true});
     console.log(character.id)
@@ -120,7 +120,27 @@ const testDbConnection = async () => {
 
     const character3 = await Character.create({ id : 2, index:( character2.id + 1), value: "r",
       parent_id: character2.id})
-    console.log(character3.value)
+    console.log(character3.value) */
+
+    // Find all users
+    /* const description  = Description.build({id: 1920, description: "Sample Description"})
+    const character2 = Character.build({ id: 1, index: 1, value: "a",
+      parent_id: 0, description_id: 1920, isParent: false});
+
+    await character2.save();
+    await description.save();
+   */
+  const character2 = Character.build({ id: 1, index: 1, value: "a",
+      parent_id: 0, description_id: 1920, isParent: false});
+  await character2.save();
+  const descrips = await Description.findAll();
+  console.log(descrips.every(descrip => descrip instanceof Description)); // true
+  console.log("All users:", JSON.stringify(descrips, null, 2));
+
+
+  const users = await Character.findAll();
+  console.log(users.every(user => user instanceof Character)); // true
+  console.log("All users:", JSON.stringify(users, null, 2));
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
