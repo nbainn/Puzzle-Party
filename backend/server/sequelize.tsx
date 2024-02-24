@@ -60,6 +60,7 @@ Character.init({
   },
   isParent: {
     type: DataTypes.BOOLEAN,
+    default: false,
     allowNull: false
   },
   // foreign key
@@ -94,7 +95,12 @@ const testDbConnection = async () => {
       isParent: true});
     console.log(character.id)
     console.log(Description === sequelize.models.Description);
+    const description  = Description.build({id: 1920, description: "Sample Description"})
 
+    const character2 = Character.build({ id: 0, index: 0, value: "a", 
+      parent_id: character.id, description_id: description.id});
+
+    console.log(character2.description_id)
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
