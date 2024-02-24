@@ -3,30 +3,44 @@ const { Sequelize, DataTypes, Model } = require('sequelize');
 // Option 1: Passing a connection URI
 const sequelize = new Sequelize('postgres://postgres:10018219@localhost:5432/PuzzleParty') // Example for postgres
 
-const testDbConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
- 
-
-testDbConnection();
 
 class Character extends Model 
 {
-  index;
+  /* index;
   value;
   isParent;
   parent_id;
-  description_id;
-  
+  description_id; */
 
 }
 
-class Description extends Model {}
+class Description extends Model {
+  /* char_id; */
+}
+
+Description.init({
+  id : {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  description: {
+    type: DataTypes.STRING
+  }, 
+  // foreign key to a character
+  /*
+  char_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Character,
+      key: 'id'
+    }
+  }, */
+}, {
+  sequelize,
+  modelName: "Description"
+})
+
 
 Character.init({
   id : {
@@ -34,7 +48,7 @@ Character.init({
     autoIncrement: true,
     primaryKey: true
   },
-/*   // index in word: ex: "abc" - a would have index 0
+  // index in word: ex: "abc" - a would have index 0
   index: {
     type:DataTypes.INTEGER,
     allowNull: false
@@ -62,30 +76,30 @@ Character.init({
       model: Description,
       key: "id"
     }
-  } */
+  } 
 }, 
 {
   sequelize,
   modelName: "Character"
 })
-console.log(Character === sequelize.models.Character);
 
-Description.init({
-  id : {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
-  },
-  // foreign key to a character
-  char_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Character,
-      key: 'id'
-    }
-  }, 
-}, {
-  sequelize,
-  modelName: "Description"
-})
+
+const testDbConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+
+    console.log(Character === sequelize.models.Character);
+    const character = Character.build({ id: 0, index: 0, value: "a", 
+      isParent: true});
+    console.log(character.id)
+    console.log(Description === sequelize.models.Description);
+
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
+ 
+
+testDbConnection();
 module.exports = { sq: sequelize, testDbConnection };
