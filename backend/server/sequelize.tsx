@@ -90,6 +90,14 @@ const testDbConnection = async () => {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
 
+    await sequelize.sync()
+      .then(() => {
+        console.log('Models synchronized successfully.');
+      })
+      .catch((err) => {
+        console.error('Error synchronizing models:', err);
+    });
+
     console.log(Character === sequelize.models.Character);
     const character = Character.build({ id: 0, index: 0, value: "a", 
       isParent: true});
@@ -97,10 +105,22 @@ const testDbConnection = async () => {
     console.log(Description === sequelize.models.Description);
     const description  = Description.build({id: 1920, description: "Sample Description"})
 
-    const character2 = Character.build({ id: 0, index: 0, value: "a", 
+    const character2 = Character.build({ id: 1, index: 1, value: "a", 
       parent_id: character.id, description_id: description.id});
 
     console.log(character2.description_id)
+
+    // save is asynchronous, meaning you have to wait
+    // build only creates the instance, doesn't actually save it to the database
+    await character.save();
+    await character2.save();
+    await description.save();
+
+    // can also use create to do build + save in one go
+
+    const character3 = await Character.create({ id : 2, index:( character2.id + 1), value: "r",
+      parent_id: character2.id})
+    console.log(character3.value)
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
