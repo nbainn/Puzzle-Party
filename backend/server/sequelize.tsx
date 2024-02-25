@@ -18,6 +18,17 @@ class Description extends Model {
   /* char_id; */
 }
 
+class Room extends Model {
+  /*  room_code;
+  host;
+  num_players;
+  isActive;
+  */
+}
+
+/* server removes the rooms from the database when all 
+players leave the room or after a certain period of inactivity */
+
 Description.init({
   id : {
     type: DataTypes.INTEGER,
@@ -84,6 +95,33 @@ Character.init({
   modelName: "Character"
 })
 
+Room.init({
+  id : {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  room_code : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  host : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  num_players : {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  isActive : {
+    type: DataTypes.BOOLEAN,
+    default: true,
+    allowNull: false
+  },
+}, {
+  sequelize,
+  modelName: "Room"
+})
 
 const testDbConnection = async () => {
   try {
