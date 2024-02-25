@@ -1,114 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PeerJS Example</title>
-    <!--This src could be replaced with the peerJS URL, but we also have the file on
-    our server that we downloaded, so we grab it from there-->
-    <script src="peer.min.js"></script>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Puzzle Party</title>
   </head>
   <body>
-    <!--Button to make a simple http request to the server-->
-    <h1>Simple Client</h1>
-    <button onclick="requestData()">Request Data</button>
-    <p id="response"></p>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-    <!--Text box and button for entering peer ID-->
-    <label for="peerIdInput">Enter Peer ID:</label>
-    <input type="text" id="peerIdInput" placeholder="Peer ID" />
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-    <button onclick="connectPeer()">Connect</button>
-    <p id="enter"></p>
-
-    <!--Text box and button for sending a message to peer-->
-    <label for="messageInput">Enter a message!</label>
-    <input type="text" id="messageInput" placeholder="message" />
-
-    <button onclick="sendMessage()">Send</button>
-    <p id="enter"></p>
-
-    <!--Wherer message is displayed when received-->
-    <label for="peerOutputLabel">Other Peer Said:</label>
-    <p id="message"></p>
-
-    <script>
-      // This function makes a simple http request using the path we defined on the server
-      // It returns a simple string from the server, which is then displayed
-      function requestData() {
-        // Make a simple HTTP GET request using the Fetch API
-        fetch("http://localhost:3000/api/data")
-          .then((response) => response.json())
-          .then((data) => {
-            // Display the server response
-            document.getElementById("response").textContent = data.message;
-          })
-          .catch((error) => console.error("Error:", error));
-      }
-
-      // A new peer is created
-      // If we left the argument blank, it would have used the defualt servers for peer ID assignment
-      // since we specified our own peer JS server, it will assign an ID and manage the peer there
-      // This gives us a lot more control over what we want our IDs to be
-      /*const peer = new Peer({
-        host: "localhost",
-        port: 3000,
-        path: "/myapp",
-      });*/
-      const peer = new Peer();
-
-      // When the peer is created, output the peer ID
-      peer.on("open", (id) => {
-        console.log("My peer ID is: " + id);
-      });
-
-      // connection is used to hold the values needed to define a connection to another peer
-      let connection = null;
-      // connectPeer grabs the ID input through text box
-      // It then creates a connectoin based on that ID, and if a connection is successful,
-      // it will send hi to the other peer
-      function connectPeer() {
-        const otherPeerId = document.getElementById("peerIdInput").value;
-
-        // You can use the 'peerId' variable to connect to the specified peer
-        console.log("Connecting to Peer ID:", otherPeerId);
-
-        // Add your connection logic here
-        // Connect to another peer
-        connection = peer.connect(otherPeerId);
-
-        connection.on("open", function () {
-          // here you have conn.id
-          connection.send("hi!");
-          console.log("sent hi");
-        });
-      }
-
-      // If someone else connects to this peer, then create a new connection object based
-      // on their peer ID so that communication can be sent back
-      // Connect function is run for the sender's id so that they recieve the peer.on signal as well
-      // Can be rewritten better lol
-      peer.on("connection", function (conn) {
-        if (connection == null) {
-          connection = peer.connect(conn.peer);
-        }
-        console.log(connection);
-        console.log("connection ??");
-        // When data is received, update the appropriate element to display the message
-        conn.on("data", function (data) {
-          // Will print 'hi!'
-          console.log("receiving data");
-          console.log(data);
-          document.getElementById("message").textContent = data;
-        });
-      });
-
-      // Sends a message from the input box through the connection
-      function sendMessage() {
-        console.log("sending a message");
-        const message = document.getElementById("messageInput").value;
-        connection.send(message);
-      }
-    </script>
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
   </body>
 </html>

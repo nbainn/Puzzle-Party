@@ -1,5 +1,5 @@
 // Express framework
-const express = require("../config/node_modules/express");
+const express = require("../node_modules/express");
 // Might not need http and path
 const http = require("http");
 const path = require("path");
@@ -18,16 +18,12 @@ app.use((req, res, next) => {
   next();
 });*/
 
-// Serve static files from the 'config' directory
-// Explaination below, basically adding all config files to same directory as server.js
-app.use(express.static(path.join(__dirname, "../config")));
-
 // Serve static files from the 'public' folder
 // What this does is allow server.js to grab index.html (or other files)
 // from the public folder and give them to the client
 // This also puts all files in the public folder on the same level as server.js,
 // so you can access index.html by typing localhost:3000/index.html instead of localhost:3000/public/index.html
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "build")));
 
 // Route handler for the root path
 // When the webpage is opened, this is the initial http request
@@ -36,7 +32,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // The single "/" represents the root directy of the server, which is
 // the initial request sent
 app.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.sendFile(path.join(__dirname, "build/index.html"));
 });
 
 // If you were to go to localhost:3000/api/data (arbitrary path), then the server
@@ -55,7 +51,7 @@ const server = app.listen(port, () => {
 // This grabs the ExpressPeerServer object from peer library (using relative path as
 // noted by lack of inital forward slash)
 // require is like import
-const { ExpressPeerServer } = require("../config/node_modules/peer");
+const { ExpressPeerServer } = require("../node_modules/peer");
 
 // This lets the peer JS server run on the same port as local host because we can define a path
 // denoted by /myapp (arbitrary)

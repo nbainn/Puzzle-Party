@@ -1,0 +1,49 @@
+.clue-list-container {
+  width: 100%; /* Match width with ChatBox */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the clue lists */
+  margin-top: 0; /* Eliminate top margin */
+}
+
+.clue-section {
+  width: 100%; 
+  margin: 0; /* Space above and below each section */
+}
+
+.clue-header {
+  width: 100%; 
+  background-color: #fcb0d1;
+  color: #000;
+  padding: 5px 0;
+  text-align: center; 
+  position: sticky;
+  top: 0; 
+  z-index: 10;
+}
+
+.clue-list {
+  list-style-type: none;
+  padding: 10px; 
+  margin: 0; 
+  max-height: 160px; 
+  overflow-y: auto; /* Scrollable */
+  background-color: #feffd6; 
+  border: 2px solid #000; 
+  border-radius: 4px;
+}
+
+.clue-list li {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #ffc4c4;
+}
+
+.clue-list li:last-child {
+  margin-bottom: 0; /* No margin for the last item */
+}
+
+.clue-section:last-child {
+  margin-bottom: 10px; /* Space below the last section */
+}
