@@ -119,7 +119,7 @@ Room.init({
 }, {
   sequelize,
   modelName: "Room"
-});
+})
 
 const testDbConnection = async () => {
   try {

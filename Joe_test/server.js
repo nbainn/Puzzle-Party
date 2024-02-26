@@ -9,7 +9,7 @@ const app = express();
 
 // Import Sequelize and your models
 const { sq, testDbConnection } = require("./sequelize.tsx");
-const { Character, Description } = sq.models;
+const { Character, Description, Room } = sq.models;
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -100,14 +100,10 @@ function createClueObject() {
 app.use(bodyParser.json()); // Parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-const Room  = require("./sequelize.tsx");
-
 app.post('/add-entry', async (req, res) => {
   try {
     const { roomCode } = req.body;
-    console.log(roomCode);
     await Room.create({ 
-      id: 1, 
       room_code: roomCode, 
       host: "test", 
       num_players: 1, 
