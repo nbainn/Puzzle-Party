@@ -3,7 +3,6 @@ const { Sequelize, DataTypes, Model } = require('sequelize');
 // Option 1: Passing a connection URI
 const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/PuzzleParty') // Example for postgres
 
-
 class Character extends Model 
 {
   /* index;
@@ -16,6 +15,16 @@ class Character extends Model
 
 class Description extends Model {
   /* char_id; */
+}
+
+class Room extends Model {
+ 
+  /*  room_code;
+  host;
+  num_players;
+  isActive;
+  */
+ 
 }
 
 Description.init({
@@ -84,6 +93,33 @@ Character.init({
   modelName: "Character"
 })
 
+Room.init({
+  id : {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  room_code : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  host : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  num_players : {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  isActive : {
+    type: DataTypes.BOOLEAN,
+    default: true,
+    allowNull: false
+  },
+}, {
+  sequelize,
+  modelName: "Room"
+})
 
 const testDbConnection = async () => {
   try {
