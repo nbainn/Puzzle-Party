@@ -4,6 +4,7 @@ const { ExpressPeerServer } = require("../node_modules/peer");
 const config = require("../config.js");
 const http = require("http");
 const path = require("path");
+const bodyParser = require("body-parser");
 const app = express();
 
 // Import Sequelize and your models
@@ -96,10 +97,22 @@ function createClueObject() {
 
 // ***ROOM CREATION****************************************************
 
+app.use(bodyParser.json()); // Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+const Room  = require("./sequelize.tsx");
+
 app.post('/add-entry', async (req, res) => {
   try {
     const { roomCode } = req.body;
-    await Room.create({ id: 1, room_code: roomCode, host: "test", num_players: 1, isActive: true})
+    console.log(roomCode);
+    await Room.create({ 
+      id: 1, 
+      room_code: roomCode, 
+      host: "test", 
+      num_players: 1, 
+      isActive: true
+    });
     res.send('New field added successfully!');
   } catch (error) {
     console.error('Error adding field:', error);

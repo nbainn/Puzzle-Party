@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes, Model } = require('sequelize');
 
 // Option 1: Passing a connection URI
-const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/PuzzleParty') // Example for postgres
+const sequelize = new Sequelize('postgres://postgres:Nbai1225.@localhost:5432/postgres') // Example for postgres
 
 class Character extends Model 
 {
@@ -119,7 +119,7 @@ Room.init({
 }, {
   sequelize,
   modelName: "Room"
-})
+});
 
 const testDbConnection = async () => {
   try {

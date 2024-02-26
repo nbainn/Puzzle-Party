@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
+import axios from 'axios';
 
 function HomePage() {
   const navigate = useNavigate();
