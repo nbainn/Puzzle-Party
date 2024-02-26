@@ -5,7 +5,6 @@ const config = require("../config.js");
 const http = require("http");
 const path = require("path");
 const app = express();
-const port = 3000;
 
 // Import Sequelize and your models
 const { sq, testDbConnection } = require("./sequelize.tsx");
@@ -35,7 +34,7 @@ app.use(express.static(path.join(__dirname, "build")));
 
 // Listening for http requests on port 3000
 const server = app.listen(config.PORT, "0.0.0.0", () => {
-  console.log(`Server running at ${config.BASE_URL}:${port}`);
+  console.log(`Server running at ${config.BASE_URL}:${config.PORT}`);
 });
 
 // This lets the peer JS server run on the same port as local host because we can define a path
@@ -94,3 +93,17 @@ function createClueObject() {
     direction: "",
   });
 }
+
+// ***ROOM CREATION****************************************************
+
+app.post('/add-entry', async (req, res) => {
+  try {
+    const { roomCode } = req.body;
+    await Room.create({ id: 1, room_code: roomCode, host: "test", num_players: 1, isActive: true})
+    res.send('New field added successfully!');
+  } catch (error) {
+    console.error('Error adding field:', error);
+    res.status(500).send('Error adding field');
+  }
+});
+
