@@ -4,11 +4,12 @@ const { ExpressPeerServer } = require("../node_modules/peer");
 const config = require("../config.js");
 const http = require("http");
 const path = require("path");
+const bodyParser = require("body-parser");
 const app = express();
 
 // Import Sequelize and your models
 const { sq, testDbConnection } = require("./sequelize.tsx");
-const { Character, Description } = sq.models;
+const { Character, Description, Room } = sq.models;
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();

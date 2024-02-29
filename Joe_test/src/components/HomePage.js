@@ -2,14 +2,20 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
+import axios from 'axios';
 
 function HomePage() {
   const navigate = useNavigate();
 
-  const handleCreateRoom = () => {
-    // Generate a 6-digit room code and navigate to the RoomPage
-    const roomCode = Math.random().toString().slice(2, 8);
-    navigate(`/room/${roomCode}`);
+  const handleCreateRoom = async () => {
+    try {// Generate a 6-digit room code and navigate to the RoomPage
+      const roomCode = Math.random().toString().slice(2, 8);
+      await axios.post('/add-entry', { roomCode });
+      console.log('Added room to db');
+      navigate(`/room/${roomCode}`);
+    } catch (error) {
+      console.error('Could not create room:', error)
+    }
   };
 
   return (
