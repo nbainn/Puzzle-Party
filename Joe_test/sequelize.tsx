@@ -1,8 +1,7 @@
 const { Sequelize, DataTypes, Model } = require('sequelize');
 
 // Option 1: Passing a connection URI
-const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/PuzzleParty') // Example for postgres
-
+const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/postgres') // Example for postgres
 
 class Character extends Model 
 {
@@ -16,6 +15,16 @@ class Character extends Model
 
 class Description extends Model {
   /* char_id; */
+}
+
+class Room extends Model {
+ 
+  /*  room_code;
+  host;
+  num_players;
+  isActive;
+  */
+ 
 }
 
 Description.init({
@@ -84,6 +93,33 @@ Character.init({
   modelName: "Character"
 })
 
+Room.init({
+  id : {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  room_code : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  host : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  num_players : {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  isActive : {
+    type: DataTypes.BOOLEAN,
+    default: true,
+    allowNull: false
+  },
+}, {
+  sequelize,
+  modelName: "Room"
+})
 
 const testDbConnection = async () => {
   try {
@@ -130,7 +166,7 @@ const testDbConnection = async () => {
     await character2.save();
     await description.save();
    */
-  const character2 = Character.build({ id: 1, index: 1, value: "a",
+/*   const character2 = Character.build({ id: 1, index: 1, value: "a",
       parent_id: 0, description_id: 1920, isParent: false});
   await character2.save();
   const descrips = await Description.findAll();
@@ -141,9 +177,10 @@ const testDbConnection = async () => {
   const users = await Character.findAll();
   console.log(users.every(user => user instanceof Character)); // true
   console.log("All users:", JSON.stringify(users, null, 2));
+  */
   } catch (error) {
     console.error("Unable to connect to the database:", error);
-  }
+  } 
 };
  
 
