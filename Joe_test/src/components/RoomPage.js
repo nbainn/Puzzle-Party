@@ -5,6 +5,7 @@ import ClueList from "./ClueList";
 import Grid from "./Grid";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
+import GeneratePuzzleForm from "./generatePuzzleForm";
 import "./RoomPage.css"; // Importing CSS for RoomPage
 
 function RoomPage() {
