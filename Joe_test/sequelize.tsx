@@ -1,11 +1,7 @@
 const { Sequelize, DataTypes, Model } = require('sequelize');
 
 // Option 1: Passing a connection URI
-<<<<<<< HEAD
-const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/postgres') // Example for postgres
-=======
 const sequelize = new Sequelize('postgres://postgres:Nbai1225.@localhost:5432/postgres') // Example for postgres
->>>>>>> 9b3e22573be25ea7ace630297de90a406b2b2e71
 
 class Character extends Model 
 {
