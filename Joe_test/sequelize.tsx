@@ -122,18 +122,11 @@ Room.init({
   modelName: "Room"
 })
 
-const testDbConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
 
-    await sequelize.sync()
-      .then(() => {
-        console.log('Models synchronized successfully.');
-      })
-      .catch((err) => {
-        console.error('Error synchronizing models:', err);
-    });
+Character.hasMany(Character, {
+  foreignKey: 'parent_id',
+  as: 'children'
+})
 
 /*     console.log(Character === sequelize.models.Character);
     const character = Character.build({ id: 0, index: 0, value: "a", 
@@ -179,11 +172,50 @@ const testDbConnection = async () => {
   console.log(users.every(user => user instanceof Character)); // true
   console.log("All users:", JSON.stringify(users, null, 2));
   */
+
+const testDbConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   } 
 };
+
+const syncModels = async () => {
+  try {
+    await testDbConnection();
+
+    await sequelize.sync()
+    .then(() => {
+      console.log('Models synchronized successfully.');
+    })
+    .catch((err) => {
+      console.error('Error synchronizing models:', err);
+  });
+
+  } catch(error) {
+    console.log("Error:", error)
+  }
+};
+
+const fetchWord = async () => {
+  try {
+    await testDbConnection();
+    const users = await Character.findAll();
+    console.log(users.every(user => user instanceof Character)); // true
+    console.log("All users:", JSON.stringify(users, null, 2));
+    
+  } catch (err) {
+    console.log("Error fetching:", err)
+  }
+
+}
  
 
 testDbConnection();
-module.exports = { sq: sequelize, testDbConnection };
+syncModels();
+fetchWord();
+
+module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord };
