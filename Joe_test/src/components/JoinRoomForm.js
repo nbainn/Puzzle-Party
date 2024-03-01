@@ -6,10 +6,10 @@ import './JoinRoomForm.css';
 import e from 'cors';
 import axios from 'axios';
 
+
 function JoinRoomForm() {
   const [roomCode, setRoomCode] = useState('');
   const navigate = useNavigate();
-
   const handleSubmit = async (event) => {
     
     event.preventDefault();
@@ -21,13 +21,20 @@ function JoinRoomForm() {
         navigate(`/room/${roomCode}`);
       } else if (response.status === 404){
         console.log('Room not found:', response.data);
+        createPopup('Room not found. Please enter an existing room.');
       } else {
         console.error('Unexpected response status:', response.status); 
       }
     } catch (error) {
       console.error('Error finding room:', error);
-      console.log("error")   
+      console.log("error")
+      createPopup('Room not found. Please enter an existing room.');   
     }
+  };
+
+  const createPopup = (message) => {
+    // Implement popup logic here
+    alert(message);
   };
 
   return (

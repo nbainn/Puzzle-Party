@@ -1,21 +1,17 @@
-const { send } = require("process");
-
 // Define the loadScript function
-function loadScript() {
+export function loadScript() {
     const libraryUrl = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = libraryUrl;
     script.onload = () => {
         // The library has been loaded, you can now use it
+        const Peer = window.Peer; // Declare Peer variable
+        let hostID;
         const peer = new Peer();
-        var conn;
-        var peerID;
-        var hostID;
-
         // Function that uses the Peer object
         const createHost = () => {
-            const peer = new Peer();
+            //const peer = new Peer();
             peer.on('open', (id) => {
                 console.log('My peer ID is: ' + id);
                 hostID = id
@@ -33,35 +29,9 @@ function loadScript() {
             });
         }
 
-        const sendCoordinates = (x, y, value) => {
-            createPeer();
-            console.log(x)
-            conn.on('open', function() {
-                console.log("Coordinates: " + x + ", "+ y + ", Character value: " + value);
-                conn.send("Coordinates: " + x + ", "+ y + ", Character value: " + value);
-                
-            })
-            conn.on('data', function(data) {
-                console.log('Received data:' + data);
-            });
-
-        }
-        const sendColor = (color) => {
-            createPeer();
-            console.log(color)
-            conn.on('open', function() {
-                console.log("Color: " + color);
-                conn.send("Color" + color);
-                
-            })
-            conn.on('data', function(data) {
-                console.log('Received data:' + data);
-            });
-        }
-
         const createPeer = () => {
             const peer = new Peer();
-            peerID
+            var peerID
             peer.on('open', (id) => {
                 console.log('My peer ID is: ' + id);
                 peerID = id
@@ -70,7 +40,7 @@ function loadScript() {
         }
 
         const connectToPeer = (peerId) => {
-            conn = peer.connect(peerId);
+            const conn = peer.connect(peerId);
 
             conn.on('open', function() {
                 console.log('Connected to peer ' + peerId);
@@ -86,8 +56,7 @@ function loadScript() {
         // Expose createHost and createPeer functions globally
         window.createHost = createHost;
         window.createPeer = createPeer;
-        window.sendCoordinates = sendCoordinates;
-        window.sendColor = sendColor;
     };
     document.head.appendChild(script);
 }
+

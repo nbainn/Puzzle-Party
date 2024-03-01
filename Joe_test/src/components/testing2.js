@@ -11,14 +11,13 @@ function loadScript() {
         const peer = new Peer();
         var conn;
         var peerID;
-        var hostID;
 
         // Function that uses the Peer object
         const createHost = () => {
             const peer = new Peer();
             peer.on('open', (id) => {
                 console.log('My peer ID is: ' + id);
-                hostID = id
+                hostID = "e27d9e0d-d881-4a45-b511-b877823f5f4f"
             });
             peer.on('connection', function(conn) {
                 conn.on('open', function() {
@@ -33,12 +32,12 @@ function loadScript() {
             });
         }
 
-        const sendCoordinates = (x, y, value) => {
+        const sendCoordinates = (x, y) => {
             createPeer();
             console.log(x)
             conn.on('open', function() {
-                console.log("Coordinates: " + x + ", "+ y + ", Character value: " + value);
-                conn.send("Coordinates: " + x + ", "+ y + ", Character value: " + value);
+                console.log("Coordinates: " + x + ", "+ y);
+                conn.send("Coordinates: " + x + ", "+ y);
                 
             })
             conn.on('data', function(data) {
