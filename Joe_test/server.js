@@ -105,7 +105,7 @@ app.post('/add-entry', async (req, res) => {
     const { roomCode } = req.body;
     await Room.create({ 
       room_code: roomCode, 
-      host: "test", 
+      host: "testHost", 
       num_players: 1, 
       isActive: true
     });
@@ -113,6 +113,24 @@ app.post('/add-entry', async (req, res) => {
   } catch (error) {
     console.error('Error adding field:', error);
     res.status(500).send('Error adding field');
+  }
+});
+
+app.post('/search-entry', async (req, res) => {
+  try {
+    const  roomCode  = req.body;
+    const foundRoom = await Room.findOne({ 
+      where: {room_code: roomCode },
+      attributes: ['host']
+    });
+    if (foundRoom) {
+      res.status(200).send(foundRoom.host);
+    } else {
+      res.status(404).send('Room not found');
+    }
+  } catch (error) {
+    console.error('Error finding field:', error);
+    res.status(500).send('Error finding field');
   }
 });
 
