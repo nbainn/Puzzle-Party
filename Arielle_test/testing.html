@@ -11,19 +11,56 @@
     <button onclick="createHost()">Connect as Host</button>
     <button onclick="createPeer()">Connect as Client</button>
 
-    <button onclick = "sendCoordinates(0, 0)">Send Coordinate</button>
-    <button onclick="sendCoordinates(0, 1)">Send Coordinate</button>
-    <button onclick="sendCoordinates(0, 2)">Send Coordinate</button>
+    <input type = "text" id = "coordinate1" name = "coordinate1">
+    <button onclick = "sendCoordinates(0, 0, document.getElementById('coordinate1').value)">Send Coordinate</button>
+    <input type="text" id="coordinate2" name="coordinate2">
+    <button onclick="sendCoordinates(0, 1, document.getElementById('coordinate2').value)">Send Coordinate</button>
+    <input type="text" id="coordinate3" name="coordinate3">
+    <button onclick="sendCoordinates(0, 2, document.getElementById('coordinate2').value)">Send Coordinate</button>
 
-    <label for="favcolor">Select your Cursor Color:</label>
-    <input type="color" id="favcolor" name="favcolor" value="#ff0000">
+    <label for="favcolor">Select your Cursor Color (user 1):</label>
+    <input type="color" id="favcolor1" name="favcolor" value="#ff0000">
 
-    <button onclick="sendColor(document.getElementById('favcolor').value)">Send Color</button>
+    <button onclick="sendColor(document.getElementById('favcolor1').value)">Send Color 1</button>
+
+    <label for="favcolor">Select your Cursor Color (user 2):</label>
+    <input type="color" id="favcolor2" name="favcolor" value="#ff0000">
+      <button onclick="sendColor(document.getElementById('favcolor2').value)">Send Color 2</button>
+
+    <label for="favcolor">Select your Cursor Color (user 3):</label>
+    <input type="color" id="favcolor3" name="favcolor" value="#ff0000">
+     <button onclick="sendColor(document.getElementById('favcolor3').value)">Send Color 3</button>
+
+ 
 
 
     <script src="testing2.js"></script>
     <script>
       loadScript();
+    // Get a reference to the color input and text input
+          const colorInput = document.getElementById("favcolor1");
+          const inputBox = document.getElementById("coordinate1");
+
+          const colorInput2 = document.getElementById("favcolor2");
+            const inputBox2 = document.getElementById("coordinate2");
+
+            const colorInput3 = document.getElementById("favcolor3");
+              const inputBox3 = document.getElementById("coordinate3");
+
+          // Add an event listener to listen for changes in the color input
+          colorInput.addEventListener("input", function() {
+            // Set the background color of the text input to the selected color
+            inputBox.style.backgroundColor = colorInput.value;
+          });
+          colorInput2.addEventListener("input", function () {
+            // Set the background color of the text input to the selected color
+            inputBox2.style.backgroundColor = colorInput2.value;
+          });
+          colorInput3.addEventListener("input", function () {
+              // Set the background color of the text input to the selected color
+              inputBox3.style.backgroundColor = colorInput3.value;
+            });
+
     </script>
   </body>
 </html>
