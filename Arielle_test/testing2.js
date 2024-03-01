@@ -13,7 +13,7 @@ function loadScript() {
             const peer = new Peer();
             peer.on('open', (id) => {
                 console.log('My peer ID is: ' + id);
-                hostID = id
+                hostID = "e27d9e0d-d881-4a45-b511-b877823f5f4f"
             });
             peer.on('connection', function(conn) {
                 conn.on('open', function() {

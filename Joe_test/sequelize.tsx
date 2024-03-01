@@ -220,9 +220,7 @@ const fetchWord = async (dictionary) => {
     });
 
     console.log(users.every(user => user instanceof Character)); // true
-    console.log("All users:", JSON.stringify(users, null, 2));
-    
-      
+    console.log("All users:", JSON.stringify(users, null, 2));   
 
     })
 
@@ -231,10 +229,35 @@ const fetchWord = async (dictionary) => {
   }
 
 }
- 
 
+const fetchHost = async (roomCode) => {
+  try {
+    await testDbConnection();
+
+    const host = await Room.findOne({
+      attributes: ['host'],
+      where: {
+        room_code: roomCode
+      }
+    });
+    if (host) {
+      console.log("Host:", host.host);
+      return host.host; // Return the host string
+    } else {
+      console.log("No host found for room code:", roomCode);
+      return null; // Return null if no host is found
+    }
+    //console.log("All users:", JSON.stringify(host, null));
+
+  } catch (err) {
+    console.log("Error fetching:", err)
+  }
+
+}
+ 
 testDbConnection();
 syncModels();
 fetchWord(word);
+//fetchHost("1234");
 
-module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord };
+module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord, fetchHost };

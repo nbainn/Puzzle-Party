@@ -7,6 +7,7 @@ function JoinRoomForm() {
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
+    
     event.preventDefault();
     // TODO: Add validation for roomCode before redirecting\
     const response = "";
@@ -38,7 +39,7 @@ function JoinRoomForm() {
         type="text"
         placeholder="Enter Room Code"
         value={roomCode}
-        onChange={(e) => setRoomCode(e.target.value)}
+       // onChange={(e) => setRoomCode(e.target.value)}
         minLength="6"
         maxLength="6"
         className="join-room-input"
