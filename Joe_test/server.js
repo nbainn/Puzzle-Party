@@ -6,7 +6,7 @@ const http = require("http");
 const path = require("path");
 const bodyParser = require("body-parser");
 const app = express();
-
+app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection } = require("./sequelize.tsx");
 const { Character, Description, Room } = sq.models;
@@ -70,7 +70,6 @@ app.get("/puzzle", (req, res) => {
 });
 
 // ***PUZZLE GENERATION****************************************************
-// Creates an empty puzzle object with only the size of the puzzle specified
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
     size: {
@@ -85,7 +84,6 @@ function createPuzzleObject(rows, columns) {
   });
 }
 
-// Creates an empty clue object
 function createClueObject() {
   return (clue = {
     number: 0,
@@ -97,62 +95,15 @@ function createClueObject() {
   });
 }
 
-// Adds a clue to the puzzle object
-function addClueToPuzzle(puzzle, clue) {
-  if (clue.direction === "across") {
-    puzzle.clues.across.push(clue);
-  } else {
-    puzzle.clues.down.push(clue);
-  }
-  let row = clue.row;
-  let column = clue.column;
-  let answer = clue.answer;
-  let direction = clue.direction;
-  for (let i = 0; i < answer.length; i++) {
-    if (direction === "across") {
-      puzzle.grid[row][column + i] = answer[i];
-    } else {
-      puzzle.grid[row + i][column] = answer[i];
-    }
-  }
-}
-
-// Sorts the clues in the puzzle object by number so that they can be displayed easily
-function sortClues(puzzle) {
-  puzzle.clues.across.sort((a, b) => a.number - b.number);
-  puzzle.clues.down.sort((a, b) => a.number - b.number);
-}
-
-// Function for querying words from the database
-// Array as argument in form {index1, character1, index2, character2, ...} for specifications
-function queryWord(specifications, seed) {}
-
-// Function that builds a crossword puzzle using all above functions
-// Queries words one at a time and adds them to crossword puzzle
-function buildPuzzle(seed, size) {
-  puzzle;
-  // Creating the puzzle object
-  switch (size) {
-    case "small":
-      puzzle = createPuzzleObject(5);
-    case "medium":
-      puzzle = createPuzzleObject(10);
-    case "large":
-      puzzle = createPuzzleObject(15);
-    default:
-      puzzle = createPuzzleObject(10);
-  }
-
-  // Adding clues to the puzzle object
-
-  return puzzle;
-}
-
 // ***ROOM CREATION****************************************************
 
 app.post("/add-entry", async (req, res) => {
   try {
-    const { roomCode } = req.body;
+    const roomCode = req.body.roomCode; // Access roomCode directly from req.body
+    if (!roomCode) {
+      throw new Error("Room code is missing in the request body");
+    }
+    console.log("Adding room to db server side", roomCode);
     await Room.create({ 
       room_code: roomCode, 
       host: "testHost", 
@@ -168,19 +119,21 @@ app.post("/add-entry", async (req, res) => {
 
 app.post('/search-entry', async (req, res) => {
   try {
-    const  roomCode  = req.body;
-    const foundRoom = await Room.findOne({ 
+    const roomCode = req.body.roomCode;
+    if (!roomCode) {
+      throw new Error("Room code is missing in the request body");
+    }
+    let foundRoom = await Room.findOne({ 
       where: {room_code: roomCode },
       attributes: ['host']
     });
     if (foundRoom) {
-      res.status(200).send(foundRoom.host);
+      res.status(200).send(JSON.stringify(foundRoom.host));
     } else {
-      res.status(404).send('Room not found');
+      res.status(404).send(null);
     }
   } catch (error) {
     console.error('Error finding field:', error);
     res.status(500).send('Error finding field');
   }
 });
-

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
 import axios from 'axios';
-const { loadScript, createHost} = require('./p2p.js'); 
+//const { loadScript, createHost} = require('./p2p.js'); 
 
 function HomePage() {
   const navigate = useNavigate();
@@ -13,8 +13,10 @@ function HomePage() {
     //loadScript();
     //const hostId = createHost();
     //console.log('hostId', hostId)
+    const roomCode = Math.random().toString().slice(2, 8);
+    console.log( "Adding roomcode", roomCode  );
+    
     try {// Generate a 6-digit room code and navigate to the RoomPage
-      const roomCode = Math.random().toString().slice(2, 8);
       await axios.post('/add-entry', { roomCode });
       console.log('Added room to db');
       navigate(`/room/${roomCode}`);

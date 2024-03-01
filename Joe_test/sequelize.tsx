@@ -251,6 +251,7 @@ const fetchHost = async (roomCode) => {
 
   } catch (err) {
     console.log("Error fetching:", err)
+    return null;
   }
 
 }
@@ -258,6 +259,6 @@ const fetchHost = async (roomCode) => {
 testDbConnection();
 syncModels();
 fetchWord(word);
-//fetchHost("1234");
+//fetchHost("882259");
 
 module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord, fetchHost };
