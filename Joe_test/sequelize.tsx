@@ -1,7 +1,11 @@
 const { Sequelize, DataTypes, Model } = require('sequelize');
 
 // Option 1: Passing a connection URI
+<<<<<<< HEAD
+const sequelize = new Sequelize('postgres://postgres:keystone8@localhost:5432/postgres') // Example for postgres
+=======
 const sequelize = new Sequelize('postgres://postgres:Nbai1225.@localhost:5432/postgres') // Example for postgres
+>>>>>>> 9b3e22573be25ea7ace630297de90a406b2b2e71
 
 class Character extends Model 
 {
@@ -166,7 +170,7 @@ const testDbConnection = async () => {
     await character2.save();
     await description.save();
    */
-  const character2 = Character.build({ id: 1, index: 1, value: "a",
+/*   const character2 = Character.build({ id: 1, index: 1, value: "a",
       parent_id: 0, description_id: 1920, isParent: false});
   await character2.save();
   const descrips = await Description.findAll();
@@ -177,9 +181,10 @@ const testDbConnection = async () => {
   const users = await Character.findAll();
   console.log(users.every(user => user instanceof Character)); // true
   console.log("All users:", JSON.stringify(users, null, 2));
+  */
   } catch (error) {
     console.error("Unable to connect to the database:", error);
-  }
+  } 
 };
  
 

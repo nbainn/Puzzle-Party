@@ -97,10 +97,7 @@ function createClueObject() {
 
 // ***ROOM CREATION****************************************************
 
-app.use(bodyParser.json()); // Parse JSON request bodies
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
-
-app.post('/add-entry', async (req, res) => {
+app.post("/add-entry", async (req, res) => {
   try {
     const { roomCode } = req.body;
     await Room.create({ 
@@ -109,10 +106,10 @@ app.post('/add-entry', async (req, res) => {
       num_players: 1, 
       isActive: true
     });
-    res.send('New field added successfully!');
+    res.send("New field added successfully!");
   } catch (error) {
-    console.error('Error adding field:', error);
-    res.status(500).send('Error adding field');
+    console.error("Error adding field:", error);
+    res.status(500).send("Error adding field");
   }
 });
 
