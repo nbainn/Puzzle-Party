@@ -3,11 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
 import axios from 'axios';
+const { loadScript, createHost} = require('./p2p.js'); 
 
 function HomePage() {
   const navigate = useNavigate();
 
   const handleCreateRoom = async () => {
+    //console.log('supposed to get hostid')
+    //loadScript();
+    //const hostId = createHost();
+    //console.log('hostId', hostId)
     try {// Generate a 6-digit room code and navigate to the RoomPage
       const roomCode = Math.random().toString().slice(2, 8);
       await axios.post('/add-entry', { roomCode });
