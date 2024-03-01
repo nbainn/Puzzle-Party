@@ -258,7 +258,7 @@ const fetchHost = async (roomCode) => {
  
 testDbConnection();
 syncModels();
-fetchWord(word);
+//fetchWord(word);
 //fetchHost("882259");
 
 module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord, fetchHost };
