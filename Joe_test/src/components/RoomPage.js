@@ -6,10 +6,13 @@ import Grid from './Grid';
 import PlayerList from './PlayerList';
 import ExitRoom from './ExitRoom';
 import './RoomPage.css'; // Importing CSS for RoomPage
+//import { query } from 'express';
 
 function RoomPage() {
   const { roomId } = useParams();
-
+  //const location = useLocation();
+  //const queryParams = new URLSearchParams(location.search);
+  //const host = queryParams.get('host');
   return (
     <div className="room-page">
       <div>
