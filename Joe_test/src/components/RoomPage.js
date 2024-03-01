@@ -4,6 +4,7 @@ import ChatBox from './ChatBox';
 import ClueList from './ClueList';
 import Grid from './Grid';
 import PlayerList from './PlayerList';
+import ExitRoom from './ExitRoom';
 import './RoomPage.css'; // Importing CSS for RoomPage
 
 function RoomPage() {
@@ -11,6 +12,9 @@ function RoomPage() {
 
   return (
     <div className="room-page">
+      <div>
+        <ExitRoom/>
+      </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         {/* You can also display the room code here */}
