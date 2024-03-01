@@ -6,6 +6,7 @@ import Grid from "./Grid";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import GeneratePuzzleForm from "./generatePuzzleForm";
+import DropdownComponent from "./DropdownComponent";
 import "./RoomPage.css"; // Importing CSS for RoomPage
 
 function RoomPage() {
@@ -19,6 +20,7 @@ function RoomPage() {
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm />
+        <DropdownComponent />
         {/* You can also display the room code here */}
       </div>
       <div className="game-container">
