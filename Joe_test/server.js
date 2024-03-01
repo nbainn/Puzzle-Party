@@ -128,7 +128,8 @@ app.post('/search-entry', async (req, res) => {
       attributes: ['host']
     });
     if (foundRoom) {
-      res.status(200).send(JSON.stringify(foundRoom.host));
+      console.log(foundRoom.host);
+      res.status(200).send(foundRoom.host);
     } else {
       res.status(404).send(null);
     }

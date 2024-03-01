@@ -14,9 +14,8 @@ function JoinRoomForm() {
     
     event.preventDefault();
     // TODO: Add validation for roomCode before redirecting\
-    const response = "";
     try {
-      response = await axios.post('/search-entry', { roomCode });
+      const response = await axios.post('/search-entry', { roomCode });
       if (response.status === 200 && response.data.found) {
         console.log('Found room:', response.data);
         navigate(`/room/${roomCode}`);
