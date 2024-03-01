@@ -200,13 +200,32 @@ const syncModels = async () => {
   }
 };
 
-const fetchWord = async () => {
+const word = {
+  1: "a",
+  3: "s"
+}
+
+const fetchWord = async (dictionary) => {
   try {
     await testDbConnection();
-    const users = await Character.findAll();
+
+    var res
+    Object.keys(dictionary).map(async (index) => {
+      console.log(index)
+      const users = await Character.findAll({
+        where: {
+          index: index,
+          value: dictionary[index]
+        }
+    });
+
     console.log(users.every(user => user instanceof Character)); // true
     console.log("All users:", JSON.stringify(users, null, 2));
     
+      
+
+    })
+
   } catch (err) {
     console.log("Error fetching:", err)
   }
@@ -216,6 +235,6 @@ const fetchWord = async () => {
 
 testDbConnection();
 syncModels();
-fetchWord();
+fetchWord(word);
 
 module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord };

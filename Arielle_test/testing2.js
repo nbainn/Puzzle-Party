@@ -9,7 +9,7 @@ function loadScript() {
         const peer = new Peer();
 
         // Function that uses the Peer object
-        function createHost() {
+        const createHost = () => {
             const peer = new Peer();
             peer.on('open', (id) => {
                 console.log('My peer ID is: ' + id);
@@ -28,7 +28,7 @@ function loadScript() {
             });
         }
 
-        function createPeer() {
+        const createPeer = () => {
             const peer = new Peer();
             var peerID
             peer.on('open', (id) => {
@@ -38,7 +38,7 @@ function loadScript() {
             connectToPeer(hostID)
         }
 
-        function connectToPeer(peerId) {
+        const connectToPeer = (peerId) => {
             const conn = peer.connect(peerId);
 
             conn.on('open', function() {
