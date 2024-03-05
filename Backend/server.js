@@ -31,7 +31,7 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 
 // ***SERVER SETUP****************************************************
 // Allows server to serve react build files
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
 // Listening for http requests on port 3000
 const server = app.listen(config.PORT, "0.0.0.0", () => {
