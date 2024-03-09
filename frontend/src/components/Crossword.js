@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Crossword.css'
 
 const CrosswordGrid = () => {
   const numRows = 10;
