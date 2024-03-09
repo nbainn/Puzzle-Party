@@ -7,6 +7,7 @@ import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import GeneratePuzzleForm from "./generatePuzzleForm";
 import DropdownComponent from "./DropdownComponent";
+import CrosswordGrid from "./Crossword";
 import "./RoomPage.css"; // Importing CSS for RoomPage
 
 function RoomPage() {
@@ -27,7 +28,8 @@ function RoomPage() {
       </div>
       <div className="game-container">
         <PlayerList />
-        <Grid />
+        {/* <Grid /> */}
+        <CrosswordGrid />
         <div className="hints-chat-container">
           <ClueList />
           <ChatBox />

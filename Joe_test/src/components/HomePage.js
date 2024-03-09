@@ -58,6 +58,10 @@ function HomePage() {
         Create Room
       </button>
       <JoinRoomForm />
+      <label for="favcolor">Select your Cursor Color:</label>
+      <input type="color" id="favcolor1" name="favcolor" 
+       value="#F88379" onChange="sendColor(document.getElementById('favcolor1').value)">
+      </input>
     </div>
   );
 }
