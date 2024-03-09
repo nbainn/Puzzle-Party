@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './Crossword.css'
 
 const CrosswordGrid = () => {
-  const numRows = 10;
-  const numCols = 10;
+  const numRows = 12;
+  const numCols = 12;
 
   const [grid, setGrid] = useState(Array(numRows).fill(Array(numCols).fill('')));
   const [currentDirection, setCurrentDirection] = useState('across'); // 'across' or 'down'
