@@ -1,22 +1,22 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
+const { Sequelize, DataTypes, Model, Op } = require('sequelize');
 const {PostgresPassword} = require("./config.js")
 
 // Option 1: Passing a connection URI
 const sequelize = new Sequelize(PostgresPassword) // Example for postgres
 
-class Character extends Model 
+/*class Character extends Model 
 {
-  /* index;
+  index;
   value;
   isParent;
   parent_id;
-  description_id; */
+  description_id;
 
-}
+}*/
 
-class Description extends Model {
-  /* char_id; */
-}
+/*class Description extends Model {
+  char_id; 
+}*/
 
 class Room extends Model {
  
@@ -28,7 +28,23 @@ class Room extends Model {
  
 }
 
-Description.init({
+class Word extends Model {
+
+  /* word;
+  descriptions;
+  */
+
+}
+
+class Puzzle extends Model {
+
+/* seed;
+puzzle;
+*/
+
+}
+
+/*Description.init({
   id : {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -38,21 +54,21 @@ Description.init({
     type: DataTypes.STRING
   }, 
   // foreign key to a character
-  /*
+  
   char_id: {
     type: DataTypes.INTEGER,
     references: {
       model: Character,
       key: 'id'
     }
-  }, */
+  }, 
 }, {
   sequelize,
   modelName: "Description"
-})
+})*/
 
 
-Character.init({
+/*Character.init({
   id : {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -92,7 +108,7 @@ Character.init({
 {
   sequelize,
   modelName: "Character"
-})
+})*/
 
 Room.init({
   id : {
@@ -122,11 +138,39 @@ Room.init({
   modelName: "Room"
 })
 
+Word.init({
+  word : {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  descriptions : {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+}, {
+  sequelize,
+  modelName: "Word"
+});
 
-Character.hasMany(Character, {
+Puzzle.init({
+  seed : {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  puzzle : {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+}, {
+  sequelize,
+  modelName: "Puzzle"
+});
+
+
+/*Character.hasMany(Character, {
   foreignKey: 'parent_id',
   as: 'children'
-})
+})*/
 
 /*     console.log(Character === sequelize.models.Character);
     const character = Character.build({ id: 0, index: 0, value: "a", 
@@ -205,22 +249,22 @@ const word = {
   3: "s"
 }
 
-const fetchWord = async (dictionary) => {
+/*const fetchWord = async (dictionary) => {
   try {
     await testDbConnection();
 
     var res
     Object.keys(dictionary).map(async (index) => {
       console.log(index)
-      const users = await Character.findAll({
+      const characters = await Character.findAll({
         where: {
           index: index,
           value: dictionary[index]
         }
     });
 
-    console.log(users.every(user => user instanceof Character)); // true
-    console.log("All users:", JSON.stringify(users, null, 2));   
+    console.log(characters.every(user => user instanceof Character)); // true
+    console.log("All users:", JSON.stringify(characters, null, 2));   
 
     })
 
@@ -228,7 +272,7 @@ const fetchWord = async (dictionary) => {
     console.log("Error fetching:", err)
   }
 
-}
+}*/
 
 const fetchHost = async (roomCode) => {
   try {
@@ -255,10 +299,55 @@ const fetchHost = async (roomCode) => {
   }
 
 }
+
+// createReg creates a regular expression pattern based on the indexes/characters
+const createReg = (specs) => {
+  const sortedEntries = Object.entries(specs).sort(([a], [b]) => +a - +b);
+  let pattern = '';
+  let prevIndex = 0;
+  for (const [index, char] of sortedEntries) {
+    const currentIndex = parseInt(index, 10);
+    if ((currentIndex - prevIndex) > 1) {
+      pattern += `.{${currentIndex - prevIndex - 1}}`;
+    }
+    pattern += char;
+    prevIndex = currentIndex;
+  }
+  console.log(`^${pattern}.*$`);
+  return new RegExp(`^${pattern}.*$`);
+};
+
+//fetchWords fetches words from the database based on the indexes/characters
+const fetchWords = async (specs) => {
+  try {
+    const pattern = createReg(specs);
+
+    const matchingWords = await Word.findAll({
+      where: {
+        word: {
+          [Op.regexp]: pattern.source,
+        },
+      },
+    });
+
+    console.log('Matching words:', matchingWords);
+    return matchingWords;
+  } catch (error) {
+    console.error('Error fetching words:', error);
+    throw error;
+  }
+};
+
+// Example usage:
+const dictionary = {
+  2: 'e',
+  4: 't',
+  // Add more index-character pairs as needed
+};
  
 testDbConnection();
 syncModels();
-//fetchWord(word);
+//fetchWords(dictionary);
 //fetchHost("882259");
 
-module.exports = { sq: sequelize, testDbConnection, syncModels, fetchWord, fetchHost };
+module.exports = { sq: sequelize, testDbConnection, syncModels, fetchHost };
