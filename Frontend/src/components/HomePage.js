@@ -57,6 +57,9 @@ function HomePage() {
       <button onClick={handleCreateRoom} className="create-room-button">
         Create Room
       </button>
+        {/* From original html file, change later to be react functionality for onchange */}
+        {/* <label for="favcolor">Select your Cursor Color:</label>
+        <input type="color" id="favcolor1" name="favcolor" value="#ff0000"> </input> */}
       <JoinRoomForm />
     </div>
   );
