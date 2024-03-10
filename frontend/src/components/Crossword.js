@@ -5,11 +5,14 @@ const CrosswordGrid = () => {
   const numRows = 10;
   const numCols = 10;
 
-  const [grid, setGrid] = useState(Array(numRows).fill(Array(numCols).fill('')));
+  const [grid, setGrid] = useState(
+    Array(numRows).fill(Array(numCols).fill({ value: '', highlighted: false }))
+  );
   const [currentDirection, setCurrentDirection] = useState('across'); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
   const [currentWordEnd, setCurrentWordEnd] = useState(null);
   const [inputChar, setInputChar] = useState('');
+  const [favcolor, setColor] = useState('#e08794');
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -24,21 +27,31 @@ const CrosswordGrid = () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [currentDirection]);
+const handleCellClick = (rowIndex, colIndex) => {
+  // Reset highlighting
+  const resetGrid = grid.map(row =>
+    row.map(cell => ({ ...cell, highlighted: false }))
+  );
+  setGrid(resetGrid);
 
-  const handleCellClick = (event, rowIndex, colIndex) => {
-    // Handle cell click based on current direction
-    // For example, you can highlight the current word or input letters
-    const newGrid = [...grid];
-    newGrid[rowIndex][colIndex] = event.target.value;
-    setGrid(newGrid);
-    setInputChar('');
+  // Highlight cells in the current direction
+  const newGrid = resetGrid.map((row, rIndex) =>
+    row.map((cell, cIndex) => {
+      if (currentDirection === 'across' && rIndex === rowIndex) {
+        return { ...cell, highlighted: true };
+      }
+      if (currentDirection === 'down' && cIndex === colIndex) {
+        return { ...cell, highlighted: true };
+      }
+      return cell;
+    })
+  );
+  setGrid(newGrid);
 
-    // Highlight current word
-    const wordStart = findWordStart(rowIndex, colIndex);
-    const wordEnd = findWordEnd(rowIndex, colIndex);
-    setCurrentWordStart(wordStart);
-    setCurrentWordEnd(wordEnd);
-  };
+  // Update current word
+  setCurrentWordStart(findWordStart(rowIndex, colIndex));
+  setCurrentWordEnd(findWordEnd(rowIndex, colIndex));
+};
 
   const findWordStart = (rowIndex, colIndex) => {
     let i = colIndex;
@@ -77,27 +90,44 @@ const CrosswordGrid = () => {
     return rowIndex >= startRow && rowIndex <= endRow && colIndex >= startCol && colIndex <= endCol;
   };
 
-  const handleCellChange = (event, rowIndex, colIndex) => {
-    const newGrid = [...grid];
-    newGrid[rowIndex][colIndex] = event.target.value;
-    setGrid(newGrid);
-  };
+const handleCellChange = (event, rowIndex, colIndex) => {
+  const newGrid = grid.map((row, rIndex) => rIndex === rowIndex
+      ? row.map((cell, cIndex) =>
+          cIndex === colIndex ?  { ...cell, value: event.target.value } : cell
+        )
+      : row
+  );
+  setGrid(newGrid);
+};
+
 
   return (
     <div className="crossword-grid">
-      {grid.map((row, rowIndex) => (
+      <div className='color-picker'>
+        <label for="favcolor">Select your Cursor Color:</label>
+        <input type="color" id="favcolor1" name="favcolor" value="#e08794" 
+          onChange={(e) => setColor(e.target.value)}></input>
+      </div>
+
+      <div className='grid'>
+        {grid.map((row, rowIndex) => (
         <div key={rowIndex} className="row">
           {row.map((cell, colIndex) => (
-            <input
-              key={`${rowIndex}-${colIndex}`}
-              className="cell"
-              value={cell}
-              onChange={(event) => handleCellClick(event, rowIndex, colIndex)}
-              maxLength={1}
-            />
+          <input
+            key={`${rowIndex}-${colIndex}`}
+            className={`cell ${isCellInCurrentWord(rowIndex, colIndex) ? 'current-word' : ''}`}
+            value={cell.value}
+            onClick={() => handleCellClick(rowIndex, colIndex)}
+            onChange={(event) => handleCellChange(event, rowIndex, colIndex)}
+            maxLength={1}
+            style={{ backgroundColor: cell.highlighted ? favcolor : 'white' }}
+          />
+
           ))}
         </div>
-      ))}
+        ))}
+      </div>
+      
     </div>
   );
 };
