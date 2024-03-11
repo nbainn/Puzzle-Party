@@ -197,10 +197,11 @@ function checkAllWords(realPuzzle, guessPuzzle) {
   for (let i = 0; i < guessPuzzle.size.rows; i++) {
     for (let j = 0; j < guessPuzzle.size.columns; j++) {
       if (guessPuzzle.grid[i][j] !== realPuzzle.grid[i][j]) {
-        return false;
+        guessPuzzle.grid[i][j] = "/";
       }
     }
   }
+  return guessPuzzle;
 }
 
 // ***ROOM CREATION****************************************************
