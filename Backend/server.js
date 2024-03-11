@@ -32,17 +32,19 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 
 // ***ABLY TOKEN ENDPOINT****************************************************
 // Endpoint to get an Ably token
-app.post('/getAblyToken', async (req, res) => {
+app.post("/getAblyToken", async (req, res) => {
   const roomId = req.body.roomId;
-  const ably = new Ably.Rest({ key: "u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs" });
-  
-  const tokenParams = { userId: roomId }; 
+  const ably = new Ably.Rest({
+    key: "u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs",
+  });
+
+  const tokenParams = { userId: roomId };
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
-      if (err) {
-          res.status(500).send("Error requesting token: " + err);
-      } else {
-          res.send(tokenRequest);
-      }
+    if (err) {
+      res.status(500).send("Error requesting token: " + err);
+    } else {
+      res.send(tokenRequest);
+    }
   });
 });
 
@@ -58,15 +60,15 @@ const server = app.listen(config.PORT, "0.0.0.0", () => {
 // This lets the peer JS server run on the same port as local host because we can define a path
 // denoted by /myapp (arbitrary)
 // Going to localhost:3000/myapp would be the same thing as going to peerJS servers available online
-const peerServer = ExpressPeerServer(server, {
+/*const peerServer = ExpressPeerServer(server, {
   proxied: true,
   debug: true,
   path: "/myapp",
   ssl: {},
-});
+});*/
 
 // Using peerServer to handle peerJS requests through defined path
-app.use(peerServer);
+//app.use(peerServer);
 
 // ***HTTP REQUESTS****************************************************
 // Root of the webpage, serves the react build to be displayed
@@ -75,11 +77,11 @@ app.get("/", (req, res) => {
 });
 
 // Request for puzzle generaation
-app.post("/puzzle", (req, res) => {
+app.post("/puzzle", async (req, res) => {
   console.log("Puzzle request received");
   const seed = req.body.seed;
   console.log("got seed");
-  let puzzle = buildPuzzle(seed, "medium");
+  let puzzle = await buildPuzzle(seed, "medium");
   console.log("built puzzle");
   res.json({ puzzle });
 });
@@ -140,22 +142,23 @@ function sortClues(puzzle) {
 
 // Function for querying words from the database
 // Takes dictionary as argument with indexes matching to characters
-function queryWord(specifications, seed) {
+async function queryWord(specifications, seed) {
   specifications = {
     1: "t",
     3: "s",
   };
-  words = fetchWords(specifications);
-  console.log(words);
+  words = await fetchWords(specifications);
+  console.log("\n\n\n\n\n");
+  console.log(words[0]);
+  console.log("\n\n\n\n\n");
   return "hi";
 }
 
 // Function that builds a crossword puzzle using all above functions
 // Queries words one at a time and adds them to crossword puzzle
-function buildPuzzle(seed, size) {
+async function buildPuzzle(seed, size) {
   let puzzle;
   // Creating the puzzle object
-  size = "medium";
   switch (size) {
     case "small":
       puzzle = createPuzzleObject(5, 5);
@@ -176,7 +179,7 @@ function buildPuzzle(seed, size) {
     let clue = createClueObject();
     clue.number = i + 1;
     clue.clue = "This is a test clue";
-    clue.answer = queryWord(specifications, seed);
+    clue.answer = await queryWord(specifications, seed);
     console.log(clue.answer);
     clue.row = rows[i];
     clue.column = columns[i];
@@ -187,6 +190,17 @@ function buildPuzzle(seed, size) {
   console.log(puzzle);
 
   return puzzle;
+}
+
+// SAMPLE FUNCTION TO CHECK GUESSES**** will go client side later
+function checkAllWords(realPuzzle, guessPuzzle) {
+  for (let i = 0; i < guessPuzzle.size.rows; i++) {
+    for (let j = 0; j < guessPuzzle.size.columns; j++) {
+      if (guessPuzzle.grid[i][j] !== realPuzzle.grid[i][j]) {
+        return false;
+      }
+    }
+  }
 }
 
 // ***ROOM CREATION****************************************************

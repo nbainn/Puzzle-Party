@@ -244,11 +244,6 @@ const syncModels = async () => {
   }
 };
 
-const word = {
-  1: "a",
-  3: "s"
-}
-
 /*const fetchWord = async (dictionary) => {
   try {
     await testDbConnection();
@@ -313,7 +308,6 @@ const createReg = (specs) => {
     pattern += char;
     prevIndex = currentIndex;
   }
-  console.log(`^${pattern}.*$`);
   return new RegExp(`^${pattern}.*$`);
 };
 
@@ -329,20 +323,11 @@ const fetchWords = async (specs) => {
         },
       },
     });
-
-    console.log('Matching words:', matchingWords);
     return matchingWords;
   } catch (error) {
     console.error('Error fetching words:', error);
     throw error;
   }
-};
-
-// Example usage:
-const dictionary = {
-  2: 'e',
-  4: 't',
-  // Add more index-character pairs as needed
 };
  
 testDbConnection();
