@@ -350,4 +350,4 @@ syncModels();
 //fetchWords(dictionary);
 //fetchHost("882259");
 
-module.exports = { sq: sequelize, testDbConnection, syncModels, fetchHost };
+module.exports = { sq: sequelize, testDbConnection, syncModels, fetchHost, fetchWords };
