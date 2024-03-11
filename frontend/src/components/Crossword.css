@@ -1,24 +1,22 @@
-.crossword-grid {
+.grid {
     display: grid;
     grid-template-columns: repeat(10, 30px);
-    /* Adjust as needed */
     grid-template-rows: repeat(10, 30px);
-    /* Adjust as needed */
     gap: 1px;
-    /* Adjust gap between cells */
 }
+.crossword-grid {
 
-.row {
-    display: flex;
 }
+.color-picker, .grid {
 
+}
+.color-picker {
+    margin: 30px;
+}
 .cell {
     width: 30px;
-    /* Adjust cell width */
     height: 30px;
-    /* Adjust cell height */
     border: 1px solid #ccc;
-    /* Border color */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,15 +25,14 @@
 
 .cell:hover {
     background-color: #f0f0f0;
-    /* Hover background color */
 }
 
 .cell.across {
     background-color: #eff2ff;
-    /* Background color for cells in across direction */
+    /* diff colors for diff direcitons*/
 }
 
 .cell.down {
     background-color: #fff8e1;
-    /* Background color for cells in down direction */
+    /* background color for cells in down direction */
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Ably from 'ably/promises';
-import './ChatBox.css';
+import { Box, TextField, IconButton, List, ListItem, ListItemText, Typography } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 /*
 Notes:
@@ -11,7 +12,7 @@ Notes:
 - Error Handling: need to add error handling for network requests and Ably operations
 */
 
-function ChatBox({ userId, roomId }) {
+function ChatBox({ userId, roomId, userColor }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [ably, setAbly] = useState(null);
@@ -71,34 +72,102 @@ function ChatBox({ userId, roomId }) {
       // retrieves Ably channel associated with roomId
       const channel = ably.channels.get(`room:${roomId}`);
       // publishes a message to the Ably channel (send a message to all subscribers of the channel)
-      // first argument 'message' is the event name, second argument contains the userId and the message text 'newMessage'
-      await channel.publish('message', { userId, text: newMessage });
+      // first argument 'message' is the event name, second argument contains the userId, the message text 'newMessage', and the user's color
+      await channel.publish('message', { userId, text: newMessage, color: userColor });
       // resets newMessage state to an empty string, clearing the input field
       setNewMessage('');
     }
   };
 
+  const chatBoxStyles = {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    height: '30%',
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
+    left: 10,
+    bgcolor: '#D7E8EF', 
+    border: '2px solid #000', 
+    borderRadius: '16px',
+    overflow: 'hidden',
+    fontFamily: "'Bubblegum Sans', cursive",
+  };
+
+  const chatInputStyles = {
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: '#F9EAFF', 
+      borderRadius: '16px',
+      border: '2px solid #000', 
+    },
+    '& .MuiOutlinedInput-input': {
+      padding: '10px', // Padding to ensure the text is aligned within the input box
+      fontFamily: "'Bubblegum Sans', cursive", 
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none', // No additional border around the input field
+    },
+  };
+
+  const sendButtonStyles = {
+    bgcolor: 'transparent', 
+    '&:hover': {
+      bgcolor: 'transparent', // Transparent background even on hover
+    },
+    '& .MuiIconButton-root': {
+      borderRadius: '4px', 
+    },
+    '& .MuiSvgIcon-root': {
+      color: '#FF00B6', 
+    },
+  };
+
   return (
-    <div className="chat-container">
-      <div className="chat-messages">
+    <Box sx={chatBoxStyles}>
+      <List sx={{
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        p: 1,
+        flexGrow: 1,
+      }}>
         {messages.map((message, index) => (
-          <div key={index} className="message">
-            {message.userId !== userId ? <b>{message.userId}: </b> : null}
-            {message.text}
-          </div>
+          <ListItem key={index} sx={{
+            backgroundColor: message.color || 'white', // Use the user's color or default to white
+            margin: '10px 0',
+            borderRadius: '10px',
+            padding: '10px',
+            border: userId === message.userId ? '2px solid black' : 'none', // Distinguish the user's own messages
+          }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 'bold',
+                color: message.userId === userId ? 'black' : 'grey',
+                fontFamily: 'Bubblegum Sans',
+              }}
+            >
+              {message.userId !== userId ? `${message.userId}: ` : null}
+              {message.text}
+            </Typography>
+          </ListItem>
         ))}
-      </div>
-      <form onSubmit={handleSendMessage} className="chat-form">
-        <input
-          type="text"
-          className="chat-input"
+      </List>
+      <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
           placeholder="Type here..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          sx={chatInputStyles}
         />
-        <button type="submit" className="send-button">Send</button>
-      </form>
-    </div>
+        <IconButton type="submit" sx={sendButtonStyles}>
+          <SendIcon />
+        </IconButton>
+      </Box>
+    </Box>
   );
 }
 
