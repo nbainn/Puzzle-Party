@@ -8,8 +8,8 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(bodyParser.json());
 // Import Sequelize and your models
-const { sq, testDbConnection } = require("./sequelize.tsx");
-const { Character, Description, Room } = sq.models;
+const { sq, testDbConnection, fetchWords } = require("./sequelize.tsx");
+const { Room, Word, Puzzle } = sq.models;
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -122,20 +122,15 @@ function sortClues(puzzle) {
 }
 
 // Function for querying words from the database
-// Array as argument in form {index1, character1, index2, character2, ...} for specifications
+// Takes dictionary as argument with indexes matching to characters
 function queryWord(specifications, seed) {
-  switch (specifications[0]) {
-    case 0:
-      return "apple";
-    case 1:
-      return "avalanche";
-    case 2:
-      return "pear";
-    case 3:
-      return "elephant";
-    default:
-      return "";
-  }
+  specifications = {
+    1: "t",
+    3: "s",
+  };
+  words = fetchWords(specifications);
+  console.log(words);
+  return "hi";
 }
 
 // Function that builds a crossword puzzle using all above functions
