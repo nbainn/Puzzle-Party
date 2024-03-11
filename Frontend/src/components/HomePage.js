@@ -51,11 +51,18 @@ function HomePage() {
     }
   };
 
+  const handleJoinList= async () => {
+    navigate('/rooms/');
+  };
+
   return (
     <div className="home-page">
       <h1 className="home-title">Welcome to Puzzle Party</h1>
       <button onClick={handleCreateRoom} className="create-room-button">
         Create Room
+      </button>
+      <button  onClick = {handleJoinList}className="create-room-button">
+        Join Public Room
       </button>
       <JoinRoomForm />
     </div>

@@ -220,3 +220,22 @@ app.post("/search-entry", async (req, res) => {
     res.status(500).send("Error finding field");
   }
 });
+
+app.post("/find-rooms", async (req, res) => {
+  try {
+    const limit = req.query.limit;
+    const rooms = await Room.findAll({
+      limit: limit,
+      //attributes: ["host", "room_code"], 
+    });
+    if (rooms) {
+      console.log(rooms);
+      res.status(200).send(rooms);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
