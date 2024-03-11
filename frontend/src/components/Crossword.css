@@ -1,0 +1,38 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 1px;
+}
+.crossword-grid {
+
+}
+.color-picker, .grid {
+
+}
+.color-picker {
+    margin: 30px;
+}
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: #f0f0f0;
+}
+
+.cell.across {
+    background-color: #eff2ff;
+    /* diff colors for diff direcitons*/
+}
+
+.cell.down {
+    background-color: #fff8e1;
+    /* background color for cells in down direction */
+}
