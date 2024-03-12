@@ -296,7 +296,7 @@ const fetchHost = async (roomCode) => {
 }
 
 // createReg creates a regular expression pattern based on the indexes/characters
-const createReg = (specs) => {
+const createReg = (specs, maxLength) => {
   const sortedEntries = Object.entries(specs).sort(([a], [b]) => +a - +b);
   let pattern = '';
   let prevIndex = 0;
@@ -308,13 +308,13 @@ const createReg = (specs) => {
     pattern += char;
     prevIndex = currentIndex;
   }
-  return new RegExp(`^${pattern}.*$`);
+  return new RegExp(`^${pattern}.{0,${maxLength - prevIndex}}$`);
 };
 
 //fetchWords fetches words from the database based on the indexes/characters
-const fetchWords = async (specs) => {
+const fetchWords = async (specs, maxLength) => {
   try {
-    const pattern = createReg(specs);
+    const pattern = createReg(specs, maxLength);
 
     const matchingWords = await Word.findAll({
       where: {
