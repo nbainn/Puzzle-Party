@@ -146,8 +146,6 @@ function sortClues(puzzle) {
 async function queryWord(specifications, seed, maxLength) {
   let words = await fetchWords(specifications, maxLength);
   let wordsLength = words.length;
-  console.log(wordsLength);
-  console.log(seed);
   if (wordsLength === 0) {
     return null;
   }
@@ -175,9 +173,9 @@ async function determineAvailability(puzzle, row, column, direction) {
 
   if (direction == "across") {
     if (
+      puzzle.size.columns - column >= 3 &&
       (column == 0 || puzzle.grid[row][column - 1] == " ") &&
-      puzzle.grid[row][column + 1] == " " &&
-      puzzle.size.columns - column >= 3
+      puzzle.grid[row][column + 1] == " "
     ) {
       for (let i = column; i < puzzle.size.columns; i++) {
         if (puzzle.grid[row][i] === " ") {
@@ -190,7 +188,6 @@ async function determineAvailability(puzzle, row, column, direction) {
             if (current - 1 >= 3) {
               query.maxLength = current - 1;
               queries.push(JSON.parse(JSON.stringify(query)));
-              console.log(query);
             }
             return queries;
           }
@@ -198,7 +195,6 @@ async function determineAvailability(puzzle, row, column, direction) {
           if (current - 2 >= 3) {
             query.maxLength = current - 2;
             queries.push(JSON.parse(JSON.stringify(query)));
-            console.log(query);
           }
           query.specifications[current] = puzzle.grid[row][i];
         }
@@ -206,9 +202,39 @@ async function determineAvailability(puzzle, row, column, direction) {
       }
       query.maxLength = current - 1;
       queries.push(JSON.parse(JSON.stringify(query)));
-      console.log(query);
     }
   } else if (direction == "down") {
+    if (
+      puzzle.size.rows - row >= 3 &&
+      (row == 0 || puzzle.grid[row - 1][column] == " ") &&
+      puzzle.grid[row + 1][column] == " "
+    ) {
+      for (let i = row; i < puzzle.size.rows; i++) {
+        if (puzzle.grid[i][column] === " ") {
+          if (
+            (puzzle.grid[i][column + 1] !== undefined &&
+              puzzle.grid[i][column + 1] !== " ") ||
+            (puzzle.grid[i][column - 1] !== undefined &&
+              puzzle.grid[i][column - 1] !== " ")
+          ) {
+            if (current - 1 >= 3) {
+              query.maxLength = current - 1;
+              queries.push(JSON.parse(JSON.stringify(query)));
+            }
+            return queries;
+          }
+        } else {
+          if (current - 2 >= 3) {
+            query.maxLength = current - 2;
+            queries.push(JSON.parse(JSON.stringify(query)));
+          }
+          query.specifications[current] = puzzle.grid[i][column];
+        }
+        current++;
+      }
+      query.maxLength = current - 1;
+      queries.push(JSON.parse(JSON.stringify(query)));
+    }
   }
 
   return queries;
@@ -217,6 +243,7 @@ async function determineAvailability(puzzle, row, column, direction) {
 // Function that builds a crossword puzzle using all above functions
 // Queries words one at a time and adds them to crossword puzzle
 async function buildPuzzle(seed, size) {
+  seed = parseInt(seed);
   let puzzle;
   // Creating the puzzle object
   switch (size) {
@@ -231,6 +258,8 @@ async function buildPuzzle(seed, size) {
   }
 
   // Adding clues to the puzzle object
+  let number = 1;
+  let increased = false;
   for (let i = 0; i < puzzle.size.rows; i++) {
     for (let j = 0; j < puzzle.size.columns; j++) {
       let queries = await determineAvailability(puzzle, i, j, "across");
@@ -245,8 +274,9 @@ async function buildPuzzle(seed, size) {
           );
           if (info != null) {
             let clue = createClueObject();
-            console.log("word:");
-            console.log(info.word);
+            clue.number = number;
+            increased = true;
+            number++;
             clue.answer = info.word;
             clue.clue = info.description;
             clue.row = i;
@@ -257,7 +287,37 @@ async function buildPuzzle(seed, size) {
           }
         }
       }
-      seed += 13;
+      seed += 29;
+      queries = await determineAvailability(puzzle, i, j, "down");
+      console.log(queries);
+      info = null;
+      if (queries.length > 0) {
+        for (let k = queries.length - 1; k >= 0; k--) {
+          info = await queryWord(
+            queries[k].specifications,
+            seed,
+            queries[k].maxLength
+          );
+          if (info != null) {
+            let clue = createClueObject();
+            if (increased) {
+              clue.number = number - 1;
+            } else {
+              clue.number = number;
+              number++;
+            }
+            clue.answer = info.word;
+            clue.clue = info.description;
+            clue.row = i;
+            clue.column = j;
+            clue.direction = "down";
+            await addClueToPuzzle(puzzle, clue);
+            break;
+          }
+        }
+      }
+      seed += 29;
+      increased = false;
     }
   }
 
