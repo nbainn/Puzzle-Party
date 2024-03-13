@@ -1,0 +1,880 @@
+cat,common household pet
+dog,runs with the wind
+mountain,soaring peaks and rocky terrain
+ocean,vast expanse of saltwater
+guitar,stringed musical instrument
+tree,tall woody plant with branches
+book,contains written or printed pages
+computer,electronic device for processing data
+rainbow,colorful arc in the sky
+coffee,caffeinated beverage made from beans
+spaceship,vehicle for space travel
+adventure,exciting and daring experience
+butterfly,colorful insect with wings
+telescope,device for viewing distant objects
+moon,natural satellite of the Earth
+chocolate,sweet confection made from cacao
+bicycle,two-wheeled human-powered vehicle
+elephant,largest land mammal
+galaxy,vast system of stars and planets
+friendship,bond between individuals
+sun,central star of the solar system
+beach,sandy shore along a body of water
+music,art form consisting of sounds
+dragon,mythical fire-breathing creature
+pizza,Italian dish with a flat crust
+flower,colorful bloom of a plant
+adventure,exciting and daring experience
+rainbow,colorful arc in the sky
+laughter,expression of joy or amusement
+dragonfly,insect with transparent wings
+camera,device for capturing images
+kindness,quality of being friendly and generous
+universe,all of space, time, matter, and energy
+painting,art form using brushes and colors
+planet,a celestial body orbiting a star
+waterfall,flowing water descending from a height
+friendship,bond between individuals
+courage,ability to confront fear or adversity
+cupcake,sweet baked dessert
+happiness,state of being joyful
+compass,navigational instrument indicating direction
+adventure,exciting and daring experience
+smile,expression of happiness
+snowflake,ice crystal falling as precipitation
+soccer,sport played with a ball on a field
+dragon,mythical fire-breathing creature
+guitar,stringed musical instrument
+island,land surrounded by water
+chocolate,sweet confection made from cacao
+sunrise,first appearance of the sun in the morning
+family,group of related individuals
+panda,black and white bear native to China
+raindrop,individual drop of rain
+piano,musical instrument with keys
+starlight,light emitted by stars
+adventure,exciting and daring experience
+firework,explosive display of light and color
+pizza,Italian dish with a flat crust
+ocean,vast expanse of saltwater
+wall,protective barrier
+disappear,vanish without a trace
+size,dimensions or extent
+defective,flawed or faulty
+sticks,thin branches or twigs
+tacit,unspoken but understood
+soggy,soaked and wet
+long,extended length
+satisfy,fulfill or meet expectations
+rings,circular bands or loops
+mean,average value
+squalid,dirty and unpleasant
+creepy,causing a feeling of unease
+flaky,having flakes or layers
+gifted,possessing natural talent
+milk,white liquid from mammals
+tickle,gently touch to cause laughter
+depressed,feeling of sadness
+imported,brought in from another place
+achiever,one who attains success
+buzz,continuous humming sound
+hushed,quiet and subdued
+happy,feeling of joy
+undress,remove clothing
+alike,similar in appearance
+jolly,cheerful and festive
+texture,feel or consistency
+silver,shiny metallic color
+adamant,unyielding and firm
+applaud,show approval through clapping
+productive,efficacious and fruitful
+employ,hire for work
+attempt,effort to accomplish something
+territory,area of land or jurisdiction
+imagine,mentally visualize
+electric,pertaining to electricity
+thankful,expressing gratitude
+bear,large mammal
+female,woman or girl
+ignorant,lacking knowledge or awareness
+insurance,financial protection
+judge,evaluate or form an opinion
+nose,facial organ for smelling
+suit,matching set of clothing
+balance,equilibrium or stability
+short,not tall in height
+cow,farm animal
+agree,concur or be in harmony
+apparatus,technical equipment or device
+sick,unwell or ill
+pollution,contamination of the environment
+roasted,cooked by exposure to heat
+breathe,inhale and exhale air
+drown,submerge in water and suffocate
+follow,pursue or come after
+mark,visible sign or indication
+property,possession or belongings
+likeable,pleasant and easy to like
+worried,anxious or concerned
+knotty,complicated or intricate
+unused,not utilized or employed
+loose,not tight or firmly fixed
+jagged,with sharp, uneven edges
+jittery,nervous or uneasy
+faulty,defective or flawed
+number,mathematical value
+doubtful,skeptical or uncertain
+bumpy,uneven or rough
+consider,contemplate or think about
+fill,make full or occupy space
+descriptive,expressive or detailed
+sloppy,untidy or messy
+want,desire or wish for
+languid,lacking energy or vitality
+moon,lunar celestial body
+juvenile,young or youthful
+count,enumerate or calculate
+greedy,excessively desiring more
+sweet,pleasantly sugary taste
+erratic,unpredictable or irregular
+continue,persist or endure
+unequal,not equal or fair
+hellish,characteristic of hell
+camera,device for capturing images
+flat,level or smooth
+obese,overweight or corpulent
+whine,complain or whimper
+truthful,honest and sincere
+irritating,annoying or provoking
+average,typical or ordinary
+crash,violent collision or impact
+free,liberated or unrestricted
+country,nation or sovereign state
+appreciate,value or recognize the worth of
+light,visible radiant energy
+trousers,long pants
+reign,period of rule or dominion
+burly,strong and muscular
+slap,strike with an open hand
+obtainable,attainable or achievable
+steep,precipitous or sharply inclined
+ritzy,luxurious or upscale
+flavor,taste or seasoning
+vanish,disappear suddenly
+incompetent,lacking skills or ability
+title,designation or name
+profit,financial gain or benefit
+painstaking,requiring great effort and care
+zoom,rapid upward movement
+towering,very tall or high
+nut,hard-shelled seed
+crooked,not straight or bent
+faithful,loyal and devoted
+chase,pursue in order to catch
+allow,permit or consent to
+gorgeous,beautiful and stunning
+wandering,moving aimlessly or without purpose
+decide,make a choice or reach a conclusion
+strap,fasten with a narrow strip of material
+icicle,hanging spike of ice
+tender,soft and delicate
+harsh,rough and severe
+throne,royal seat of power
+sea,vast body of saltwater
+smash,vigorously break into pieces
+concentrate,focus one's attention
+ambitious,aspiring and determined
+class,group with shared characteristics
+dogs,domestic canines
+tenuous,weak and insubstantial
+unbecoming,not fitting or appropriate
+paper,thin material for writing
+loaf,unit of bread
+necessary,required and essential
+substance,material with defined properties
+groovy,cool and stylish
+upset,emotionally disturbed
+damage,harm or impairment
+dispensable,able to be done without
+listen,pay attention to sounds
+unequaled,without equal or unmatched
+thankful,expressing gratitude
+confess,admit to wrongdoing
+rebel,resist or defy authority
+explode,burst with force
+earth,planet we inhabit
+cattle,livestock, especially cows
+nonstop,continuous without interruption
+giraffe,tall African mammal
+warn,advise of potential danger
+talented,possessing natural skill
+creepy,causing unease or fear
+vest,sleeveless garment
+shave,remove hair with a razor
+geese,plural of goose
+tap,strike lightly
+flash,sudden burst of light
+wail,prolonged and mournful cry
+basin,round container for liquids
+tall,of great height
+gabby,talkative and chatty
+graceful,elegantly coordinated
+curved,bent or rounded
+nine,numeral 9
+trains,linked vehicles on tracks
+womanly,characteristic of a woman
+nerve,courage and fortitude
+adorable,lovable and charming
+aquatic,relating to water
+help,assist or support
+develop,grow or advance
+material,substance of which something is made
+machine,mechanical device
+tired,exhausted or fatigued
+thirsty,craving liquid
+history,past events and occurrences
+pan,cooking utensil
+hospital,medical facility
+phobic,fearful or aversive
+terrible,extremely bad or unpleasant
+snails,slow-moving mollusks
+bag,container for carrying items
+teeth,hard organs in the mouth
+fuzzy,soft and blurred
+mindless,lacking intelligence or awareness
+materialistic,concerned with possessions
+toys,playthings or amusements
+rub,apply pressure with a back-and-forth motion
+phone,communication device
+obedient,compliant and submissive
+tie,fastening accessory
+majestic,grand and dignified
+cap,head covering
+treatment,medical care or procedure
+secret,concealed information
+colossal,enormous and gigantic
+neck,part of the body connecting head and torso
+coil,spiral or wind into a circular shape
+vengeful,seeking revenge
+quixotic,idealistic and impractical
+retire,withdraw or leave one's job
+brother,male sibling
+eggnog,traditional festive drink
+spooky,scary and eerie
+sand,granular material on beaches
+momentous,of great importance
+silky,smooth and soft
+nice,pleasant and agreeable
+voracious,very eager or ravenous
+nonchalant,indifferent or casually unconcerned
+iron,metallic element
+five,numeral 5
+adaptable,able to adjust or change
+sail,move across water using a vessel
+fuel,material for energy production
+peep,quick and brief look
+meat,edible flesh of animals
+dizzy,feeling lightheaded or confused
+fluffy,soft and downy
+fretful,worried and agitated
+angle,measurement of inclination
+subsequent, following in order
+loutish, uncouth and aggressive
+salty, containing or tasting of salt
+dynamic, energetic and forceful
+abundant, existing in large quantities
+adventurous, willing to take risks
+chop, cut into pieces with a sharp tool
+knife, cutting tool with a blade
+secret, concealed or hidden
+proud, feeling deep satisfaction
+disturbed, agitated or upset
+pollution, contamination of the environment
+tenuous, weak and delicate
+confess, admit to wrongdoing
+abandoned, left without care or support
+well-groomed, neatly and stylishly maintained
+wanting, lacking or deficient
+respect, admiration and esteem
+impossible, not able to occur or be done
+terrible, extremely bad or distressing
+expansion, act of becoming larger
+skin, outer covering of the body
+jobless, unemployed or without work
+bless, invoke divine favor
+damaged, harmed or impaired
+sophisticated, cultured and refined
+twist, turn or bend into shape
+trucks, large motor vehicles for transport
+difficult, requiring effort or skill
+sack, large bag often used for carrying goods
+appreciate, recognize the value of
+spotless, completely clean and free from stains
+thoughtless, lacking consideration for others
+cause, reason or motive
+sugar, sweet crystalline substance
+iron, metallic element with atomic number 26
+handy, convenient and easily accessible
+aback, taken by surprise or shock
+religion, belief in and worship of a higher power
+unable, lacking the ability or means
+hard, solid and resistant to pressure
+note, written or printed message
+dry, free from moisture or dampness
+dull, lacking interest or excitement
+sign, indication or gesture conveying information
+friction, resistance to motion
+narrow, limited in width or extent
+hateful, filled with strong dislike or hatred
+use, employ or utilize for a purpose
+diligent, hardworking and industrious
+supreme, highest in rank or authority
+awful, extremely bad or unpleasant
+pour, flow in a steady stream
+childlike, characteristic of a child
+explode, burst with force and noise
+teaching, imparting knowledge or skills
+jazzy, lively and stylish
+shoe, footwear for the feet
+unbiased, impartial and fair
+cruel, causing pain or suffering
+wretched, miserable or pitiful
+neck, part of the body connecting head and torso
+calculate, determine by mathematical means
+disagree, have a differing opinion
+determined, resolute and committed
+dramatic, intense and emotional
+berry, small juicy fruit
+coherent, logical and consistent
+elite, privileged and superior
+hose, flexible tube for conveying liquids
+cheer, shout of joy or encouragement
+quicksand, unstable ground that engulfs
+maid, female domestic servant
+abrupt, sudden and unexpected
+empty, containing nothing
+claim, assert or demand as a right
+employ, provide work for someone
+insidious, treacherous and deceitful
+floor, surface of a room
+chess, strategic board game
+bounce, rebound or spring back
+agreeable, pleasant and enjoyable
+chemical, substance with specific properties
+guarded, protected or kept under surveillance
+rapid, fast and swift
+caring, showing concern and kindness
+board, flat piece of wood or other material
+payment, amount of money given as compensation
+improve, make better or enhance
+handsomely, in an attractive and generous manner
+plastic, synthetic material
+plot, secret plan or scheme
+heavenly, of or relating to the heavens
+straight, not curved or bent
+cake, sweet baked dessert
+pinch, squeeze tightly between fingers
+unhealthy, detrimental to health
+fine, of high quality or excellence
+toothpaste, substance for cleaning teeth
+impress, make a strong impact or effect
+arrest, take into custody for legal action
+sweet, having a pleasant taste
+evasive, avoiding commitment or direct answers
+dizzy, feeling lightheaded or disoriented
+moor, open area of wetland with poor drainage
+oranges, citrus fruits with a bright orange color
+wrist, joint connecting the hand to the arm
+receptive, open and willing to accept new ideas
+amuse, entertain or cause laughter
+breakable, able to be easily damaged or shattered
+limit, point beyond which something cannot pass
+tall, having a greater height than average
+psychedelic, relating to or characteristic of psychedelic drugs
+hallowed, regarded as holy or sacred
+impulse, sudden and spontaneous urge or feeling
+vague, unclear or indistinct in meaning
+mute, refraining from speech or temporarily speechless
+like, similar to or having the same characteristics as
+great, of an extent, amount, or intensity considerably above average
+icky, unpleasant or distasteful
+straight, not curved or bent
+shaggy, having long, untidy, or disheveled hair or fur
+ask, make a request or inquiry
+scissors, cutting tool with two blades pivoted in the middle
+abandoned, left without care or support
+rub, apply pressure and friction to a surface
+rabbits, small mammals with long ears and soft fur
+quaint, attractively unusual or old-fashioned
+furry, covered with fur or soft hair
+houses, buildings used as living spaces
+talk, speak in order to give information or express ideas or feelings
+spooky, eerie or suggesting the supernatural
+offend, cause to feel upset or annoyed
+number, mathematical value or symbol
+ticket, piece of paper giving the holder a right to enter or travel
+aquatic, relating to water or living in water
+jail, place of confinement for those accused or convicted of a crime
+meek, quiet, gentle, and easily imposed on
+unaccountable, unable to be explained or justified
+base, lowest part or edge of something
+beginner, person starting to learn a skill or take part in an activity
+confess, admit to wrongdoing
+roomy, having plenty of space
+nutritious, providing nourishment or nutritional value
+whisper, speak very softly or quietly
+melt, change from a solid to a liquid state
+relieved, feeling happy because something difficult or unpleasant has happened
+monkey, small to medium-sized primate
+uncovered, not protected or hidden
+helpless, unable to defend oneself or act without help
+childlike, characteristic of a child
+cushion, soft object used for support or comfort
+hands, body parts at the end of arms with fingers
+corn, cereal plant that yields large grains
+secret, concealed or hidden
+duck, waterfowl with a broad flat beak
+trees, large woody plants with a main stem and branches
+gaze, look steadily and intently
+overconfident, excessively or unjustifiably confident
+wealthy, having a great deal of money, resources, or assets
+endurable, able to be endured or tolerated
+bear, large mammal with a heavy body and shaggy coat
+special, better, greater, or otherwise different from what is usual
+glass, transparent substance often used for containers or windows
+agreement, harmony or conformity in opinion or feeling
+low, of less than average height or extent
+gratis, without charge or payment
+thaw, become liquid or soft as a result of warming
+horses, large domesticated mammals used for various purposes
+ship, large watercraft for transporting goods or people
+adorable, deserving of being loved or admired
+bury, place a dead body in the ground
+quartz, hard mineral often used in jewelry
+cooperative, involving mutual assistance in working towards a common goal
+stain, mark or discoloration on a surface
+short, measuring a small distance from end to end
+splendid, magnificent or impressive in appearance
+fuel, material used for producing heat or power
+able, having the power, skill, or means to do something
+telling, revealing or indicative of something
+direction, course or path along which something moves or lies
+help, assistance or support
+hapless, unfortunate or unlucky
+flower, the reproductive part
+fluffy, soft and light in texture
+classy, stylish and sophisticated
+expand, become larger in size or scope
+applaud, show approval or praise by clapping
+island, landmass surrounded by water
+approve, officially agree or sanction
+rapid, happening or moving quickly
+six, the number following five
+passenger, person traveling in a vehicle
+chivalrous, courteous and gallant, especially towards women
+attack, hostile and aggressive action
+purpose, reason for which something is done or created
+accessible, easy to approach or reach
+ship, large watercraft for transporting goods or people
+sand, granular material on beaches and deserts
+threatening, causing fear or indicating harm
+mint, aromatic plant with serrated leaves, often used in flavoring
+nice, pleasant and agreeable
+escape, break free from confinement or danger
+swift, happening quickly or with great speed
+bead, small, usually round object with a hole for stringing
+unequal, not equal or evenly matched
+guarantee, assurance of the fulfillment of a condition or promise
+tongue, muscular organ in the mouth used for tasting and speaking
+mundane, ordinary and commonplace
+women, adult female human beings
+ambiguous, having more than one interpretation or unclear meaning
+damaged, harmed or impaired
+bizarre, strange and unconventional
+copper, metallic element with a reddish-brown color
+trade, buying and selling of goods and services
+rice, staple food grain
+confuse, make unclear or bewildered
+decision, conclusion or resolution reached after consideration
+deep, extending far down from the surface
+eyes, organs of sight in humans and animals
+zippy, quick and energetic
+pets, domesticated animals kept for companionship
+nosy, excessively curious or prying
+confess, admit to wrongdoing or share a secret
+holiday, special day of celebration or observance
+desert, arid land with little or no vegetation
+white, color of snow or milk
+scandalous, causing public outrage or disgrace
+lying, not telling the truth
+energetic, possessing or displaying energy and vitality
+mighty, possessing great power or strength
+ticket, pass or voucher for admission or travel
+truculent, fierce and cruel
+distance, amount of space between two points
+mature, fully grown or developed
+prefer, choose or like better
+wave, undulating motion of water or other substances
+breezy, characterized by a gentle and refreshing wind
+nifty, cleverly stylish and neat
+ultra, beyond or surpassing a standard or level
+stiff, rigid and not easily bent
+bike, short for bicycle, a two-wheeled vehicle
+sign, indication or gesture conveying information
+shrug, lift and lower the shoulders to express indifference or uncertainty
+paste, thick, soft substance often used for sticking things together
+wobble, move unsteadily from side to side
+morning, early part of the day
+add, combine or include as an addition
+pleasure, state of enjoyment or satisfaction
+open, not closed or barred
+fanatical, extremely enthusiastic or devoted
+breath, air taken into or expelled from the lungs
+grab, seize or take hold of suddenly
+accept, receive willingly or agree to
+imperfect, having flaws or deficiencies
+aloof, distant or reserved in manner
+angle, the space between two intersecting lines or surfaces
+appear, come into sight or become visible
+nerve, bundle of fibers transmitting signals between the brain and other parts of the body
+sulky, sullen or resentfully silent
+advise, offer suggestions or recommendations
+voyage, long journey, especially by sea or in space
+arrange, organize or set up systematically
+consider, think about carefully or take into account
+godly, divine or relating to a deity
+same, identical or similar in nature
+ludicrous, absurd or laughably foolish
+exist, have actual being or live
+vague, unclear or not clearly expressed
+geese, plural of goose, a large waterfowl
+partner, person associated with another in a business or personal relationship
+scene, setting or location of an event or activity
+slow, moving or proceeding with a low speed
+wiggly, characterized by twisting or wavy movement
+bag, flexible container with an opening at the top
+super, excellent or outstanding in quality
+paddle, short-handled oar used for propelling a boat
+tearful, characterized by the shedding of tears
+drunk, under the influence of alcohol
+nonchalant, appearing casual or indifferent
+list, a series of items written down
+stove, appliance used for cooking or heating
+rainstorm, a heavy fall of rain with thunder and lightning
+tap, device for controlling the flow of liquid
+careful, exercising caution and attention
+friction, resistance to motion between two surfaces
+poke, prod or jab with a finger or pointed object
+quill, a large feather used as a writing instrument
+hammer, a tool with a heavy metal head
+literate, able to read and write
+hair, the fine thread-like strands growing on the skin
+pink, a pale red color
+dysfunctional, not functioning properly
+fallacious, based on a mistaken belief
+girl, a female child or young woman
+splendid, magnificent or excellent
+wipe, clean or dry with a cloth or tissue
+help, assistance or support
+quizzical, expressing curiosity or confusion
+thunder, the loud sound accompanying a storm
+little, small in size or amount
+grateful, feeling or showing gratitude
+agonizing, causing great physical or mental pain
+instruct, teach or direct someone to do something
+skirt, a garment worn around the waist, extending to the legs
+choke, struggle for breath due to a blocked airway
+doubtful, uncertain or not convinced
+enchanting, charming or captivating
+mindless, lacking intelligence or thought
+second-hand, previously owned or used by someone else
+act, perform an action or behave in a particular way
+scare, cause fear or alarm
+cheat, act dishonestly to gain an advantage
+division, the action of separating or splitting
+kitty, informal term for a cat
+hill, elevated land with a rounded summit
+panoramic, providing a broad and comprehensive view
+cook, prepare food by heating or baking
+trade, the buying and selling of goods and services
+road, a wide way for vehicles or pedestrians
+hobbies, activities pursued for pleasure and relaxation
+interfere, become involved in the affairs of others
+hypnotic, inducing a sleep-like state of focused attention
+stamp, an impression or mark made by a seal or tool
+amuck, behaving in a frenzied or uncontrollable manner
+listen, pay attention to sound or spoken words
+helpless, unable to defend oneself or take action
+painful, causing physical or emotional distress
+rock, a large natural mass of stone
+slave, a person who is the legal property of another
+iron, a strong, hard magnetic metal
+gratis, free of charge or without payment
+educated, having been formally instructed or trained
+ten, the number following nine
+telephone, a device for transmitting voice over a distance
+bells, musical instruments typically made of metal
+easy, not difficult or requiring little effort
+appreciate, recognize the value or significance of
+abortive, unsuccessful or failing to achieve the intended result
+gabby, talkative or chatty
+property, belongings or possessions
+brave, showing courage or fearlessness
+fasten, close or secure with a fastening
+psychotic, relating to or suffering from a severe mental disorder
+reach, extend to or touch a specified point
+protect, keep safe from harm or danger
+fire, the rapid oxidation of a material producing heat and light
+texture, the feel, appearance, or consistency of a surface
+command, give an authoritative order
+fragile, easily broken or delicate
+way, a method or manner of doing something
+garrulous, excessively talkative
+writer, a person who produces literary work
+mask, a covering for the face, often worn for disguise
+shy, timid or reserved in the company of others
+sheep, domesticated ruminant mammals often raised for wool
+bait, food used to attract fish or other animals
+meddle, interfere in or busy oneself with something without invitation
+skate, move on ice or roller skates
+unkempt, untidy or disheveled in appearance
+numberless, too many to be counted
+thank, express gratitude or appreciation
+Ace,Top grade
+Aid,Assist
+Aim,Goal
+Air,Atmosphere
+Ale,Beer
+Arm,Limb
+Art,Creativity
+Awl,Pointed tool
+Eel,Slippery fish
+Ear,Hearing organ
+Era,Time period
+Ice,Frozen water
+Ire,Anger
+Ilk,Kind
+Oar,Rowing paddle
+Oak,Tree
+Oat,Grain
+Oil,Lubricant
+Ore,Mineral
+Owl,Nocturnal bird
+Urn,Vessel
+Web,Internet
+Cab,Taxi
+Dab,Light touch
+Jab,Quick punch
+Lab,Laboratory
+Tab,Tablet
+Dad,Father
+Fad,Trend
+Lad,Young man
+Mad,Angry
+Bag,Sack
+Gag,Choke
+Hag,Witch
+Lag,Delay
+Mag,Spell
+Rag,Fabric scrap
+Tag,Label
+Pal,Friend
+Cam,Device
+Dam,Barrier
+Fam,Familiar
+Ham,Meat
+Jam,Fruit preserve
+Ram,Male sheep
+Ban,Prohibition
+Can,Container
+Fan,Admirer
+Man,Adult male
+Pan,Cooking vessel
+Tan,Beige color
+Bap,Bread roll
+Cap,Head covering
+Lap,Upper legs
+Pap,Soft food
+Rap,Music genre
+Sap,Tree fluid
+Tap,Faucet
+Yap,High-pitched bark
+Bar,Drinking establishment
+Car,Vehicle
+Jar,Container
+Tar,Sticky substance
+War,Conflict
+Bat,Nocturnal mammal
+Cat,Feline
+Hat,Headwear
+Mat,Flat surface
+Pat,Gentle touch
+Tat,Trivial thing
+Rat,Rodent
+Vat,Container
+Caw,Crow sound
+Jaw,Lower mouth
+Law,Legislation
+Maw,Mouth
+Paw,Animal foot
+Bay,Body of water
+Cay,Small island
+Day,24 hours
+Hay,Forage
+Ray,Beam of light
+Pay,Compensation
+Way,Route
+Max,Maximum
+Sax,Musical instrument
+Tax,Charge
+Pea,Edible pod
+Sea,Body of water
+Tea,Hot beverage
+Bed,Sleeping furniture
+Med,Medical treatment
+Leg,Body part
+Peg,Wooden pin
+Bee,Insect
+Lee,Sheltered side
+Tee,Golf starting point
+Gem,Precious stone
+Bet,Wager
+Jet,High-speed aircraft
+Net,Mesh fabric
+Pet,Domestic animal
+Set,Group of items
+Den,Animal lair
+Hen,Female chicken
+Men,Adult males
+Pen,Writing tool
+Ten,Numeric value
+Yen,Japanese currency
+Dew,Water droplets
+Mew,Cat sound
+Pew,Church bench
+Bib,Baby garment
+Fib,Untruth
+Jib,Sail
+Rib,Bone part
+Sib,Sibling
+Bid,Offer
+Kid,Young goat
+Lid,Cover
+Vid,Video
+Tie,Neckwear
+Lie,Falsehood
+Pie,Dessert
+Fig,Fruit
+Jig,Dance
+Pig,Farm animal
+Rig,Mechanical arrangement
+Wig,Hairpiece
+Dim,Low light
+Bin,Container
+Din,Loud noise
+Fin,Body part of fish
+Gin,Alcoholic drink
+Pin,Sharp object
+Sin,Wrongdoing
+Tin,Metal
+Win,Achieve victory
+Yin,Negative force
+Dip,Liquid scoop
+Lip,Body part
+Pip,Seed
+Sip,Small drink
+Tip,Point
+Git,Contemptible person
+Hit,Strike
+Kit,Set of items
+Pit,Hole
+Wit,Intelligence
+Bod,Body
+Cod,Fish
+God,Deity
+Mod,Modern
+Pod,Seed container
+Rod,Long stick
+Doe,Female deer
+Foe,Enemy
+Hoe,Gardening tool
+Roe,Fish eggs
+Toe,Digit
+Bog,Marshy area
+Cog,Gear
+Dog,Canine
+Fog,Condensed water vapor
+Hog,Domesticated pig
+Jog,Slow run
+Log,Wood piece
+Poi,Hawaiian dish
+Con,Scam
+Son,Male child
+Ton,Measurement
+Zoo,Animal park
+Cop,Police officer
+Hop,Jump
+Mop,Cleaning tool
+Pop,Loud sound
+Top,Upper part
+Bot,Robotic device
+Cot,Bed for baby
+Dot,Small spot
+Lot,Group of items
+Pot,Cooking vessel
+Tot,Small child
+Bow,Weapon
+Cow,Farm animal
+Sow,Female pig
+Row,Line
+Box,Container
+Lox,Smoked salmon
+Pox,Disease
+Boy,Young male
+Soy,Plant product
+Toy,Plaything
+Cub,Young bear
+Nub,Small lump
+Pub,Drinking establishment
+Sub,Submarine
+Tub,Container
+Bug,Insect
+Hug,Embrace
+Jug,Large container
+Mug,Drinking vessel
+Rug,Textile floor covering
+Tug,Pull
+Bum,Tramp
+Gum,Chewing material
+Hum,Low noise
+Rum,Alcoholic beverage
+Tum,Stomach part
+Bun,Bread roll
+Gun,Firearm
+Pun,Play on words
+Run,Move quickly
+Sun,Central star
+Cup,Drinking vessel
+Pup,Young dog
+Cut,Separate with sharp tool
+Gut,Intestinal tract
+Hut,Shelter
+Nut,Edible seed
+Rut,Track
+Egg,Reproductive cell
+Ego,Self
+Elf,Mythical creature
+Elm,Tree
+Emu,Flightless bird
+End,Conclusion
+Eve,First woman
+Eye,Organ of sight
+Ink,Writing fluid
+Inn,Place of lodging
+Ion,Electrically charged atom
+Ivy,Climbing plant
+Lye,Alkaline substance
+Dye,Coloring agent
+Rye,Grain
+Pus,Fluid from infection
+Gym,Fitness center
