@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import "./PublicRooms.css"; // Importing CSS for PublicRooms
 import { join } from "path-browserify";
@@ -10,6 +10,7 @@ function PublicRooms() {
     //const host = createHost();
     //console.log("Adding peerID", host)
     const [rooms, setRooms] = useState([]);
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchRooms = async () => {
             try {
@@ -18,7 +19,7 @@ function PublicRooms() {
                         limit: 10
                     }
                 });
-                console.log('Got rooms:', response.data);
+                //console.log('Got rooms:', response.data);
                 setRooms(response.data);
             } catch (error) {
                 console.error('Could not get rooms:', error)
@@ -27,6 +28,9 @@ function PublicRooms() {
         fetchRooms();
     }, []);
 
+    const handleJoin = (roomCode) => {
+        navigate(`/room/${roomCode}`);
+    };
 
     return (
         <div className="room-page">
@@ -38,8 +42,8 @@ function PublicRooms() {
                 <ul>
                     {rooms.map(room => (
                         <li key={room.id}>
-                            <span>{room.name}</span>
-                            {/* Add more room details here if needed */}
+                            <span>Room Code: {room.room_code}, Host: {room.host}</span>
+                            <button onClick={() => handleJoin(room.room_code)}>Join</button>
                         </li>
                     ))}
                 </ul>

@@ -360,6 +360,17 @@ app.post("/add-entry", async (req, res) => {
   }
 });
 
+app.post('/getAblyToken', async (req, res) => {
+  try {
+    // Generate Ably token (you need to implement this)
+    const token = generateAblyToken(req.body.roomId);
+    res.json({ token });
+  } catch (error) {
+    console.error('Error generating Ably token:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post("/search-entry", async (req, res) => {
   try {
     const roomCode = req.body.roomCode;
@@ -382,9 +393,10 @@ app.post("/search-entry", async (req, res) => {
   }
 });
 
-app.post("/find-rooms", async (req, res) => {
+app.get("/find-rooms", async (req, res) => {
   try {
     const limit = req.query.limit;
+    console.log("Limit: ", limit);
     const rooms = await Room.findAll({
       limit: limit,
       //attributes: ["host", "room_code"],
