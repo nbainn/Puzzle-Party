@@ -3,39 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
 import axios from 'axios';
-import { loadScript, createHost} from  './peer2peer.js';
+//import { loadScript, createHost} from  './peer2peer.js';
+import Ably from 'ably';
 
 function HomePage() {
   const navigate = useNavigate();
   //const [peer, setPeer] = useState(null);
   
   useEffect(() => {
-    loadScript(); // Call loadScript when component mounts
+    //loadScript(); // Call loadScript when component mounts
+    const ably = new Ably.Realtime.Promise({ authUrl: '/getAblyToken' });
+    window.ably = ably; // Make Ably instance available globally
   }, []);
 
   const handleCreateRoom = async () => {
     //console.log('supposed to get hostid')
-    //loadScript();
     //const hostId = createHost();
     //console.log('hostId', hostId)
-    const createHost = () => {
-      const peer = window.peer;
-      peer.on('open', (id) => {
-        console.log('My peer ID is: ' + id);
-        // Add your logic here to handle the peer ID
-      });
-      peer.on('connection', function (conn) {
-        conn.on('open', function () {
-          // Receive messages
-          conn.on('data', function (data) {
-            console.log('Received', data);
-          });
-
-          // Send messages
-          conn.send('Hello!');
-        });
-      });
-    }; 
 
     const roomCode = Math.random().toString().slice(2, 8);
     console.log( "Adding roomcode", roomCode  );
@@ -44,7 +28,9 @@ function HomePage() {
     //console.log("Adding peerID", host)
     try {// Generate a 6-digit room code and navigate to the RoomPage
       await axios.post('/add-entry', { roomCode });
-      console.log('Added room to db');
+      const ably = window.ably;
+      const channel = ably.channels.get('rooms');
+      channel.presence.enterClient('host', { roomId: roomCode });
       navigate(`/room/${roomCode}`);
     } catch (error) {
       console.error('Could not create room:', error)

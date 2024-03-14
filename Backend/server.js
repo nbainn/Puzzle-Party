@@ -356,6 +356,7 @@ app.post("/add-entry", async (req, res) => {
       host: "testHost",
       num_players: 1,
       isActive: true,
+      public_status: true,
     });
     res.send("New field added successfully!");
   } catch (error) {
