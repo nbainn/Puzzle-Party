@@ -19,31 +19,44 @@ function ChatBox({ userId, roomId, userColor }) {
   const [ably, setAbly] = useState(null);
 
   useEffect(() => {
-    async function fetchToken() {
+    async function fetchUserIdAndToken() {
       try {
-        console.log('Sending clientId:', userId);
-        const response = await fetch('/getAblyToken', {
+        // Fetch the userId from backend
+        const userRes = await fetch('/getUserId');
+        if (!userRes.ok) {
+          throw new Error('UserId fetch failed with status: ' + userRes.status);
+        }
+        const { userId } = await userRes.json();
+  
+        // Log the userId for debugging purposes
+        console.log('Retrieved userId:', userId);
+  
+        // Now fetch the Ably token using the retrieved userId
+        const tokenRes = await fetch('/getAblyToken', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ clientId: userId }),
         });
-
-        if (!response.ok) {
-          throw new Error('Token request failed with status: ' + response.status);
+        if (!tokenRes.ok) {
+          throw new Error('Token request failed with status: ' + tokenRes.status);
         }
-
-        const tokenDetails = await response.json();
+  
+        const tokenDetails = await tokenRes.json();
+        // Log the token details for debugging purposes
         console.log('Token Details:', tokenDetails);
+  
         const ablyClient = new Ably.Realtime.Promise({ tokenDetails });
+        // Log the Ably client initialization for debugging purposes
         console.log('Ably client initialized with token details:', tokenDetails);
+        
         setAbly(ablyClient);
       } catch (error) {
         console.error('Error fetching Ably token:', error);
       }
     }
-    
-    fetchToken();
-  }, [userId]);
+  
+    fetchUserIdAndToken();
+  }, []);  
 
   useEffect(() => {
     if (ably) {
