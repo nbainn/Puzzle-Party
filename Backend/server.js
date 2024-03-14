@@ -46,7 +46,6 @@ app.post("/getAblyToken", async (req, res) => {
   const tokenParams = { clientId };
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
-      console.error("Error creating token request:", err);
       res.status(500).send("Error requesting token: " + err.message);
     } else {
       res.send(tokenRequest);
@@ -362,17 +361,6 @@ app.post("/add-entry", async (req, res) => {
   } catch (error) {
     console.error("Error adding field:", error);
     res.status(500).send("Error adding field");
-  }
-});
-
-app.post('/getAblyToken', async (req, res) => {
-  try {
-    // Generate Ably token (you need to implement this)
-    const token = generateAblyToken(req.body.roomId);
-    res.json({ token });
-  } catch (error) {
-    console.error('Error generating Ably token:', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
