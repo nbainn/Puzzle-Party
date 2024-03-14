@@ -10,6 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords } = require("./sequelize.tsx");
+const { queries } = require("@testing-library/react");
 const { Room, Word, Puzzle } = sq.models;
 
 // Use the testDbConnection function to authenticate and sync models
@@ -120,7 +121,7 @@ function createClueObject() {
 }
 
 // Adds a clue to the puzzle object
-function addClueToPuzzle(puzzle, clue) {
+async function addClueToPuzzle(puzzle, clue) {
   if (clue.direction === "across") {
     puzzle.clues.across.push(clue);
   } else {
@@ -147,21 +148,107 @@ function sortClues(puzzle) {
 
 // Function for querying words from the database
 // Takes dictionary as argument with indexes matching to characters
-async function queryWord(specifications, seed) {
-  specifications = {
-    1: "t",
-    3: "s",
+async function queryWord(specifications, seed, maxLength) {
+  let words = await fetchWords(specifications, maxLength);
+  let wordsLength = words.length;
+  if (wordsLength === 0) {
+    return null;
+  }
+  wordIndex = seed % wordsLength;
+
+  descriptions = words[wordIndex].descriptions.split(",");
+  descriptionsLength = descriptions.length;
+  descriptionIndex = seed % descriptionsLength;
+
+  return (word = {
+    word: words[wordIndex].word,
+    description: descriptions[descriptionIndex],
+  });
+}
+
+// Function that determines all possible combinations of words that can fit...
+// ...in a specific location and direction
+async function determineAvailability(puzzle, row, column, direction) {
+  let queries = [];
+  let query = {
+    specifications: {},
+    maxLength: 0,
   };
-  words = await fetchWords(specifications);
-  console.log("\n\n\n\n\n");
-  console.log(words[0]);
-  console.log("\n\n\n\n\n");
-  return "hi";
+  let current = 1;
+
+  if (direction == "across") {
+    if (
+      puzzle.size.columns - column >= 3 &&
+      (column == 0 || puzzle.grid[row][column - 1] == " ") &&
+      puzzle.grid[row][column + 1] == " "
+    ) {
+      for (let i = column; i < puzzle.size.columns; i++) {
+        if (puzzle.grid[row][i] === " ") {
+          if (
+            (puzzle.grid[row + 1] !== undefined &&
+              puzzle.grid[row + 1][i] !== " ") ||
+            (puzzle.grid[row - 1] !== undefined &&
+              puzzle.grid[row - 1][i] !== " ")
+          ) {
+            if (current - 1 >= 3) {
+              query.maxLength = current - 1;
+              queries.push(JSON.parse(JSON.stringify(query)));
+            }
+            return queries;
+          }
+        } else {
+          if (current - 2 >= 3) {
+            query.maxLength = current - 2;
+            queries.push(JSON.parse(JSON.stringify(query)));
+          }
+          query.specifications[current] = puzzle.grid[row][i];
+        }
+        current++;
+      }
+      query.maxLength = current - 1;
+      queries.push(JSON.parse(JSON.stringify(query)));
+    }
+  } else if (direction == "down") {
+    if (
+      puzzle.size.rows - row >= 3 &&
+      (row == 0 || puzzle.grid[row - 1][column] == " ") &&
+      puzzle.grid[row + 1][column] == " "
+    ) {
+      for (let i = row; i < puzzle.size.rows; i++) {
+        if (puzzle.grid[i][column] === " ") {
+          if (
+            (puzzle.grid[i][column + 1] !== undefined &&
+              puzzle.grid[i][column + 1] !== " ") ||
+            (puzzle.grid[i][column - 1] !== undefined &&
+              puzzle.grid[i][column - 1] !== " ")
+          ) {
+            if (current - 1 >= 3) {
+              query.maxLength = current - 1;
+              queries.push(JSON.parse(JSON.stringify(query)));
+            }
+            return queries;
+          }
+        } else {
+          if (current - 2 >= 3) {
+            query.maxLength = current - 2;
+            queries.push(JSON.parse(JSON.stringify(query)));
+          }
+          query.specifications[current] = puzzle.grid[i][column];
+        }
+        current++;
+      }
+      query.maxLength = current - 1;
+      queries.push(JSON.parse(JSON.stringify(query)));
+    }
+  }
+
+  return queries;
 }
 
 // Function that builds a crossword puzzle using all above functions
 // Queries words one at a time and adds them to crossword puzzle
 async function buildPuzzle(seed, size) {
+  seed = parseInt(seed);
   let puzzle;
   // Creating the puzzle object
   switch (size) {
@@ -176,20 +263,67 @@ async function buildPuzzle(seed, size) {
   }
 
   // Adding clues to the puzzle object
-  for (let i = 0; i < 4; i++) {
-    let rows = [0, 0, 0, 0];
-    let columns = [0, 0, 2, 4];
-    let directions = ["across", "down", "down", "down"];
-    let specifications = [i];
-    let clue = createClueObject();
-    clue.number = i + 1;
-    clue.clue = "This is a test clue";
-    clue.answer = await queryWord(specifications, seed);
-    console.log(clue.answer);
-    clue.row = rows[i];
-    clue.column = columns[i];
-    clue.direction = directions[i];
-    addClueToPuzzle(puzzle, clue);
+  let number = 1;
+  let increased = false;
+  for (let i = 0; i < puzzle.size.rows; i++) {
+    for (let j = 0; j < puzzle.size.columns; j++) {
+      let queries = await determineAvailability(puzzle, i, j, "across");
+      console.log(queries);
+      let info = null;
+      if (queries.length > 0) {
+        for (let k = queries.length - 1; k >= 0; k--) {
+          info = await queryWord(
+            queries[k].specifications,
+            seed,
+            queries[k].maxLength
+          );
+          if (info != null) {
+            let clue = createClueObject();
+            clue.number = number;
+            increased = true;
+            number++;
+            clue.answer = info.word;
+            clue.clue = info.description;
+            clue.row = i;
+            clue.column = j;
+            clue.direction = "across";
+            await addClueToPuzzle(puzzle, clue);
+            break;
+          }
+        }
+      }
+      seed += 29;
+      queries = await determineAvailability(puzzle, i, j, "down");
+      console.log(queries);
+      info = null;
+      if (queries.length > 0) {
+        for (let k = queries.length - 1; k >= 0; k--) {
+          info = await queryWord(
+            queries[k].specifications,
+            seed,
+            queries[k].maxLength
+          );
+          if (info != null) {
+            let clue = createClueObject();
+            if (increased) {
+              clue.number = number - 1;
+            } else {
+              clue.number = number;
+              number++;
+            }
+            clue.answer = info.word;
+            clue.clue = info.description;
+            clue.row = i;
+            clue.column = j;
+            clue.direction = "down";
+            await addClueToPuzzle(puzzle, clue);
+            break;
+          }
+        }
+      }
+      seed += 29;
+      increased = false;
+    }
   }
 
   console.log(puzzle);
@@ -231,6 +365,17 @@ app.post("/add-entry", async (req, res) => {
   }
 });
 
+app.post('/getAblyToken', async (req, res) => {
+  try {
+    // Generate Ably token (you need to implement this)
+    const token = generateAblyToken(req.body.roomId);
+    res.json({ token });
+  } catch (error) {
+    console.error('Error generating Ably token:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post("/search-entry", async (req, res) => {
   try {
     const roomCode = req.body.roomCode;
@@ -253,12 +398,13 @@ app.post("/search-entry", async (req, res) => {
   }
 });
 
-app.post("/find-rooms", async (req, res) => {
+app.get("/find-rooms", async (req, res) => {
   try {
     const limit = req.query.limit;
+    console.log("Limit: ", limit);
     const rooms = await Room.findAll({
       limit: limit,
-      //attributes: ["host", "room_code"], 
+      //attributes: ["host", "room_code"],
     });
     if (rooms) {
       console.log(rooms);
