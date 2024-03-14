@@ -33,15 +33,20 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 // ***ABLY TOKEN ENDPOINT****************************************************
 // Endpoint to get an Ably token
 app.post("/getAblyToken", async (req, res) => {
-  const roomId = req.body.roomId;
+  const { clientId } = req.body;
+  if (!clientId) {
+    return res.status(400).send("clientId is required");
+  }
+
   const ably = new Ably.Rest({
     key: "u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs",
   });
 
-  const tokenParams = { userId: roomId };
+  const tokenParams = { clientId };
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
-      res.status(500).send("Error requesting token: " + err);
+      console.error("Error creating token request:", err);
+      res.status(500).send("Error requesting token: " + err.message);
     } else {
       res.send(tokenRequest);
     }
