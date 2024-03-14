@@ -7,7 +7,7 @@ import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import GeneratePuzzleForm from "./generatePuzzleForm";
 import DropdownComponent from "./DropdownComponent";
-import "./RoomPage.css"; // Importing CSS for RoomPage
+import "./RoomPage.css";
 
 function RoomPage() {
   const { roomId } = useParams();
