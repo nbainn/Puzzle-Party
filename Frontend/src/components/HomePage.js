@@ -11,8 +11,16 @@ function HomePage() {
   //const [peer, setPeer] = useState(null);
   
   useEffect(() => {
-    //loadScript(); // Call loadScript when component mounts
-    const ably = new Ably.Realtime.Promise({ authUrl: '/getAblyToken' });
+    const ably = new Ably.Realtime.Promise({
+      authUrl: '/getAblyToken',
+      authMethod: 'POST', // Ensure we use POST
+      authHeaders: {
+        'Content-Type': 'application/json', // Set appropriate headers
+      },
+      authParams: {
+        clientId: 'temporary-client-id', // Send client ID (need to implement)
+      },
+    });
     window.ably = ably; // Make Ably instance available globally
   }, []);
 

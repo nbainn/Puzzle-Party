@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  Link as MuiLink,
-  styled,
-} from '@mui/material';
+import { Container, Card, CardContent, Typography, TextField, Button, Link as MuiLink, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  marginTop: theme.spacing(10),
   padding: theme.spacing(3),
 }));
 
@@ -40,7 +30,15 @@ function SignupPage() {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container component="main" maxWidth="xs" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '16px',
+      overflow: 'auto'
+    }}>
       <StyledCard elevation={3}>
         <CardContent>
           <Title variant="h4" align="center">
