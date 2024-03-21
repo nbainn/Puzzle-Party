@@ -1,17 +1,27 @@
 // ***IMPORTS****************************************************
 const express = require("../node_modules/express");
 const { ExpressPeerServer } = require("../node_modules/peer");
-const config = require("../config.js");
+const rootConfig = require("../config.js");
+const config = require("./config.js");
 const http = require("http");
 const path = require("path");
 const bodyParser = require("body-parser");
 const Ably = require("ably");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const app = express();
+const axios = require('axios');
 app.use(bodyParser.json());
 // Import Sequelize and your models
-const { sq, testDbConnection, fetchWords } = require("./sequelize.tsx");
+const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { Room, Word, Puzzle } = sq.models;
+// Secret key for JWT signing and encryption
+const jwtSecret = config.JWT_SECRET;
+// Ably API Key
+const ablyApiKey = config.ABLY_API_KEY;
+// Google Client ID
+const CLIENT_ID = config.CLIENT_ID;
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -31,23 +41,233 @@ const allCharacters = Character.findAll();
 Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 */
 
+// ***SIGNUP/LOGIN ENDPOINT****************************************************
+// Email+Password Signup Endpoint
+app.post('/signup', async (req, res) => {
+  try {
+    const { email, password, nickname, userColor } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Create a new user
+    const newUser = await User.create({
+      email,
+      hashedPassword: password, // Pass the plain password here because hashing is handled by the model in sequelize
+      nickname,
+      userColor
+    });
+
+    // Create a token
+    const token = jwt.sign(
+      { id: newUser.id },
+      jwtSecret,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.status(201).json({
+      token,
+      userId: newUser.id,
+      email: newUser.email,
+      nickname: newUser.nickname,
+      userColor: newUser.userColor
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating new user', error });
+  }
+});
+
+// Email+Password Login Endpoint
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.hashedPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Create a token
+    const token = jwt.sign(
+      { id: user.id },
+      jwtSecret,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.json({ token, userId: user.id, email: user.email });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during login', error });
+  }
+});
+
+// Google OAuth functionality needs work
+
+// Google OAuth Verification
+const verifyGoogleToken = async (token) => {
+  try {
+    const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
+    const response = await axios.get(url);
+    
+    if (response.status === 200) {
+      const payload = response.data;
+      
+      // Check if the aud field in the payload matches your app's client ID
+      if (payload.aud !== CLIENT_ID) {
+        throw new Error("Token's client ID does not match app's.");
+      }
+
+      // Check if the token is not expired
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+      if (currentTime >= payload.exp) {
+        throw new Error('Token is expired.');
+      }
+
+      // Check if the issuer is correct
+      if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
+        throw new Error("Token's issuer is invalid.");
+      }
+      
+      // If you've reached here, the token is valid
+      return payload; // This contains the user's information
+    } else {
+      throw new Error('Token verification failed');
+    }
+  } catch (error) {
+    console.error('Error during Google token verification:', error);
+    throw error;
+  }
+};
+
+// Google OAuth Login Endpoint
+app.post('/googleLogin', async (req, res) => {
+  console.log('Received ID token:', req.body.token);
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ message: 'Token not provided.' });
+    }
+    const payload = await verifyGoogleToken(token);
+    const googleId = payload['sub'];
+    const email = payload['email'];
+    const name = payload['name'];
+
+    // Check if user already exists in your database
+    let user = await User.findOne({ where: { email } });
+
+    // If the user exists, create a token for them
+    if (user) {
+      const token = jwt.sign(
+        { id: user.id },
+        jwtSecret,
+        { expiresIn: '1h' } // Token expires in 1 hour
+      );
+      return res.json({ token, userId: user.id, email: user.email, userColor: user.userColor });
+    }
+
+    // If the user does not exist, create a new user entry in your database
+    user = await User.create({
+      email,
+      nickname: name, // Nickname will be the name provided by Google
+      userColor: '#0000ff', // Just an example, you could generate a color or let the user pick one later
+      hashedPassword: bcrypt.hashSync(googleId, 10), // Hash the Google ID for the password
+    });
+
+    // Create a token for the new user
+    const newToken = jwt.sign(
+      { id: user.id },
+      jwtSecret,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    // Send the token and user info back to the client
+    res.status(201).json({
+      token: newToken,
+      userId: user.id,
+      email: user.email,
+      userColor: user.userColor
+    });
+    
+  } catch (error) {
+    console.error('Error during Google Login:', error);
+    res.status(500).json({ message: 'Server error during Google login', error });
+  }
+});
+
+
+// Middleware to authenticate and decode JWT
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// User profile endpoint
+app.get('/user/profile', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({ email: user.email, name: user.name }); // Adjust according to the fields in your User model
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+// Update profile endpoint
+app.post('/updateProfile', authenticateToken, async (req, res) => {
+  try {
+    const { nickname, userColor } = req.body;
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.nickname = nickname || user.nickname;
+    user.userColor = userColor || user.userColor;
+    await user.save();
+
+    res.json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating profile', error });
+  }
+});
+
 // ***ABLY TOKEN ENDPOINT****************************************************
 // Endpoint to get an Ably token
 app.post("/getAblyToken", async (req, res) => {
+  console.log("Received Ably token request with body:", req.body);
   const { clientId } = req.body;
   if (!clientId) {
+    console.error("No clientId provided in the token request.");
     return res.status(400).send("clientId is required");
   }
 
-  const ably = new Ably.Rest({ key: config.AblyApiKey });
-
+  const ably = new Ably.Rest({ key: ablyApiKey });
   const tokenParams = { clientId: clientId };
+  
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
+      console.error("Error creating Ably token request:", err);
       res.status(500).send("Error requesting token: " + err.message);
     } else {
-      res.setHeader('Content-Type', 'application/json'); // Set Content-Type header for JSON response
-      res.send(JSON.stringify(tokenRequest)); // Send stringified JSON object
+      console.log("Ably token request successful for clientId:", clientId, "Token Request:", tokenRequest);
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(tokenRequest));
     }
   });
 });
@@ -57,8 +277,8 @@ app.post("/getAblyToken", async (req, res) => {
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
 // Listening for http requests on port 3000
-const server = app.listen(config.PORT, "0.0.0.0", () => {
-  console.log(`Server running at ${config.BASE_URL}:${config.PORT}`);
+const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
+  console.log(`Server running at ${rootConfig.BASE_URL}:${rootConfig.PORT}`);
 });
 
 // This lets the peer JS server run on the same port as local host because we can define a path

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import ClueList from "./ClueList";
@@ -7,10 +7,49 @@ import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import GeneratePuzzleForm from "./generatePuzzleForm";
 import DropdownComponent from "./DropdownComponent";
+import { useAuth } from '../hooks/useAuth';
 import "./RoomPage.css";
 
 function RoomPage() {
   const { roomId } = useParams();
+  const { ablyClient, userId, userColor } = useAuth();
+  const [ablyReady, setAblyReady] = useState(false);
+
+  useEffect(() => {
+    if (ablyClient) {
+      // Log the current connection state
+      console.log('Current Ably connection state:', ablyClient.connection.state);
+  
+      // Set up a listener for when the connection state changes
+      const onConnectionStateChange = (stateChange) => {
+        console.log('Ably connection state has changed:', stateChange.current);
+        
+        // If Ably is connected, update state accordingly
+        if (stateChange.current === 'connected') {
+          console.log('Ably is now connected.');
+          setAblyReady(true);
+        } else {
+          console.log('Ably is not connected. Current state:', stateChange.current);
+          setAblyReady(false);
+        }
+      };
+  
+      ablyClient.connection.on('connectionstate', onConnectionStateChange);
+  
+      // Immediately invoke the callback if already connected
+      if (ablyClient.connection.state === 'connected') {
+        setAblyReady(true);
+      }
+  
+      // Clean up listener when the component is unmounted
+      return () => ablyClient.connection.off('connectionstate', onConnectionStateChange);
+    }
+  }, [ablyClient]);
+  
+  // Use the 'ablyReady' state to control your loading screen
+  if (!ablyReady) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="room-page">
@@ -21,14 +60,13 @@ function RoomPage() {
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm />
         <DropdownComponent />
-        {/* You can also display the room code here */}
       </div>
       <div className="game-container">
         <PlayerList />
         <Grid />
         <div className="hints-chat-container">
           <ClueList />
-          <ChatBox />
+          <ChatBox ablyClient={ablyClient} roomId={roomId} userId={userId} userColor={userColor} />
         </div>
       </div>
     </div>
