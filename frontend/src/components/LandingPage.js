@@ -60,14 +60,18 @@ function LandingPage() {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+    <Container component="main" maxWidth="xs" sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      overflow: 'auto'
+    }}>
       <Card sx={{ p: 3 }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Typography component="h1" variant="h5" fontFamily="'Bubblegum Sans', cursive">
             Welcome to Puzzle Party
-          </Typography>
-          <Typography sx={{ mt: 2, mb: 1 }} color="textSecondary">
-            Login
           </Typography>
           <Typography variant="body2">
             Don't have an account yet? <Link onClick={handleSignUp} sx={{ cursor: 'pointer' }}>Sign Up</Link>
@@ -107,18 +111,18 @@ function LandingPage() {
           >
             LOGIN
           </Button>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            or login with
-          </Typography>
           <Button
             onClick={() => googleLogin()}
+            fullWidth
+            variant="outlined"
             startIcon={<GoogleIcon />}
+            sx={{ mb: 2 }}
           >
             Login with Google
           </Button>
           <Button
             fullWidth
-            variant="text"
+            variant="outlined"
             onClick={handleGuest}
             sx={{ mb: 2 }}
           >

@@ -39,16 +39,15 @@ app.post("/getAblyToken", async (req, res) => {
     return res.status(400).send("clientId is required");
   }
 
-  const ably = new Ably.Rest({
-    key: "u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs",
-  });
+  const ably = new Ably.Rest({ key: config.AblyApiKey });
 
-  const tokenParams = { clientId };
+  const tokenParams = { clientId: clientId };
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
       res.status(500).send("Error requesting token: " + err.message);
     } else {
-      res.send(tokenRequest);
+      res.setHeader('Content-Type', 'application/json'); // Set Content-Type header for JSON response
+      res.send(JSON.stringify(tokenRequest)); // Send stringified JSON object
     }
   });
 });
