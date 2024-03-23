@@ -34,17 +34,20 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 // ***ABLY TOKEN ENDPOINT****************************************************
 // Endpoint to get an Ably token
 app.post("/getAblyToken", async (req, res) => {
-  const roomId = req.body.roomId;
-  const ably = new Ably.Rest({
-    key: "u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs",
-  });
+  const { clientId } = req.body;
+  if (!clientId) {
+    return res.status(400).send("clientId is required");
+  }
 
-  const tokenParams = { userId: roomId };
+  const ably = new Ably.Rest({ key: config.AblyApiKey });
+
+  const tokenParams = { clientId: clientId };
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
-      res.status(500).send("Error requesting token: " + err);
+      res.status(500).send("Error requesting token: " + err.message);
     } else {
-      res.send(tokenRequest);
+      res.setHeader('Content-Type', 'application/json'); // Set Content-Type header for JSON response
+      res.send(JSON.stringify(tokenRequest)); // Send stringified JSON object
     }
   });
 });
@@ -352,6 +355,7 @@ app.post("/add-entry", async (req, res) => {
       host: "testHost",
       num_players: 1,
       isActive: true,
+      public_status: true,
     });
     res.send("New field added successfully!");
   } catch (error) {
@@ -382,9 +386,10 @@ app.post("/search-entry", async (req, res) => {
   }
 });
 
-app.post("/find-rooms", async (req, res) => {
+app.get("/find-rooms", async (req, res) => {
   try {
     const limit = req.query.limit;
+    console.log("Limit: ", limit);
     const rooms = await Room.findAll({
       limit: limit,
       //attributes: ["host", "room_code"],

@@ -24,6 +24,7 @@ class Room extends Model {
   host;
   num_players;
   isActive;
+  public_status;
   */
  
 }
@@ -129,6 +130,11 @@ Room.init({
     allowNull: false
   },
   isActive : {
+    type: DataTypes.BOOLEAN,
+    default: true,
+    allowNull: false
+  },
+  public_status : {
     type: DataTypes.BOOLEAN,
     default: true,
     allowNull: false

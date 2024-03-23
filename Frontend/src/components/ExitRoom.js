@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './ExitRoom.css'; 
 import { useNavigate } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ function ExitRoom() {
 
   const handleExitRoom = (event) => {
     event.preventDefault();
-    navigate(`/`);
+    navigate(`/home`);
   };
 
   return (
