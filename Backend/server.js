@@ -364,6 +364,31 @@ app.post("/add-entry", async (req, res) => {
   }
 });
 
+app.post("/change-status", async (req, res) => {
+  try {
+    const roomCode = req.body.roomCode; // Access roomCode directly from req.body
+    const status = req.body.status;
+    console.log(status);
+    if (status == "public") {
+      status = true;
+    } else {
+      status = false;
+    }
+    if (!roomCode) {
+      throw new Error("Room code is missing in the request body");
+    }
+    console.log("Changing private/public status", roomCode);
+    await Room.update(  
+      { public_status: status },
+      { where: { room_code: roomCode } }
+    );
+    res.send("New field added successfully!");
+  } catch (error) {
+    console.error("Error adding field:", error);
+    res.status(500).send("Error adding field");
+  }
+});
+
 app.post("/search-entry", async (req, res) => {
   try {
     const roomCode = req.body.roomCode;

@@ -17,7 +17,7 @@ function RoomPage() {
     <div className="room-page">
       <div>
         <ExitRoom />
-        <RoomStatus/>
+        <RoomStatus roomId={roomId}/>
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
