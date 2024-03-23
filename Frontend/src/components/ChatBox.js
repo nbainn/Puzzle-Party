@@ -1,87 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import Ably from 'ably/promises';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, TextField, IconButton, List, ListItem, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 /*
 Notes:
-- API Key for Backend: u-tBhA.LAJA1A:D5_Sa8D3Grz3QdLdE4K5N6ZMMiZnA87OABpBUemj1gs
-- Token Fetching: component fetches an Ably token when it mounts and sets up the Ably client; fetchToken function can be changed to match backend's API
-- User and Room IDs: component expects userId and roomId as props. These should be provided based on the logged-in user's ID and the ID of the room they're in
-- Message Format: Messages are sent with the user ID and text
+- Message Format: Messages are sent with the user ID and text; needs to be changed to nickname or email or something else
 - Error Handling: need to add error handling for network requests and Ably operations
 */
 
-// eventually pass userId as a prop, for now just generate it for testing purposes
-function ChatBox({ userId, roomId, userColor }) {
+function ChatBox({ userId, roomId, userColor, ablyClient }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [ably, setAbly] = useState(null);
+  const messagesEndRef = useRef(null);
+  const defaultGuestColor = '#aaff69';
 
   useEffect(() => {
-    async function fetchUserIdAndToken() {
-      try {
-        // Fetch the userId from backend
-        const userRes = await fetch('/getUserId');
-        if (!userRes.ok) {
-          throw new Error('UserId fetch failed with status: ' + userRes.status);
-        }
-        const { userId } = await userRes.json();
-  
-        // Log the userId for debugging purposes
-        console.log('Retrieved userId:', userId);
-  
-        // Now fetch the Ably token using the retrieved userId
-        const tokenRes = await fetch('/getAblyToken', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ clientId: userId }),
-        });
-        if (!tokenRes.ok) {
-          throw new Error('Token request failed with status: ' + tokenRes.status);
-        }
-  
-        const tokenDetails = await tokenRes.json();
-        // Log the token details for debugging purposes
-        console.log('Token Details:', tokenDetails);
-  
-        const ablyClient = new Ably.Realtime.Promise({ tokenDetails });
-        // Log the Ably client initialization for debugging purposes
-        console.log('Ably client initialized with token details:', tokenDetails);
-        
-        setAbly(ablyClient);
-      } catch (error) {
-        console.error('Error fetching Ably token:', error);
+    if (ablyClient) {
+      console.log('Ably client provided to ChatBox', ablyClient);
+
+      const onConnected = () => {
+        console.log('Ably client connected, now subscribing to channel:', `room:${roomId}`);
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        const onMessage = (message) => {
+          console.log('Message received:', message);
+          setMessages((prevMessages) => [...prevMessages, message.data]);
+        };
+        channel.subscribe('message', onMessage);
+
+        return () => {
+          channel.unsubscribe('message', onMessage);
+          ablyClient.connection.off('connected', onConnected);
+        };
+      };
+
+      if (ablyClient.connection.state === 'connected') {
+        onConnected();
+      } else {
+        ablyClient.connection.once('connected', onConnected);
       }
     }
-  
-    fetchUserIdAndToken();
-  }, []);  
+  }, [ablyClient, roomId]);
 
   useEffect(() => {
-    if (ably) {
-      const channel = ably.channels.get(`room:${roomId}`);
-      const onMessage = (message) => {
-        setMessages((prevMessages) => [...prevMessages, message.data]);
-      };
-      channel.subscribe('message', onMessage);
-      return () => {
-        channel.unsubscribe('message', onMessage);
-      };
-    }
-  }, [ably, roomId]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
-    if (ably && newMessage.trim() !== '') {
-      const channel = ably.channels.get(`room:${roomId}`);
+    if (ablyClient && newMessage.trim() !== '') {
+      console.log('Sending message:', newMessage);
+      const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
         await channel.publish('message', { userId, text: newMessage, color: userColor });
-        setNewMessage('');  // Clear the input after sending
+        console.log('Message sent:', newMessage);
+        setNewMessage('');
       } catch (error) {
         console.error('Error sending message:', error);
       }
+    } else {
+      console.log('Ably client not initialized or no message to send.');
     }
+  };
+
+  // Note: message bubble color matching userColor functionality isn't working yet; same with the contrasting color stuff
+
+  // Function to determine message bubble styling based on the sender
+  const getMessageBubbleStyles = (message) => {
+    const bubbleColor = message.color || defaultGuestColor;
+    return {
+      bgcolor: bubbleColor,
+      margin: '10px',
+      maxWidth: '80%',
+      alignSelf: userId === message.userId ? 'flex-end' : 'flex-start',
+      textAlign: 'left',
+      padding: '10px',
+      borderRadius: '16px',
+      color: getContrastYIQ(bubbleColor),
+      boxShadow: '0 2px 2px rgba(0,0,0,0.2)',
+    };
+  };
+
+  // Function to get a contrasting text color based on the background color
+  const getContrastYIQ = (hexcolor) => {
+    hexcolor = hexcolor.replace("#", "");
+    const r = parseInt(hexcolor.substr(0, 2), 16);
+    const g = parseInt(hexcolor.substr(2, 2), 16);
+    const b = parseInt(hexcolor.substr(4, 2), 16);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? "#000" : "#fff";
   };
 
   const chatBoxStyles = {
@@ -107,18 +113,18 @@ function ChatBox({ userId, roomId, userColor }) {
       border: '2px solid #000', 
     },
     '& .MuiOutlinedInput-input': {
-      padding: '10px', // Padding to ensure the text is aligned within the input box
+      padding: '10px',
       fontFamily: "'Bubblegum Sans', cursive", 
     },
     '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none', // No additional border around the input field
+      border: 'none',
     },
   };
 
   const sendButtonStyles = {
     bgcolor: 'transparent', 
     '&:hover': {
-      bgcolor: 'transparent', // Transparent background even on hover
+      bgcolor: 'transparent',
     },
     '& .MuiIconButton-root': {
       borderRadius: '4px', 
@@ -133,23 +139,16 @@ function ChatBox({ userId, roomId, userColor }) {
       <List sx={{
         overflowY: 'auto',
         display: 'flex',
-        flexDirection: 'column-reverse',
+        flexDirection: 'column',
         p: 1,
         flexGrow: 1,
       }}>
         {messages.map((message, index) => (
-          <ListItem key={index} sx={{
-            backgroundColor: message.color || 'white', // Use the user's color or default to white
-            margin: '10px 0',
-            borderRadius: '10px',
-            padding: '10px',
-            border: userId === message.userId ? '2px solid black' : 'none', // Distinguish the user's own messages
-          }}>
+          <ListItem key={index} sx={getMessageBubbleStyles(message)}>
             <Typography
               variant="body1"
               sx={{
                 fontWeight: 'bold',
-                color: message.userId === userId ? 'black' : 'grey',
                 fontFamily: 'Bubblegum Sans',
               }}
             >
@@ -158,6 +157,7 @@ function ChatBox({ userId, roomId, userColor }) {
             </Typography>
           </ListItem>
         ))}
+        <div ref={messagesEndRef} />
       </List>
       <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
         <TextField

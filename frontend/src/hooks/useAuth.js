@@ -1,13 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../AuthContext';
 
+// This custom hook allows any component that imports it to access the authentication context
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check local storage or authentication token logic
-    const userToken = localStorage.getItem('userToken');
-    setIsAuthenticated(!!userToken);
-  }, []);
-
-  return { isAuthenticated };
+  return useContext(AuthContext);
 }
