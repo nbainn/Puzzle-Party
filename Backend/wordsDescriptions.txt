@@ -293,7 +293,6 @@ pollution, contamination of the environment
 tenuous, weak and delicate
 confess, admit to wrongdoing
 abandoned, left without care or support
-well-groomed, neatly and stylishly maintained
 wanting, lacking or deficient
 respect, admiration and esteem
 impossible, not able to occur or be done
@@ -587,7 +586,7 @@ choke, struggle for breath due to a blocked airway
 doubtful, uncertain or not convinced
 enchanting, charming or captivating
 mindless, lacking intelligence or thought
-second-hand, previously owned or used by someone else
+secondhand, previously owned or used by someone else
 act, perform an action or behave in a particular way
 scare, cause fear or alarm
 cheat, act dishonestly to gain an advantage
@@ -878,3 +877,103 @@ Dye,Coloring agent
 Rye,Grain
 Pus,Fluid from infection
 Gym,Fitness center
+claim, assert ownership or right to something
+hair, strands covering the scalp of a human
+perform, to carry out an action or task
+bad, not good; of poor quality or low standard
+fold, to bend or crease something
+cart, a vehicle with wheels used for transporting goods
+rough, having an uneven or irregular surface
+miscreant, a person who behaves badly or breaks the law
+uttermost, the greatest possible extent or degree
+legal, relating to the law or permitted by law
+baby, a very young child, especially one newly or recently born
+innocent, free from guilt or wrongdoing
+swanky, stylishly luxurious or expensive
+lovely, beautiful or attractive
+friendly, kind and pleasant
+voracious, having a very eager approach to an activity
+righteous, morally right or justifiable
+robin, a small songbird with a red or orange breast
+wood, the hard fibrous material that forms the main substance of the trunk or branches of a tree
+office, a room, set of rooms, or building used as a place for commercial, professional, or bureaucratic work
+exercise, activity requiring physical effort, carried out to sustain or improve health and fitness
+confuse, to cause someone to become bewildered or perplexed
+trade, the action of buying and selling goods and services
+cakes, small sweet baked desserts
+charge, to demand as a price for a service rendered or goods supplied
+library, a building or room containing collections of books, periodicals, and sometimes films and recorded music for people to read, borrow, or refer to
+sticks, small thin pieces of wood that have been cut or broken from a larger piece
+snotty, unpleasantly haughty or disdainful
+suck, to draw into the mouth by contracting the muscles of the lips and mouth to make a partial vacuum
+willing, ready, eager, or prepared to do something
+abstracted, removed in thought from the immediate situation, lost in one's own mind
+doctor, a qualified practitioner of medicine
+alive, living, not dead
+phobic, having or involving an extreme or irrational fear of or aversion to something
+notebook, a book with blank pages for recording notes or memoranda
+responsible, having an obligation to do something
+camera, a device for recording visual images
+evanescent, soon passing out of sight, memory, or existence
+enthusiastic, having or showing intense and eager enjoyment, interest, or approval
+thought, the process of considering or reasoning about something
+volcano, a mountain or hill, typically conical, having a crater or vent through which lava, rock fragments, hot vapor, and gas are being or have been erupted from the earth's crust
+hop, a short journey made by a quick trip
+puny, small and weak
+illfated, destined to fail or have an unfortunate outcome
+kitty, a young cat
+fork, a tool with two or more prongs, used for lifting food to the mouth or holding it when cutting
+neighborly, characteristic of a good neighbor, friendly and helpful
+slope, a surface of which one end or side is at a higher level than another; a rising or falling surface
+jazzy, lively, bright, and flashy
+question, a sentence worded or expressed so as to elicit information
+tour, a journey for pleasure in which several different places are visited
+wicked, evil or morally wrong
+decisive, settling an issue; producing a definite result
+woebegone, showing or expressing sorrow or misery
+direction, the course or path along which something moves or lies
+spooky, eerie or frightening
+invincible, incapable of being conquered, defeated, or subdued
+camp, a place with temporary accommodations of huts, tents, or other structures, typically used by soldiers, refugees, or travelers
+futuristic, having or involving modern technology or design resembling science fiction
+incandescent, emitting light as a result of being heated
+angry, having a strong feeling of or showing annoyance, displeasure, or hostility
+ancient, belonging to the very distant past and no longer in existence
+sense, a faculty by which the body perceives an external stimulus
+flesh, the soft substance consisting of muscle and fat that is found between the skin and bones of an animal or a human
+turkey, a large mainly domesticated game bird native to North America
+wish, a desire or hope for something to happen
+heavy, of great weight; difficult to lift or move
+airplane, a powered flying vehicle with fixed wings and a weight greater than that of the air it displaces
+slim, attractively thin
+hover, remain in one place in the air
+expand, to become or make larger or more extensive
+inquisitive, curious or inquiring
+sordid, involving ignoble actions and motives; arousing moral distaste and contempt
+industrious, diligent and hard-working
+deserted, abandoned or forsaken
+befitting, appropriate to; suitable or proper for
+fine, of very high quality; very good of its kind
+observe, notice or perceive something and register it as being significant
+count, determine the total number of something
+voiceless, without the power of speech
+scene, the place where an incident in real life or fiction occurs or occurred
+stereotyped, lacking originality or individuality
+silk, a fine, strong, soft, lustrous fiber produced by silkworms in making cocoons and collected to make thread and fabric
+puzzled, unable to understand; perplexed
+intelligent, having or showing intelligence, especially of a high level
+cheat, act dishonestly or unfairly in order to gain an advantage, especially in a game or examination
+overrated, considered to be better or more important than it actually is
+marble, a hard crystalline metamorphic form of limestone
+skirt, a garment fastened around the waist and hanging down around the legs
+succinct, briefly and clearly expressed
+bubble, a thin sphere of liquid enclosing air or another gas
+clumsy, awkward in movement or in handling things
+historical, belonging to or set in the past, typically so as to evoke a sense of period
+quarter, each of four equal or corresponding parts into which something is or can be divided
+receipt, a written acknowledgment that something has been received
+receptive, willing to consider or accept new suggestions and ideas
+boring, not interesting; tedious
+large, of considerable or relatively great size, extent, or capacity
+gabby, excessively talkative, especially about trivial matters
+fence, a barrier
