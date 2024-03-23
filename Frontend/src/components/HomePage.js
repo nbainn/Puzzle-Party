@@ -1,28 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import JoinRoomForm from './JoinRoomForm';
 import './HomePage.css'; 
 import axios from 'axios';
 //import { loadScript, createHost} from  './peer2peer.js';
-import Ably from 'ably';
 
 function HomePage() {
   const navigate = useNavigate();
   //const [peer, setPeer] = useState(null);
-  
-  useEffect(() => {
-    const ably = new Ably.Realtime.Promise({
-      authUrl: '/getAblyToken',
-      authMethod: 'POST', // Ensure we use POST
-      authHeaders: {
-        'Content-Type': 'application/json', // Set appropriate headers
-      },
-      authParams: {
-        clientId: 'temporary-client-id', // Send client ID (need to implement)
-      },
-    });
-    window.ably = ably; // Make Ably instance available globally
-  }, []);
 
   const handleCreateRoom = async () => {
     //console.log('supposed to get hostid')
@@ -34,14 +19,12 @@ function HomePage() {
     //createHost();
     //const host = createHost();
     //console.log("Adding peerID", host)
-    try {// Generate a 6-digit room code and navigate to the RoomPage
+    try {
+      // Generate a 6-digit room code and navigate to the RoomPage
       await axios.post('/add-entry', { roomCode });
-      const ably = window.ably;
-      const channel = ably.channels.get('rooms');
-      channel.presence.enterClient('host', { roomId: roomCode });
       navigate(`/room/${roomCode}`);
     } catch (error) {
-      console.error('Could not create room:', error)
+      console.error('Could not create room:', error);
     }
   };
 

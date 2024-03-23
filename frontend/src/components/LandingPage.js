@@ -1,62 +1,47 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, Typography, Link, TextField, Box, Container } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
+import { Button, Card, CardContent, Typography, Link, TextField, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../hooks/useAuth';
+import axios from 'axios';
 
 function LandingPage() {
-  // State for traditional login
+  const { login, guestLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const authenticateUser = () => {
-    // TODO: Common authentication tasks (like redirecting to HomePage)
-    // This can be called after traditional login or Google OAuth success
-    navigate('/home'); // For now, just navigate to the HomePage
-  };
 
-  // TODO: Implement the handleLogin function to:
-  // 1. Validate the input fields (email and password).
-  // 2. Send login request to the server with email and password.
-  // 3. Handle the response from the server.
-  //    - If successful, save the received token and user information in global state/local storage/session storage.
-  //    - If error, display the error message to the user.
-  // 4. Redirect the user to the HomePage upon successful login.
-  const handleLogin = () => {
-    console.log('Traditional Login with:', email, password);
-    // TODO: Traditional login logic
-    authenticateUser();
-  };
-
-  const googleLogin = useGoogleLogin({
-    onSuccess: tokenResponse => {
-      console.log('Google tokenResponse:', tokenResponse);
-      // Handle the successful response here, like saving the token and redirecting to the home page
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('/login', { email, password });
+      login(response.data.token, response.data.userId);
       navigate('/home');
-    },
-    onError: () => {
-      console.log('Login failed');
-      // Handle login failure here
-    },
-  });
-
-  // TODO: Implement the handleGuest function to:
-  // 1. Generate a temporary guest userID on the client or retrieve from the server.
-  // 2. Save the guest userID in the global state/local storage to maintain session.
-  // 3. Redirect the user to the HomePage as a guest.
-  // 4. Consider limiting the functionality or persisting data for guests as per your application's requirements.
-  const handleGuest = () => {
-    navigate('/home'); // For now, just navigate to the HomePage
+    } catch (error) {
+      console.error('Login Error:', error.response?.data?.message || error.message);
+    }
   };
 
-  // TODO: Implement the handleSignUp function to:
-  // 1. Redirect the user to a SignUp page/component.
-  // 2. Provide a form for the user to enter account details, such as email, password, and possibly username.
-  // 3. Validate user input and handle sign-up logic with appropriate feedback.
-  // 4. On successful account creation, redirect to the login page or automatically log the user in.
-  // 5. Handle any errors and provide feedback during the sign-up process.
+  // Still need to get Google OAuth working
+
+  const onGoogleLoginSuccess = async tokenResponse => {
+    try {
+      const googleUser = await axios.post('/googleLogin', { token: tokenResponse.access_token });
+      login(googleUser.data.token, googleUser.data.userId); // Pass token and userId to login
+      navigate('/home');
+    } catch (error) {
+      console.error('Google Login Error:', error.response?.data?.message || error.message);
+    }
+  };
+
+
+
+  const handleGuest = () => {
+    guestLogin();
+    navigate('/home');
+};
+
   const handleSignUp = () => {
-    navigate('/signup'); // For now, just navigate to the SignupPage
+    navigate('/signup');
   };
 
   return (
@@ -77,8 +62,8 @@ function LandingPage() {
             Don't have an account yet? <Link onClick={handleSignUp} sx={{ cursor: 'pointer' }}>Sign Up</Link>
           </Typography>
           <TextField
-            value={email} // Bind state to the TextField
-            onChange={(e) => setEmail(e.target.value)} // Update state on change
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             margin="normal"
             fullWidth
             id="email"
@@ -90,8 +75,8 @@ function LandingPage() {
             sx={{ mt: 3 }}
           />
           <TextField
-            value={password} // Bind state to the TextField
-            onChange={(e) => setPassword(e.target.value)} // Update state on change
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             margin="normal"
             fullWidth
             name="password"
@@ -111,15 +96,10 @@ function LandingPage() {
           >
             LOGIN
           </Button>
-          <Button
-            onClick={() => googleLogin()}
-            fullWidth
-            variant="outlined"
-            startIcon={<GoogleIcon />}
-            sx={{ mb: 2 }}
-          >
-            Login with Google
-          </Button>
+          <GoogleLogin
+            onSuccess={onGoogleLoginSuccess}
+            onError={() => console.log('Google login failed')}
+          />
           <Button
             fullWidth
             variant="outlined"

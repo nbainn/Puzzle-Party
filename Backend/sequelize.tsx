@@ -1,8 +1,55 @@
 const { Sequelize, DataTypes, Model, Op } = require('sequelize');
-const {PostgresPassword} = require("./config.js")
+const config = require('./config');
+const bcrypt = require('bcrypt');
 
 // Option 1: Passing a connection URI
-const sequelize = new Sequelize(PostgresPassword) // Example for postgres
+const sequelize = new Sequelize(config.PostgresPassword) // Example for postgres
+
+// Define the User model with email and hashedPassword fields
+class User extends Model {}
+
+User.init({
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  hashedPassword: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  nickname: {
+    type: DataTypes.STRING,
+    allowNull: true, // allowNull is true, some kind of default handling for null nickname needs to be implemented
+  },
+  userColor: {
+    type: DataTypes.STRING,
+    allowNull: true, // Allow null, can be set later
+    defaultValue: '#FFFFFF',
+    validate: {
+      is: /^#(?:[0-9a-fA-F]{3}){1,2}$/i, // Regex to validate hex color codes
+    }
+  },
+}, {
+  sequelize,
+  modelName: 'User',
+  hooks: {
+    beforeValidate: (user) => {
+      // Set nickname if it's null
+      if (!user.nickname) {
+        user.nickname = user.email.split('@')[0];
+      }
+    },
+    beforeCreate: async (user) => {
+      // Hash the password before saving the User model
+      const salt = await bcrypt.genSalt(10); // The salt rounds, the cost of processing the data
+      user.hashedPassword = await bcrypt.hash(user.hashedPassword, salt);
+    },
+  },
+});
 
 /*class Character extends Model 
 {
@@ -341,4 +388,4 @@ syncModels();
 //fetchWords(dictionary);
 //fetchHost("882259");
 
-module.exports = { sq: sequelize, testDbConnection, syncModels, fetchHost, fetchWords };
+module.exports = { sq: sequelize, testDbConnection, syncModels, fetchHost, fetchWords, User };
