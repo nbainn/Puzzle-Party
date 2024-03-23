@@ -5,6 +5,7 @@ import ClueList from "./ClueList";
 import Grid from "./Grid";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
+import RoomStatus from "./RoomStatus";
 import GeneratePuzzleForm from "./generatePuzzleForm";
 import DropdownComponent from "./DropdownComponent";
 import { useAuth } from '../hooks/useAuth';
@@ -55,6 +56,7 @@ function RoomPage() {
     <div className="room-page">
       <div>
         <ExitRoom />
+        <RoomStatus/>
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
