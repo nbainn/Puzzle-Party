@@ -977,3 +977,6 @@ boring, not interesting; tedious
 large, of considerable or relatively great size, extent, or capacity
 gabby, excessively talkative, especially about trivial matters
 fence, a barrier
+zeus, god of thunder
+athena, goddess of war
+aries, god of war

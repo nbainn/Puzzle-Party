@@ -6,9 +6,8 @@ import Grid from "./Grid";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import RoomStatus from "./RoomStatus";
-import GeneratePuzzleForm from "./generatePuzzleForm";
-import DropdownComponent from "./DropdownComponent";
-import { useAuth } from '../hooks/useAuth';
+import GeneratePuzzleForm from "./GeneratePuzzleForm";
+import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 
 function RoomPage() {
@@ -19,34 +18,41 @@ function RoomPage() {
   useEffect(() => {
     if (ablyClient) {
       // Log the current connection state
-      console.log('Current Ably connection state:', ablyClient.connection.state);
-  
+      console.log(
+        "Current Ably connection state:",
+        ablyClient.connection.state
+      );
+
       // Set up a listener for when the connection state changes
       const onConnectionStateChange = (stateChange) => {
-        console.log('Ably connection state has changed:', stateChange.current);
-        
+        console.log("Ably connection state has changed:", stateChange.current);
+
         // If Ably is connected, update state accordingly
-        if (stateChange.current === 'connected') {
-          console.log('Ably is now connected.');
+        if (stateChange.current === "connected") {
+          console.log("Ably is now connected.");
           setAblyReady(true);
         } else {
-          console.log('Ably is not connected. Current state:', stateChange.current);
+          console.log(
+            "Ably is not connected. Current state:",
+            stateChange.current
+          );
           setAblyReady(false);
         }
       };
-  
-      ablyClient.connection.on('connectionstate', onConnectionStateChange);
-  
+
+      ablyClient.connection.on("connectionstate", onConnectionStateChange);
+
       // Immediately invoke the callback if already connected
-      if (ablyClient.connection.state === 'connected') {
+      if (ablyClient.connection.state === "connected") {
         setAblyReady(true);
       }
-  
+
       // Clean up listener when the component is unmounted
-      return () => ablyClient.connection.off('connectionstate', onConnectionStateChange);
+      return () =>
+        ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
-  
+
   // Use the 'ablyReady' state to control your loading screen
   if (!ablyReady) {
     return <div>Loading...</div>;
@@ -56,19 +62,23 @@ function RoomPage() {
     <div className="room-page">
       <div>
         <ExitRoom />
-        <RoomStatus roomId={roomId}/>
+        <RoomStatus roomId={roomId} />
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm />
-        <DropdownComponent />
       </div>
       <div className="game-container">
         <PlayerList />
         <Grid />
         <div className="hints-chat-container">
           <ClueList />
-          <ChatBox ablyClient={ablyClient} roomId={roomId} userId={userId} userColor={userColor} />
+          <ChatBox
+            ablyClient={ablyClient}
+            roomId={roomId}
+            userId={userId}
+            userColor={userColor}
+          />
         </div>
       </div>
     </div>
