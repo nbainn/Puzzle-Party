@@ -1,0 +1,25 @@
+.cheating {
+  display: flex; /* Use flexbox to align items */
+  justify-content: flex-start; /* Align items to the start (left) of the flex container */
+}
+
+.image-container {
+  margin-right: 2px; /* Adjust the margin as needed */
+  margin-left: 5px;
+  margin-bottom: -30px;
+  position: relative; /* Ensure the z-index works */
+  z-index: 9999; /* Set a very high z-index value for the image */
+}
+
+.button-container {
+  display: flex; /* Use flexbox to align items */
+  align-items: flex-end; /* Align items to the bottom of the flex container */
+}
+
+.button-container button {
+  margin-right: 5px; /* Adjust the margin between buttons as needed */
+}
+
+.pixelated-image {
+  image-rendering: pixelated; /* Apply pixelation to the image */
+}

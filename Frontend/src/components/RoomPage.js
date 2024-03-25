@@ -7,9 +7,9 @@ import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import RoomStatus from "./RoomStatus";
 import GeneratePuzzleForm from "./GeneratePuzzleForm";
-//import DropdownComponent from "./DropdownComponent";
+import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 
 function RoomPage() {
@@ -64,7 +64,6 @@ function RoomPage() {
     setPuzzleData(data);
   };
 
-
   return (
     <div className="room-page">
       <div>
@@ -74,10 +73,11 @@ function RoomPage() {
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm />
+        <Cheating />
       </div>
       <div className="game-container">
         <PlayerList />
-        <CrosswordGrid/>
+        <CrosswordGrid />
         <div className="hints-chat-container">
           <ClueList />
           <ChatBox

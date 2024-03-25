@@ -51,7 +51,7 @@ function GeneratePuzzleForm() {
         <input
           id="seedInput"
           type="number"
-          placeholder="Enter Puzzle Seed"
+          placeholder="Enter Seed"
           value={seed}
           onChange={(e) => setSeed(e.target.value)}
           min="0"
