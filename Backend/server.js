@@ -7,10 +7,10 @@ const http = require("http");
 const path = require("path");
 const bodyParser = require("body-parser");
 const Ably = require("ably");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const app = express();
-const axios = require('axios');
+const axios = require("axios");
 app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
@@ -44,14 +44,14 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 
 // ***SIGNUP/LOGIN ENDPOINT****************************************************
 // Email+Password Signup Endpoint
-app.post('/signup', async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { email, password, nickname, userColor } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     // Create a new user
@@ -59,14 +59,14 @@ app.post('/signup', async (req, res) => {
       email,
       hashedPassword: password, // Pass the plain password here because hashing is handled by the model in sequelize
       nickname,
-      userColor
+      userColor,
     });
 
     // Create a token
     const token = jwt.sign(
       { id: newUser.id },
       jwtSecret,
-      { expiresIn: '1h' } // Token expires in 1 hour
+      { expiresIn: "1h" } // Token expires in 1 hour
     );
 
     res.status(201).json({
@@ -74,40 +74,40 @@ app.post('/signup', async (req, res) => {
       userId: newUser.id,
       email: newUser.email,
       nickname: newUser.nickname,
-      userColor: newUser.userColor
+      userColor: newUser.userColor,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating new user', error });
+    res.status(500).json({ message: "Error creating new user", error });
   }
 });
 
 // Email+Password Login Endpoint
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Find user by email
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.hashedPassword);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Create a token
     const token = jwt.sign(
       { id: user.id },
       jwtSecret,
-      { expiresIn: '1h' } // Token expires in 1 hour
+      { expiresIn: "1h" } // Token expires in 1 hour
     );
 
     res.json({ token, userId: user.id, email: user.email });
   } catch (error) {
-    res.status(500).json({ message: 'Server error during login', error });
+    res.status(500).json({ message: "Server error during login", error });
   }
 });
 
@@ -118,10 +118,10 @@ const verifyGoogleToken = async (token) => {
   try {
     const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
     const response = await axios.get(url);
-    
+
     if (response.status === 200) {
       const payload = response.data;
-      
+
       // Check if the aud field in the payload matches your app's client ID
       if (payload.aud !== CLIENT_ID) {
         throw new Error("Token's client ID does not match app's.");
@@ -130,37 +130,40 @@ const verifyGoogleToken = async (token) => {
       // Check if the token is not expired
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
       if (currentTime >= payload.exp) {
-        throw new Error('Token is expired.');
+        throw new Error("Token is expired.");
       }
 
       // Check if the issuer is correct
-      if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
+      if (
+        payload.iss !== "https://accounts.google.com" &&
+        payload.iss !== "accounts.google.com"
+      ) {
         throw new Error("Token's issuer is invalid.");
       }
-      
+
       // If you've reached here, the token is valid
       return payload; // This contains the user's information
     } else {
-      throw new Error('Token verification failed');
+      throw new Error("Token verification failed");
     }
   } catch (error) {
-    console.error('Error during Google token verification:', error);
+    console.error("Error during Google token verification:", error);
     throw error;
   }
 };
 
 // Google OAuth Login Endpoint
-app.post('/googleLogin', async (req, res) => {
-  console.log('Received ID token:', req.body.token);
+app.post("/googleLogin", async (req, res) => {
+  console.log("Received ID token:", req.body.token);
   try {
     const { token } = req.body;
     if (!token) {
-      return res.status(400).json({ message: 'Token not provided.' });
+      return res.status(400).json({ message: "Token not provided." });
     }
     const payload = await verifyGoogleToken(token);
-    const googleId = payload['sub'];
-    const email = payload['email'];
-    const name = payload['name'];
+    const googleId = payload["sub"];
+    const email = payload["email"];
+    const name = payload["name"];
 
     // Check if user already exists in your database
     let user = await User.findOne({ where: { email } });
@@ -170,16 +173,21 @@ app.post('/googleLogin', async (req, res) => {
       const token = jwt.sign(
         { id: user.id },
         jwtSecret,
-        { expiresIn: '1h' } // Token expires in 1 hour
+        { expiresIn: "1h" } // Token expires in 1 hour
       );
-      return res.json({ token, userId: user.id, email: user.email, userColor: user.userColor });
+      return res.json({
+        token,
+        userId: user.id,
+        email: user.email,
+        userColor: user.userColor,
+      });
     }
 
     // If the user does not exist, create a new user entry in your database
     user = await User.create({
       email,
       nickname: name, // Nickname will be the name provided by Google
-      userColor: '#0000ff', // Just an example, you could generate a color or let the user pick one later
+      userColor: "#0000ff", // Just an example, you could generate a color or let the user pick one later
       hashedPassword: bcrypt.hashSync(googleId, 10), // Hash the Google ID for the password
     });
 
@@ -187,7 +195,7 @@ app.post('/googleLogin', async (req, res) => {
     const newToken = jwt.sign(
       { id: user.id },
       jwtSecret,
-      { expiresIn: '1h' } // Token expires in 1 hour
+      { expiresIn: "1h" } // Token expires in 1 hour
     );
 
     // Send the token and user info back to the client
@@ -195,20 +203,20 @@ app.post('/googleLogin', async (req, res) => {
       token: newToken,
       userId: user.id,
       email: user.email,
-      userColor: user.userColor
+      userColor: user.userColor,
     });
-    
   } catch (error) {
-    console.error('Error during Google Login:', error);
-    res.status(500).json({ message: 'Server error during Google login', error });
+    console.error("Error during Google Login:", error);
+    res
+      .status(500)
+      .json({ message: "Server error during Google login", error });
   }
 });
 
-
 // Middleware to authenticate and decode JWT
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
 
@@ -220,31 +228,31 @@ const authenticateToken = (req, res, next) => {
 };
 
 // User profile endpoint
-app.get('/user/profile', authenticateToken, async (req, res) => {
+app.get("/user/profile", authenticateToken, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     res.json({ email: user.email, name: user.name }); // Adjust according to the fields in your User model
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 });
 
 // Update profile endpoint
-app.post('/updateProfile', authenticateToken, async (req, res) => {
+app.post("/updateProfile", authenticateToken, async (req, res) => {
   try {
     const { nickname, userColor } = req.body;
     const user = await User.findByPk(req.user.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     user.nickname = nickname || user.nickname;
     user.userColor = userColor || user.userColor;
     await user.save();
 
-    res.json({ message: 'Profile updated successfully' });
+    res.json({ message: "Profile updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating profile', error });
+    res.status(500).json({ message: "Error updating profile", error });
   }
 });
 
@@ -260,14 +268,19 @@ app.post("/getAblyToken", async (req, res) => {
 
   const ably = new Ably.Rest({ key: ablyApiKey });
   const tokenParams = { clientId: clientId };
-  
+
   ably.auth.createTokenRequest(tokenParams, (err, tokenRequest) => {
     if (err) {
       console.error("Error creating Ably token request:", err);
       res.status(500).send("Error requesting token: " + err.message);
     } else {
-      console.log("Ably token request successful for clientId:", clientId, "Token Request:", tokenRequest);
-      res.setHeader('Content-Type', 'application/json');
+      console.log(
+        "Ably token request successful for clientId:",
+        clientId,
+        "Token Request:",
+        tokenRequest
+      );
+      res.setHeader("Content-Type", "application/json");
       res.send(JSON.stringify(tokenRequest));
     }
   });
@@ -305,8 +318,10 @@ app.get("/", (req, res) => {
 app.post("/puzzle", async (req, res) => {
   console.log("Puzzle request received");
   const seed = req.body.seed;
+  const size = req.body.size;
+  console.log("SIZE:" + size + "\n");
   console.log("got seed");
-  let puzzle = await buildPuzzle(seed, "medium");
+  let puzzle = await buildPuzzle(seed, size);
   console.log("built puzzle");
   res.json({ puzzle });
 });
@@ -473,10 +488,13 @@ async function buildPuzzle(seed, size) {
   switch (size) {
     case "small":
       puzzle = createPuzzleObject(5, 5);
+      break;
     case "medium":
       puzzle = createPuzzleObject(10, 10);
+      break;
     case "large":
       puzzle = createPuzzleObject(15, 15);
+      break;
     default:
       puzzle = createPuzzleObject(10, 10);
   }
@@ -487,7 +505,6 @@ async function buildPuzzle(seed, size) {
   for (let i = 0; i < puzzle.size.rows; i++) {
     for (let j = 0; j < puzzle.size.columns; j++) {
       let queries = await determineAvailability(puzzle, i, j, "across");
-      console.log(queries);
       let info = null;
       if (queries.length > 0) {
         for (let k = queries.length - 1; k >= 0; k--) {
@@ -513,7 +530,6 @@ async function buildPuzzle(seed, size) {
       }
       seed += 29;
       queries = await determineAvailability(puzzle, i, j, "down");
-      console.log(queries);
       info = null;
       if (queries.length > 0) {
         for (let k = queries.length - 1; k >= 0; k--) {
@@ -545,7 +561,7 @@ async function buildPuzzle(seed, size) {
     }
   }
 
-  console.log(puzzle);
+  sortClues(puzzle);
 
   return puzzle;
 }
