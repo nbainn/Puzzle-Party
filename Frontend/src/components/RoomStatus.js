@@ -12,7 +12,7 @@ function RoomStatus({roomId}) {
     event.preventDefault();
     setStatus(prevStatus => (prevStatus === 'public' ? 'private' : 'public'));
     try {// Generate a 6-digit room code and navigate to the RoomPage
-        await axios.post('/change-status', { roomId, status });
+        await axios.post('/change-status', { roomId: roomId, status: status });
       } catch (error) {
         console.error('Could not change status:', error)
       }

@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
+const { fabClasses } = require("@mui/material");
 const { Room, Word, Puzzle } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
@@ -602,20 +603,21 @@ app.post("/add-entry", async (req, res) => {
 
 app.post("/change-status", async (req, res) => {
   try {
-    const roomCode = req.body.roomCode; // Access roomCode directly from req.body
+    const roomCode = req.body.roomId; // Access roomCode directly from req.body
     const status = req.body.status;
+    let newStatus;
     console.log(status);
     if (status == "public") {
-      status = true;
+      newStatus = false;
     } else {
-      status = false;
+      newStatus = true;
     }
     if (!roomCode) {
       throw new Error("Room code is missing in the request body");
     }
     console.log("Changing private/public status", roomCode);
-    await Room.update(
-      { public_status: status },
+    await Room.update(  
+      { public_status: newStatus },
       { where: { room_code: roomCode } }
     );
     res.send("New field added successfully!");
