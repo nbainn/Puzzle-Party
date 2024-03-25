@@ -7,13 +7,16 @@ import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import RoomStatus from "./RoomStatus";
 import GeneratePuzzleForm from "./GeneratePuzzleForm";
-import { useAuth } from "../hooks/useAuth";
+//import DropdownComponent from "./DropdownComponent";
+import CrosswordGrid from "./Crossword";
+import { useAuth } from '../hooks/useAuth';
 import "./RoomPage.css";
 
 function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
+  const [puzzleData, setPuzzleData] = useState(null);
 
   useEffect(() => {
     if (ablyClient) {
@@ -57,6 +60,10 @@ function RoomPage() {
   if (!ablyReady) {
     return <div>Loading...</div>;
   }
+  const handlePuzzleData = (data) => {
+    setPuzzleData(data);
+  };
+
 
   return (
     <div className="room-page">
@@ -70,7 +77,7 @@ function RoomPage() {
       </div>
       <div className="game-container">
         <PlayerList />
-        <Grid />
+        <CrosswordGrid/>
         <div className="hints-chat-container">
           <ClueList />
           <ChatBox

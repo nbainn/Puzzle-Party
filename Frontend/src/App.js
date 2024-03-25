@@ -7,6 +7,7 @@ import SignupPage from "./components/SignupPage";
 import RoomPage from "./components/RoomPage";
 import PublicRooms from "./components/PublicRooms";
 import ProfilePage from './components/ProfilePage';
+import CrosswordGrid from "./components/Crossword";
 import { useAuth } from "./hooks/useAuth";
 
 const ProtectedRoute = ({ children }) => {
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path = "/crossword" element={<CrosswordGrid />} />
           {/* Conditionally rendered routes using ProtectedRoute */}
           <Route path="/home" element={
             <ProtectedRoute>
