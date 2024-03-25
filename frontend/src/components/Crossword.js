@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import axios from "axios";
 import './Crossword.css'; // You can define your own CSS for styling
 // gridSize can be dynamically set in the future based on user preference for small, medium, or large puzzles
 const gridSize = 10; 
@@ -190,6 +191,32 @@ function hexToRGBA(hex, alpha) {
       window.removeEventListener('resize', updateGridSize);
     };
   }, []);
+
+  const puzzle = async () => {
+  try {
+    var seed = 123456;
+        const response = await axios.post("/puzzle", { seed, size });
+        if (response.status === 200) {
+          let puzzleData = response.data;
+          console.log("Puzzle Received", puzzleData); 
+          const updatedGrid = puzzle.grid.map(row =>
+            row.map(cell => (cell === " " ? "-" : (cell !== "" && cell !== "-") ? " " : cell))
+          );
+
+          console.log(updatedGrid)
+
+
+          
+        } else if (response.status === 404) {
+          console.log("Error", response.data);
+        } else {
+          console.error("Unexpected response status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error contacting server", error);
+        console.log("error");
+      }
+  }
 
 
   return (
