@@ -25,25 +25,54 @@ function SignupPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [networkError, setNetworkError] = useState('');
+  const [serverError, setServerError] = useState('');
+  const [genericError, setGenericError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [userColor, setUserColor] = useState('#FFFFFF');  // Default white
+  const [userColor, setUserColor] = useState('#FFFFFF');
+  const [invalidColorError, setInvalidColorError] = useState('');
+
+  const isValidHexColor = (color) => /^#([0-9A-F]{3}){1,2}$/i.test(color);
+  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
   const handleSignUp = async (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
+    if (!isValidHexColor(userColor)) {
+      setInvalidColorError('Invalid hex color format.');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
     setLoading(true);
     try {
       const response = await axios.post('/signup', { email, password, nickname, userColor });
-      console.log('Signup response data:', response.data);
-      setLoading(false);
-      // Use the login function from useAuth to update the auth state and handle Ably initialization
       login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
       navigate('/home');
     } catch (err) {
       setLoading(false);
-      setError(err.response?.data?.message || 'Failed to sign up.');
+      if (err.response) {
+        if (err.response.status === 500) {
+          setServerError('Something went wrong on our end. Please try again later.');
+        } else {
+          setGenericError(err.response?.data?.message || 'Failed to sign up.');
+        }
+      } else {
+        setNetworkError('Unable to connect to the server. Please try again later.');
+      }
+    }
+  };
+
+  const handleColorChange = (color) => {
+    if (isValidHexColor(color)) {
+      setUserColor(color);
+      setInvalidColorError('');
+    } else {
+      setInvalidColorError('Invalid color format');
     }
   };
 
@@ -68,6 +97,8 @@ function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              error={emailError !== ''}
+              helperText={emailError}
             />
             <StyledTextField
               label="Password"
@@ -90,7 +121,10 @@ function SignupPage() {
               variant="outlined"
               fullWidth
               value={userColor}
-              onChange={(e) => setUserColor(e.target.value)}
+              onChange={(e) => handleColorChange(e.target.value)}
+              error={invalidColorError !== ''}
+              helperText={invalidColorError}
+              type="color"
             />
             <SubmitButton
               type="submit"
@@ -101,24 +135,56 @@ function SignupPage() {
             >
               Create Account
             </SubmitButton>
-            <Typography align="center">
-              Already have an account?{' '}
-              <MuiLink
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/')}
-                underline="hover"
-              >
-                Login
-              </MuiLink>
-            </Typography>
           </form>
-          {error && (
+          <Typography align="center">
+            Already have an account?{' '}
+            <MuiLink
+              component="button"
+              variant="body2"
+              onClick={() => navigate('/')}
+              underline="hover"
+            >
+              Login
+            </MuiLink>
+          </Typography>
+          {networkError && (
             <Snackbar
-              open={Boolean(error)}
+              open={Boolean(networkError)}
               autoHideDuration={6000}
-              onClose={() => setError('')}
-              message={error}
+              onClose={() => setNetworkError('')}
+              message={networkError}
+            />
+          )}
+          {serverError && (
+            <Snackbar
+              open={Boolean(serverError)}
+              autoHideDuration={6000}
+              onClose={() => setServerError('')}
+              message={serverError}
+            />
+          )}
+          {genericError && (
+            <Snackbar
+              open={Boolean(genericError)}
+              autoHideDuration={6000}
+              onClose={() => setGenericError('')}
+              message={genericError}
+            />
+          )}
+          {emailError && (
+            <Snackbar
+              open={Boolean(emailError)}
+              autoHideDuration={6000}
+              onClose={() => setEmailError('')}
+              message={emailError}
+            />
+          )}
+          {invalidColorError && (
+            <Snackbar
+              open={Boolean(invalidColorError)}
+              autoHideDuration={6000}
+              onClose={() => setInvalidColorError('')}
+              message={invalidColorError}
             />
           )}
         </CardContent>

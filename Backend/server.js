@@ -11,6 +11,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
+const ColorThief = require('color-thief-node');
 app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
@@ -23,6 +24,7 @@ const jwtSecret = config.JWT_SECRET;
 const ablyApiKey = config.ABLY_API_KEY;
 // Google Client ID
 const CLIENT_ID = config.CLIENT_ID;
+
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -67,7 +69,7 @@ app.post("/signup", async (req, res) => {
     // Create a new user
     const newUser = await User.create({
       email,
-      hashedPassword: password, // Pass the plain password here because hashing is handled by the model in sequelize
+      hashedPassword: password, // Pass the plain password; hashing is handled by the model in sequelize
       nickname,
       userColor,
     });
@@ -76,7 +78,7 @@ app.post("/signup", async (req, res) => {
     const token = jwt.sign(
       generateJwtPayload(newUser),
       jwtSecret,
-      { expiresIn: "1h" } // Token expires in 1 hour
+      { expiresIn: "1h" }
     );
 
     res.status(201).json({
@@ -127,8 +129,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Google OAuth functionality needs work
-
 // Google OAuth Verification
 const verifyGoogleToken = async (token) => {
   try {
@@ -168,6 +168,20 @@ const verifyGoogleToken = async (token) => {
   }
 };
 
+// Function to get the dominant color from an image URL
+async function getDominantColor(imageUrl) {
+  try {
+    const dominantColor = await ColorThief.getColorFromURL(imageUrl);
+    // Convert the RGB array to a hex string
+    const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+    return hexColor;
+  } catch (error) {
+    console.error("Error fetching dominant color:", error);
+    // Return a default color if something goes wrong
+    return '#FFFFFF';
+  }
+}
+
 // Google OAuth Login Endpoint
 app.post("/googleLogin", async (req, res) => {
   console.log("Received ID token:", req.body.token);
@@ -179,17 +193,17 @@ app.post("/googleLogin", async (req, res) => {
     const payload = await verifyGoogleToken(token);
     const googleId = payload["sub"];
     const email = payload["email"];
-    const name = payload["name"];
+    const givenName = payload["given_name"]; //  given name (first name)
 
-    // Check if user already exists in your database
+    // Check if user already exists in database
     let user = await User.findOne({ where: { email } });
 
-    // If the user exists, create a token for them
+    // If user exists, create a token for them
     if (user) {
       const token = jwt.sign(
         generateJwtPayload(user),
         jwtSecret,
-        { expiresIn: "1h" } // Token expires in 1 hour
+        { expiresIn: "1h" }
       );
       res.json({
         token,
@@ -200,18 +214,21 @@ app.post("/googleLogin", async (req, res) => {
       });
     } else {
       // If the user does not exist, create a new user entry in your database
+      
+      const pictureUrl = payload["picture"]; // URL of profile picture
+      const userColor = await getDominantColor(pictureUrl); // Get the dominant color from the profile picture
       user = await User.create({
         email,
-        nickname: name, // Nickname will be the name provided by Google
-        userColor: "#0000ff", // Just an example, you could generate a color or let the user pick one later
-        hashedPassword: bcrypt.hashSync(googleId, 10), // Hash the Google ID for the password
+        nickname: givenName, // Use the given name as the user's nickname
+        userColor: userColor, // Use the dominant color of their PFP as the user's color
+        hashedPassword: googleId, // Pass the plain googleId; hashing is handled by the model in sequelize
       });
 
       // Create a token for the new user
       const newToken = jwt.sign(
         generateJwtPayload(user),
         jwtSecret,
-        { expiresIn: "1h" } // Token expires in 1 hour
+        { expiresIn: "1h" }
       );
 
       // Send the token and user info back to the client
@@ -219,15 +236,13 @@ app.post("/googleLogin", async (req, res) => {
         token: newToken,
         userId: user.id,
         email: user.email,
-        nickname: user.nickname, // This will be the name provided by Google
+        nickname: givenName,
         userColor: user.userColor,
       });
     }
   } catch (error) {
     console.error("Error during Google Login:", error);
-    res
-      .status(500)
-      .json({ message: "Server error during Google login", error });
+    res.status(500).json({ message: "Server error during Google login", error });
   }
 });
 

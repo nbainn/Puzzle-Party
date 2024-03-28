@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, Typography, Link, TextField, Container } from '@mui/material';
+import { Button, Box, Card, CardContent, Typography, Link, TextField, Container, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../hooks/useAuth';
@@ -9,25 +9,46 @@ function LandingPage() {
   const { login, guestLogin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [networkError, setNetworkError] = useState('');
+  const [serverError, setServerError] = useState('');
+  const [genericError, setGenericError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const navigate = useNavigate();
+  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    if (!isValidEmail(email)) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
     try {
       const response = await axios.post('/login', { email, password });
       login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
       navigate('/home');
     } catch (error) {
-      console.error('Login Error:', error.response?.data?.message || error.message);
+      if (!error.response) {
+        setNetworkError('Unable to connect to the server. Please try again later.');
+      } else if (error.response.status === 500) {
+        setServerError('Something went wrong on our end. Please try again later.');
+      } else {
+        setGenericError(error.response?.data?.message || 'An error occurred. Please try again.');
+      }
     }
   };
 
-  // Still need to get Google OAuth working
-
-  const onGoogleLoginSuccess = async tokenResponse => {
+  const onGoogleLoginSuccess = async (tokenResponse) => {
+    console.log('Received token from Google:', tokenResponse);
     try {
-      const googleUser = await axios.post('/googleLogin', { token: tokenResponse.access_token });
-      // needs fixed to look something like "login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);" but for OAuth
-      login(googleUser.data.token, googleUser.data.userId); // Pass token and userId to login
+      // Extract the credential from the tokenResponse object
+      const token = tokenResponse.credential;
+      if (!token) {
+        console.error('No token found in the Google token response:', tokenResponse);
+        return;
+      }
+      
+      const googleUser = await axios.post('/googleLogin', { token });
+      login(googleUser.data.token, googleUser.data.userId, googleUser.data.nickname, googleUser.data.userColor);
       navigate('/home');
     } catch (error) {
       console.error('Google Login Error:', error.response?.data?.message || error.message);
@@ -43,12 +64,17 @@ function LandingPage() {
     navigate('/signup');
   };
 
+  const googleButtonStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+  };
+
   return (
-    <Container component="main" maxWidth="xs" sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh', 
-      justifyContent: 'center', 
+    <Container component="main" maxWidth="xs" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      justifyContent: 'center',
       alignItems: 'center',
       overflow: 'auto'
     }}>
@@ -60,55 +86,96 @@ function LandingPage() {
           <Typography variant="body2">
             Don't have an account yet? <Link onClick={handleSignUp} sx={{ cursor: 'pointer' }}>Sign Up</Link>
           </Typography>
-          <TextField
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            variant="outlined"
-            sx={{ mt: 3 }}
-          />
-          <TextField
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            variant="outlined"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleLogin}
-            sx={{ mt: 3, mb: 2 }}
-          >
-            LOGIN
-          </Button>
-          <GoogleLogin
-            onSuccess={onGoogleLoginSuccess}
-            onError={() => console.log('Google login failed')}
-          />
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={handleGuest}
-            sx={{ mb: 2 }}
-          >
-            Play as a Guest
-          </Button>
+          <form onSubmit={handleLogin}>
+            <TextField
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              margin="normal"
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              variant="outlined"
+              sx={{ mt: 3 }}
+              error={Boolean(emailError)}
+              helperText={emailError}
+            />
+            <TextField
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              variant="outlined"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              LOGIN
+            </Button>
+            <Box sx={{ width: '100%', mb: 2 }}>
+              <div style={googleButtonStyle}>
+                <GoogleLogin
+                  onSuccess={onGoogleLoginSuccess}
+                  onError={() => console.log('Google login failed')}
+                />
+              </div>
+            </Box>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleGuest}
+              sx={{ mb: 2 }}
+            >
+              Play as a Guest
+            </Button>
+          </form>
         </CardContent>
       </Card>
+      {networkError && (
+        <Snackbar
+          open={Boolean(networkError)}
+          autoHideDuration={6000}
+          onClose={() => setNetworkError('')}
+          message={networkError}
+        />
+      )}
+      {serverError && (
+        <Snackbar
+          open={Boolean(serverError)}
+          autoHideDuration={6000}
+          onClose={() => setServerError('')}
+          message={serverError}
+        />
+      )}
+      {genericError && (
+        <Snackbar
+          open={Boolean(genericError)}
+          autoHideDuration={6000}
+          onClose={() => setGenericError('')}
+          message={genericError}
+        />
+      )}
+      {emailError && (
+        <Snackbar
+          open={Boolean(emailError)}
+          autoHideDuration={6000}
+          onClose={() => setEmailError('')}
+          message={emailError}
+        />
+      )}
     </Container>
   );
 }

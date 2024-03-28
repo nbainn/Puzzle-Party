@@ -51,7 +51,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       console.log('Sending message:', newMessage);
       const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
-        console.log('Nickname:', nickname, 'Color:', userColor);
         await channel.publish('message', {
           nickname: nickname,
           text: newMessage,
@@ -66,8 +65,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       console.log('Ably client not initialized or no message to send.');
     }
   };
-
-  // Note: message bubble color matching userColor functionality isn't working yet; same with the contrasting color stuff
 
   // Function to determine message bubble styling based on the sender
   const getMessageBubbleStyles = (message) => {
@@ -153,7 +150,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
             <Typography
               variant="body1"
               sx={{
-                fontWeight: 'bold',
                 fontFamily: 'Bubblegum Sans',
               }}
             >
