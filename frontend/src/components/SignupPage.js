@@ -39,7 +39,7 @@ function SignupPage() {
       console.log('Signup response data:', response.data);
       setLoading(false);
       // Use the login function from useAuth to update the auth state and handle Ably initialization
-      login(response.data.token, response.data.userId);
+      login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
       navigate('/home');
     } catch (err) {
       setLoading(false);

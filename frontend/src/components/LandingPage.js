@@ -14,7 +14,7 @@ function LandingPage() {
   const handleLogin = async () => {
     try {
       const response = await axios.post('/login', { email, password });
-      login(response.data.token, response.data.userId);
+      login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
       navigate('/home');
     } catch (error) {
       console.error('Login Error:', error.response?.data?.message || error.message);
@@ -26,14 +26,13 @@ function LandingPage() {
   const onGoogleLoginSuccess = async tokenResponse => {
     try {
       const googleUser = await axios.post('/googleLogin', { token: tokenResponse.access_token });
+      // needs fixed to look something like "login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);" but for OAuth
       login(googleUser.data.token, googleUser.data.userId); // Pass token and userId to login
       navigate('/home');
     } catch (error) {
       console.error('Google Login Error:', error.response?.data?.message || error.message);
     }
   };
-
-
 
   const handleGuest = () => {
     guestLogin();

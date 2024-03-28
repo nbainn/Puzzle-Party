@@ -14,7 +14,7 @@ import "./RoomPage.css";
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor } = useAuth();
+  const { ablyClient, userId, userColor, nickname } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   const [puzzleData, setPuzzleData] = useState(null);
 
@@ -85,6 +85,7 @@ function RoomPage() {
             roomId={roomId}
             userId={userId}
             userColor={userColor}
+            nickname={nickname}
           />
         </div>
       </div>

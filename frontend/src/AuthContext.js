@@ -7,6 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [nickname, setNickname] = useState(null);
+  const [userColor, setUserColor] = useState(null);
   const [ablyClient, setAblyClient] = useState(null);
 
   useEffect(() => {
@@ -58,15 +60,22 @@ export const AuthProvider = ({ children }) => {
     setAblyClient(client);
   };
 
-  const login = async (token, userId) => {
+  const login = async (token, userId, nickname, userColor) => {
     if (!token || !userId) {
       console.error('Invalid login parameters:', { token, userId });
       return;
     }
+    // Store user details in localStorage
     localStorage.setItem('userToken', token);
     localStorage.setItem('userId', userId);
+    localStorage.setItem('nickname', nickname);
+    localStorage.setItem('userColor', userColor);
+  
+    // Set state values
     setIsAuthenticated(true);
     setUserId(String(userId));
+    setNickname(nickname);
+    setUserColor(userColor);
   };
 
   const guestLogin = async () => {
@@ -92,7 +101,7 @@ export const AuthProvider = ({ children }) => {
 
   // Expose the states and functions through context
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, ablyClient, login, guestLogin, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

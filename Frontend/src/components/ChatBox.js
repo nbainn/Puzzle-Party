@@ -8,7 +8,7 @@ Notes:
 - Error Handling: need to add error handling for network requests and Ably operations
 */
 
-function ChatBox({ userId, roomId, userColor, ablyClient }) {
+function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
@@ -51,7 +51,12 @@ function ChatBox({ userId, roomId, userColor, ablyClient }) {
       console.log('Sending message:', newMessage);
       const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
-        await channel.publish('message', { userId, text: newMessage, color: userColor });
+        console.log('Nickname:', nickname, 'Color:', userColor);
+        await channel.publish('message', {
+          nickname: nickname,
+          text: newMessage,
+          color: userColor || defaultGuestColor
+        });
         console.log('Message sent:', newMessage);
         setNewMessage('');
       } catch (error) {
@@ -66,12 +71,12 @@ function ChatBox({ userId, roomId, userColor, ablyClient }) {
 
   // Function to determine message bubble styling based on the sender
   const getMessageBubbleStyles = (message) => {
-    const bubbleColor = message.color || defaultGuestColor;
+    const bubbleColor = message.color;
     return {
       bgcolor: bubbleColor,
       margin: '10px',
       maxWidth: '80%',
-      alignSelf: userId === message.userId ? 'flex-end' : 'flex-start',
+      alignSelf: message.nickname === nickname ? 'flex-end' : 'flex-start',
       textAlign: 'left',
       padding: '10px',
       borderRadius: '16px',
@@ -152,7 +157,7 @@ function ChatBox({ userId, roomId, userColor, ablyClient }) {
                 fontFamily: 'Bubblegum Sans',
               }}
             >
-              {message.userId !== userId ? `${message.userId}: ` : null}
+              {message.nickname !== nickname ? `${message.nickname}: ` : null}
               {message.text}
             </Typography>
           </ListItem>

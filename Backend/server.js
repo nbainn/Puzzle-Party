@@ -43,6 +43,16 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 */
 
 // ***SIGNUP/LOGIN ENDPOINT****************************************************
+
+// Function to generate a consistent JWT payload
+function generateJwtPayload(user) {
+  return {
+    id: user.id,
+    nickname: user.nickname || user.email.split('@')[0], // Fallback to part of the email if nickname is null
+    userColor: user.userColor || '#FFFFFF', // Default color if null
+  };
+}
+
 // Email+Password Signup Endpoint
 app.post("/signup", async (req, res) => {
   try {
@@ -62,9 +72,9 @@ app.post("/signup", async (req, res) => {
       userColor,
     });
 
-    // Create a token
+    // Generate a token
     const token = jwt.sign(
-      { id: newUser.id },
+      generateJwtPayload(newUser),
       jwtSecret,
       { expiresIn: "1h" } // Token expires in 1 hour
     );
@@ -98,14 +108,20 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Create a token
+    // Generate a token
     const token = jwt.sign(
-      { id: user.id },
+      generateJwtPayload(user),
       jwtSecret,
-      { expiresIn: "1h" } // Token expires in 1 hour
+      { expiresIn: "1h" }
     );
 
-    res.json({ token, userId: user.id, email: user.email });
+    res.json({
+      token,
+      userId: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      userColor: user.userColor
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error during login", error });
   }
@@ -171,40 +187,42 @@ app.post("/googleLogin", async (req, res) => {
     // If the user exists, create a token for them
     if (user) {
       const token = jwt.sign(
-        { id: user.id },
+        generateJwtPayload(user),
         jwtSecret,
         { expiresIn: "1h" } // Token expires in 1 hour
       );
-      return res.json({
+      res.json({
         token,
         userId: user.id,
         email: user.email,
+        nickname: user.nickname,
+        userColor: user.userColor
+      });
+    } else {
+      // If the user does not exist, create a new user entry in your database
+      user = await User.create({
+        email,
+        nickname: name, // Nickname will be the name provided by Google
+        userColor: "#0000ff", // Just an example, you could generate a color or let the user pick one later
+        hashedPassword: bcrypt.hashSync(googleId, 10), // Hash the Google ID for the password
+      });
+
+      // Create a token for the new user
+      const newToken = jwt.sign(
+        generateJwtPayload(user),
+        jwtSecret,
+        { expiresIn: "1h" } // Token expires in 1 hour
+      );
+
+      // Send the token and user info back to the client
+      res.status(201).json({
+        token: newToken,
+        userId: user.id,
+        email: user.email,
+        nickname: user.nickname, // This will be the name provided by Google
         userColor: user.userColor,
       });
     }
-
-    // If the user does not exist, create a new user entry in your database
-    user = await User.create({
-      email,
-      nickname: name, // Nickname will be the name provided by Google
-      userColor: "#0000ff", // Just an example, you could generate a color or let the user pick one later
-      hashedPassword: bcrypt.hashSync(googleId, 10), // Hash the Google ID for the password
-    });
-
-    // Create a token for the new user
-    const newToken = jwt.sign(
-      { id: user.id },
-      jwtSecret,
-      { expiresIn: "1h" } // Token expires in 1 hour
-    );
-
-    // Send the token and user info back to the client
-    res.status(201).json({
-      token: newToken,
-      userId: user.id,
-      email: user.email,
-      userColor: user.userColor,
-    });
   } catch (error) {
     console.error("Error during Google Login:", error);
     res

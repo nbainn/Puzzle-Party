@@ -23,11 +23,11 @@ User.init({
   },
   nickname: {
     type: DataTypes.STRING,
-    allowNull: true, // allowNull is true, some kind of default handling for null nickname needs to be implemented
+    allowNull: true,
   },
   userColor: {
     type: DataTypes.STRING,
-    allowNull: true, // Allow null, can be set later
+    allowNull: true,
     defaultValue: '#FFFFFF',
     validate: {
       is: /^#(?:[0-9a-fA-F]{3}){1,2}$/i, // Regex to validate hex color codes
