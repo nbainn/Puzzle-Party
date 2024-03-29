@@ -19,6 +19,13 @@ function RoomPage() {
   const [ablyReady, setAblyReady] = useState(false);
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
+  const [timer, setTimer] = useState(true);
+  const [hints, setHints] = useState(true);
+  const [guesses, setGuesses] = useState(true);
+  const [revealGrid, setRevealGrid] = useState(false);
+  const [revealHint, setRevealHint] = useState(false);
+  const [checkWord, setCheckWord] = useState(false);
+  const [checkGrid, setCheckGrid] = useState(false);
 
   useEffect(() => {
     if (ablyClient) {
@@ -75,16 +82,40 @@ function RoomPage() {
         <RoomStatus roomId={roomId} />
       </div>
       <div className="settings">
-        <RoomSettings />
+        <RoomSettings
+          timer={timer}
+          hints={hints}
+          guesses={guesses}
+          setTimer={setTimer}
+          setHints={setHints}
+          setGuesses={setGuesses}
+        />
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm setPuzzle={setPuzzleHelper} />
-        <Cheating />
+        <Cheating
+          setRevealGrid={setRevealGrid}
+          setRevealHint={setRevealHint}
+          setCheckWord={setCheckWord}
+          setCheckGrid={setCheckGrid}
+        />
       </div>
       <div className="game-container">
         <PlayerList />
-        <CrosswordGrid puzzle={puzzle} />
+        <CrosswordGrid
+          puzzle={puzzle}
+          hints={hints}
+          guesses={guesses}
+          revealGrid={revealGrid}
+          setRevealGrid={setRevealGrid}
+          revealHint={revealHint}
+          setRevealHint={setRevealHint}
+          checkWord={checkWord}
+          setCheckWord={setCheckWord}
+          checkGrid={checkGrid}
+          setCheckGrid={setCheckGrid}
+        />
         <div className="hints-chat-container">
           <ClueList />
           <ChatBox

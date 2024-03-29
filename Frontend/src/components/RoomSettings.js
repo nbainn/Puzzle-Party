@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
-import './RoomSettings.css'; // You can create this CSS file to style your popup
+import React, { useState } from "react";
+import "./RoomSettings.css"; // You can create this CSS file to style your popup
 
-function RoomSettings() {
+function RoomSettings({
+  timer,
+  hints,
+  guesses,
+  setTimer,
+  setHints,
+  setGuesses,
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [timerEnabled, setTimerEnabled] = useState(true);
-  const [hintsEnabled, setHintsEnabled] = useState(true);
-  const [guessesEnabled, setGuessesEnabled] = useState(true);
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleTimerChange = () => {
+  /*const handleTimerChange = () => {
+    setTimer(!timerEnabled);
     setTimerEnabled(!timerEnabled);
   };
 
   const handleHintsChange = () => {
+    setHints(!hintsEnabled);
     setHintsEnabled(!hintsEnabled);
   };
 
   const handleGuessesChange = () => {
+    setGuesses(!guessesEnabled);
     setGuessesEnabled(!guessesEnabled);
+  };*/
+
+  const handleTimerChange = () => {
+    setTimer(!timer);
+    console.log("Timer: ", timer);
+  };
+
+  const handleHintsChange = () => {
+    setHints(!hints);
+    console.log("Hints: ", hints);
+  };
+
+  const handleGuessesChange = () => {
+    setGuesses(!guesses);
+    console.log("Guesses: ", guesses);
   };
 
   return (
@@ -34,7 +56,7 @@ function RoomSettings() {
           <label>
             <input
               type="checkbox"
-              checked={timerEnabled}
+              checked={timer}
               onChange={handleTimerChange}
             />
             Enable Timer
@@ -42,7 +64,7 @@ function RoomSettings() {
           <label>
             <input
               type="checkbox"
-              checked={hintsEnabled}
+              checked={hints}
               onChange={handleHintsChange}
             />
             Enable Hints
@@ -50,7 +72,7 @@ function RoomSettings() {
           <label>
             <input
               type="checkbox"
-              checked={guessesEnabled}
+              checked={guesses}
               onChange={handleGuessesChange}
             />
             Enable Guesses
