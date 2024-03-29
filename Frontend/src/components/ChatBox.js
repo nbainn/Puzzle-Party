@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box, TextField, IconButton, List, ListItem, Typography } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  TextField,
+  IconButton,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 /*
 Notes:
@@ -10,33 +17,36 @@ Notes:
 
 function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
-  const defaultGuestColor = '#aaff69';
+  const defaultGuestColor = "#aaff69";
 
   useEffect(() => {
     if (ablyClient) {
-      console.log('Ably client provided to ChatBox', ablyClient);
+      console.log("Ably client provided to ChatBox", ablyClient);
 
       const onConnected = () => {
-        console.log('Ably client connected, now subscribing to channel:', `room:${roomId}`);
+        console.log(
+          "Ably client connected, now subscribing to channel:",
+          `room:${roomId}`
+        );
         const channel = ablyClient.channels.get(`room:${roomId}`);
         const onMessage = (message) => {
-          console.log('Message received:', message);
+          console.log("Message received:", message);
           setMessages((prevMessages) => [...prevMessages, message.data]);
         };
-        channel.subscribe('message', onMessage);
+        channel.subscribe("message", onMessage);
 
         return () => {
-          channel.unsubscribe('message', onMessage);
-          ablyClient.connection.off('connected', onConnected);
+          channel.unsubscribe("message", onMessage);
+          ablyClient.connection.off("connected", onConnected);
         };
       };
 
-      if (ablyClient.connection.state === 'connected') {
+      if (ablyClient.connection.state === "connected") {
         onConnected();
       } else {
-        ablyClient.connection.once('connected', onConnected);
+        ablyClient.connection.once("connected", onConnected);
       }
     }
   }, [ablyClient, roomId]);
@@ -47,22 +57,22 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
-    if (ablyClient && newMessage.trim() !== '') {
-      console.log('Sending message:', newMessage);
+    if (ablyClient && newMessage.trim() !== "") {
+      console.log("Sending message:", newMessage);
       const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
-        await channel.publish('message', {
+        await channel.publish("message", {
           nickname: nickname,
           text: newMessage,
-          color: userColor || defaultGuestColor
+          color: userColor || defaultGuestColor,
         });
-        console.log('Message sent:', newMessage);
-        setNewMessage('');
+        console.log("Message sent:", newMessage);
+        setNewMessage("");
       } catch (error) {
-        console.error('Error sending message:', error);
+        console.error("Error sending message:", error);
       }
     } else {
-      console.log('Ably client not initialized or no message to send.');
+      console.log("Ably client not initialized or no message to send.");
     }
   };
 
@@ -71,14 +81,14 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
     const bubbleColor = message.color;
     return {
       bgcolor: bubbleColor,
-      margin: '10px',
-      maxWidth: '80%',
-      alignSelf: message.nickname === nickname ? 'flex-end' : 'flex-start',
-      textAlign: 'left',
-      padding: '10px',
-      borderRadius: '16px',
+      margin: "10px",
+      maxWidth: "80%",
+      alignSelf: message.nickname === nickname ? "flex-end" : "flex-start",
+      textAlign: "left",
+      padding: "10px",
+      borderRadius: "16px",
       color: getContrastYIQ(bubbleColor),
-      boxShadow: '0 2px 2px rgba(0,0,0,0.2)',
+      boxShadow: "0 2px 2px rgba(0,0,0,0.2)",
     };
   };
 
@@ -93,64 +103,66 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   };
 
   const chatBoxStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: '30%',
-    position: 'absolute',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    height: "30%",
+    position: "absolute",
     right: 10,
     bottom: 10,
     left: 10,
-    bgcolor: '#D7E8EF', 
-    border: '2px solid #000', 
-    borderRadius: '16px',
-    overflow: 'hidden',
+    bgcolor: "#D7E8EF",
+    border: "2px solid #000",
+    borderRadius: "16px",
+    overflow: "hidden",
     fontFamily: "'Bubblegum Sans', cursive",
   };
 
   const chatInputStyles = {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: '#F9EAFF', 
-      borderRadius: '16px',
-      border: '2px solid #000', 
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: "#F9EAFF",
+      borderRadius: "16px",
+      border: "2px solid #000",
     },
-    '& .MuiOutlinedInput-input': {
-      padding: '10px',
-      fontFamily: "'Bubblegum Sans', cursive", 
+    "& .MuiOutlinedInput-input": {
+      padding: "10px",
+      fontFamily: "'Bubblegum Sans', cursive",
     },
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none',
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
     },
   };
 
   const sendButtonStyles = {
-    bgcolor: 'transparent', 
-    '&:hover': {
-      bgcolor: 'transparent',
+    bgcolor: "transparent",
+    "&:hover": {
+      bgcolor: "transparent",
     },
-    '& .MuiIconButton-root': {
-      borderRadius: '4px', 
+    "& .MuiIconButton-root": {
+      borderRadius: "4px",
     },
-    '& .MuiSvgIcon-root': {
-      color: '#FF00B6', 
+    "& .MuiSvgIcon-root": {
+      color: "#FF00B6",
     },
   };
 
   return (
     <Box sx={chatBoxStyles}>
-      <List sx={{
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        p: 1,
-        flexGrow: 1,
-      }}>
+      <List
+        sx={{
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          p: 1,
+          flexGrow: 1,
+        }}
+      >
         {messages.map((message, index) => (
           <ListItem key={index} sx={getMessageBubbleStyles(message)}>
             <Typography
               variant="body1"
               sx={{
-                fontFamily: 'Bubblegum Sans',
+                fontFamily: "Bubblegum Sans",
               }}
             >
               {message.nickname !== nickname ? `${message.nickname}: ` : null}
@@ -160,7 +172,11 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
         ))}
         <div ref={messagesEndRef} />
       </List>
-      <Box component="form" onSubmit={handleSendMessage} sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+      <Box
+        component="form"
+        onSubmit={handleSendMessage}
+        sx={{ display: "flex", alignItems: "center", p: 1 }}
+      >
         <TextField
           fullWidth
           variant="outlined"
