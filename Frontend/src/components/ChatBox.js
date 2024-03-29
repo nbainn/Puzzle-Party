@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import Filter from 'bad-words';
 
 const ResizeHandle = styled("div")({
   position: "absolute",
@@ -15,6 +16,8 @@ const ResizeHandle = styled("div")({
   },
   zIndex: 10,
 });
+
+const filter = new Filter();
 
 function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const [messages, setMessages] = useState([]);
@@ -61,15 +64,16 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const handleSendMessage = async (event) => {
     event.preventDefault();
     if (ablyClient && newMessage.trim() !== "") {
-      console.log("Sending message:", newMessage);
+      const safeMessage = filter.clean(newMessage);
+      console.log("Sending message:", safeMessage);
       const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
         await channel.publish("message", {
           nickname: nickname,
-          text: newMessage,
+          text: safeMessage,
           color: userColor || defaultGuestColor,
         });
-        console.log("Message sent:", newMessage);
+        console.log("Message sent:", safeMessage);
         setNewMessage("");
       } catch (error) {
         console.error("Error sending message:", error);
