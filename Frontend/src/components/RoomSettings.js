@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./RoomSettings.css"; // You can create this CSS file to style your popup
 
 function RoomSettings({
@@ -10,43 +10,39 @@ function RoomSettings({
   setGuesses,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60); // Initial time left in seconds
+
+  useEffect(() => {
+    if (timer && timeLeft > 0) {
+      const timerId = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }
+  }, [timer, timeLeft]);
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
 
-  /*const handleTimerChange = () => {
-    setTimer(!timerEnabled);
-    setTimerEnabled(!timerEnabled);
-  };
-
-  const handleHintsChange = () => {
-    setHints(!hintsEnabled);
-    setHintsEnabled(!hintsEnabled);
-  };
-
-  const handleGuessesChange = () => {
-    setGuesses(!guessesEnabled);
-    setGuessesEnabled(!guessesEnabled);
-  };*/
-
   const handleTimerChange = () => {
     setTimer(!timer);
-    console.log("Timer: ", timer);
   };
 
   const handleHintsChange = () => {
     setHints(!hints);
-    console.log("Hints: ", hints);
   };
 
   const handleGuessesChange = () => {
     setGuesses(!guesses);
-    console.log("Guesses: ", guesses);
   };
 
   return (
     <div className="settings-popup">
+      <label>{timer && <p>Time left: {timeLeft} seconds</p>}</label>
       <button onClick={togglePopup} className="settings-button">
         ⚙️
       </button>
@@ -60,8 +56,6 @@ function RoomSettings({
               onChange={handleTimerChange}
             />
             Enable Timer
-          </label>
-          <label>
             <input
               type="checkbox"
               checked={hints}

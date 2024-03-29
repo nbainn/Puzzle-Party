@@ -167,7 +167,27 @@ const CrosswordGrid = ({
 
   useEffect(() => {
     if (hints) {
+      console.log(location);
       if (revealHint) {
+        const resetGrid = grid.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (
+              !cell.hidden &&
+              rowIndex === location[0] &&
+              colIndex === location[1]
+            ) {
+              console.log("HINT", puzzle.puzzle.grid[rowIndex][colIndex]);
+              return {
+                ...cell,
+                value: puzzle.puzzle.grid[rowIndex][colIndex],
+                color: "#86fe9e",
+              };
+            } else {
+              return { ...cell };
+            }
+          })
+        );
+        setGrid(resetGrid);
       }
     }
     setRevealHint(false);
@@ -233,6 +253,7 @@ const CrosswordGrid = ({
   const [favcolor, setColor] = useState("#f07aff");
   // State for responsive grid size
   const [size, setSize] = useState(300);
+  const [location, setLocation] = useState(0, 0);
 
   //useEffect(() => {
   const handleKeyPress = (event, rowIndex, colIndex) => {
@@ -266,6 +287,7 @@ const CrosswordGrid = ({
     const resetGrid = grid.map((row) =>
       row.map((cell) => ({ ...cell, highlighted: false }))
     );
+    setLocation([rowIndex, colIndex]);
     setGrid(resetGrid);
 
     // Highlight cells in the current direction
