@@ -110,12 +110,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
     return yiq >= 128 ? "#000" : "#fff";
   };
 
-  // Function to calculate the maximum height
-  const calculateMaxHeight = () => {
-    const chatBoxTop = chatBoxRef.current.getBoundingClientRect().top;
-    return window.innerHeight - chatBoxTop;
-  };
-
   const handleMouseDown = (event) => {
     event.preventDefault();
     const startY = event.clientY;

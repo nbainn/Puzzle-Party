@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import Ably from 'ably/promises';
 
 export const AuthContext = createContext();
@@ -11,15 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [userColor, setUserColor] = useState(null);
   const [ablyClient, setAblyClient] = useState(null);
 
-  useEffect(() => {
-    // This effect runs when isAuthenticated becomes true and when userId is set
-    if (isAuthenticated && userId) {
-      console.log('User authenticated. Setting up Ably client:', userId);
-      fetchAndSetAblyClient(userId);
-    }
-  }, [isAuthenticated, userId]);
-
-  const fetchAndSetAblyClient = async (clientId) => {
+  const fetchAndSetAblyClient = useCallback(async (clientId) => {
     if (ablyClient) {
       // Ably client already exists. No need to fetch a new token
       return;
@@ -58,7 +50,15 @@ export const AuthProvider = ({ children }) => {
     });
 
     setAblyClient(client);
-  };
+  }, [ablyClient]);
+
+  useEffect(() => {
+    // This effect runs when isAuthenticated becomes true and when userId is set
+    if (isAuthenticated && userId) {
+      console.log('User authenticated. Setting up Ably client:', userId);
+      fetchAndSetAblyClient(userId);
+    }
+  }, [isAuthenticated, userId, fetchAndSetAblyClient]);
 
   const login = async (token, userId, nickname, userColor) => {
     if (!token || !userId) {
