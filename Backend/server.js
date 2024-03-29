@@ -634,6 +634,25 @@ app.post("/add-entry", async (req, res) => {
   }
 });
 
+app.post("/room-status", async (req, res) => {
+  try {
+    const roomCode = req.body.roomId;
+    let foundRoom = await Room.findOne({
+      where: { room_code: roomCode },
+      attributes: ["public_status"],
+    });
+    if (foundRoom) {
+      console.log(foundRoom.public_status);
+      res.status(200).send(foundRoom.public_status);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
 app.post("/change-status", async (req, res) => {
   try {
     const roomCode = req.body.roomId; // Access roomCode directly from req.body
@@ -687,7 +706,9 @@ app.get("/find-rooms", async (req, res) => {
     const limit = req.query.limit;
     console.log("Limit: ", limit);
     const rooms = await Room.findAll({
+      where: { public_status: true },
       limit: limit,
+
       //attributes: ["host", "room_code"],
     });
     if (rooms) {
