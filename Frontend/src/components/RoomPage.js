@@ -19,6 +19,7 @@ function RoomPage() {
   const [ablyReady, setAblyReady] = useState(false);
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
+  const [players, setPlayers] = useState([]);
 
   useEffect(() => {
     if (ablyClient) {
@@ -27,7 +28,7 @@ function RoomPage() {
         "Current Ably connection state:",
         ablyClient.connection.state
       );
-
+      
       // Set up a listener for when the connection state changes
       const onConnectionStateChange = (stateChange) => {
         console.log("Ably connection state has changed:", stateChange.current);
@@ -57,6 +58,51 @@ function RoomPage() {
         ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
+/*
+  useEffect(() => {
+    if (ablyClient) {
+      console.log("Ably client provided to RoomPage", ablyClient);
+
+      // Function to handle presence messages
+      const onPresence = (presenceMsg) => {
+        if (presenceMsg.action === "enter") {
+          const newPlayerNickname = presenceMsg.clientId; // Use clientId as nickname
+          setPlayers((prevPlayers) => {
+            if (!prevPlayers.includes(newPlayerNickname)) {
+              return [...prevPlayers, newPlayerNickname];
+            }
+            return prevPlayers;
+          });
+          
+        } else if (presenceMsg.action === "leave") {
+          const leftPlayerNickname = presenceMsg.clientId;
+          setPlayers((prevPlayers) =>
+            prevPlayers.filter((player) => player !== leftPlayerNickname)
+          );
+        }
+      };
+
+      // Subscribe to presence events
+      const channel = ablyClient.channels.get(`room:${roomId}`);
+      channel.presence.subscribe(onPresence);
+
+      // Fetch current presence information
+      channel.presence.get((err, members) => {
+        if (!err) {
+          const currentPlayers = members.map((member) => member.clientId);
+          setPlayers(currentPlayers);
+        }
+      });
+
+      return () => {
+        channel.presence.unsubscribe(onPresence);
+      };
+    }
+  }, [ablyClient, roomId]);
+*/
+  useEffect(() => {
+    console.log("Players updated:", players);
+  }, [players]);
 
   // Use the 'ablyReady' state to control your loading screen
   if (!ablyReady) {
@@ -68,6 +114,20 @@ function RoomPage() {
     console.log("Puzzle set to:", puzzle);
   }
 
+/*
+  function PlayerList({ players }) {
+    return (
+      <div>
+        <h3>Players in the room:</h3>
+        <ul>
+          {players.map((player, index) => (
+            <li key={index}>{player}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+*/
   return (
     <div className="room-page">
       <div>

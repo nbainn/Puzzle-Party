@@ -26,6 +26,9 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const messagesEndRef = useRef(null);
   const defaultGuestColor = "#aaff69";
   const chatBoxRef = useRef(null);
+  const [players, setPlayers] = useState([]); // State variable to store unique nicknames
+  
+
 
   useEffect(() => {
     if (ablyClient) {
@@ -36,6 +39,8 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
           "Ably client connected, now subscribing to channel:",
           `room:${roomId}`
         );
+        console.log("Nickname:", nickname);
+        setPlayers((prevPlayers) => [...prevPlayers, nickname]);
         const channel = ablyClient.channels.get(`room:${roomId}`);
         const onMessage = (message) => {
           console.log("Message received:", message);
@@ -56,6 +61,59 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       }
     }
   }, [ablyClient, roomId]);
+
+  useEffect(() => {
+    console.log("Players updated:", players);
+  }, [players]);
+
+  async function getUsersInRoom() {
+    const channel = ablyClient.channels.get(`room:${roomId}`);
+    console.log("Trying to get users in the room");
+  
+    // Array to store current users
+    const currentUsers = [];
+  
+    // Subscription for user enter event
+    channel.presence.subscribe('enter', (member) => {
+      console.log(`${member.clientId} entered the room`);
+      currentUsers.push(member.clientId); // Add user to current users array
+      console.log('Current users:', currentUsers);
+    });
+  
+    // Subscription for user leave event
+    channel.presence.subscribe('leave', (member) => {
+      console.log(`${member.clientId} left the room`);
+      const index = currentUsers.indexOf(member.clientId);
+      if (index !== -1) {
+        currentUsers.splice(index, 1); // Remove user from current users array
+      }
+      console.log('Current users:', currentUsers);
+    });
+  
+    // Get initial presence set
+    const presenceSet = await channel.presence.get();
+    presenceSet.forEach((member) => {
+      currentUsers.push(member.clientId); // Add existing users to current users array
+    });
+    console.log('Initial current users:', currentUsers);
+  
+    // Optional: You can continue listening for presence events or perform other tasks here
+    return currentUsers; // Return the current users array
+  }
+    // Optional: You can continue listening for presence events or perform other tasks here
+  
+  useEffect(() => {
+    // Call getUsersInRoom when the component mounts
+    //getUsersInRoom(); // Call getUsersInRoom here
+    const channel = ablyClient.channels.get(`room:${roomId}`);
+    channel.presence.subscribe('enter', (member) => {
+      console.log(member.data); // => not moving
+    });
+
+    // Your existing code...
+  }, []); 
+
+  // Call the function to execute the code
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -187,6 +245,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       color: "#FF00B6",
     },
   };
+
 
   return (
     <Box ref={chatBoxRef} sx={chatBoxStyles}>
