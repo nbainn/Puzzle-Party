@@ -16,7 +16,8 @@ function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  const [puzzleData, setPuzzleData] = useState(null);
+  // State to store the puzzle object
+  const [puzzle, setPuzzle] = useState(null);
 
   useEffect(() => {
     if (ablyClient) {
@@ -60,9 +61,11 @@ function RoomPage() {
   if (!ablyReady) {
     return <div>Loading...</div>;
   }
-  const handlePuzzleData = (data) => {
-    setPuzzleData(data);
-  };
+
+  function setPuzzleHelper(puzzle) {
+    setPuzzle(puzzle);
+    console.log("Puzzle set to:", puzzle);
+  }
 
   return (
     <div className="room-page">
@@ -72,12 +75,12 @@ function RoomPage() {
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
-        <GeneratePuzzleForm />
+        <GeneratePuzzleForm setPuzzle={setPuzzleHelper} />
         <Cheating />
       </div>
       <div className="game-container">
         <PlayerList />
-        <CrosswordGrid />
+        <CrosswordGrid puzzle={puzzle} />
         <div className="hints-chat-container">
           <ClueList />
           <ChatBox
