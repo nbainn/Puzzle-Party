@@ -9,6 +9,7 @@ import RoomStatus from "./RoomStatus";
 import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
+import RoomSettings from "./RoomSettings";
 import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 
@@ -69,6 +70,9 @@ function RoomPage() {
       <div>
         <ExitRoom />
         <RoomStatus roomId={roomId} />
+      </div>
+      <div className="settings">
+        <RoomSettings />
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
