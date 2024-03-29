@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh; /* Full height of the viewport */
-    background-color: #fcb0d1; 
+    background-color: #ffad9d; 
     font-family: 'Bubblegum Sans', cursive; 
   }
   
@@ -18,8 +18,8 @@
   .create-room-button {
     padding: 15px 30px;
     font-size: 1.5rem;
-    background-color: #fff;
-    color: #fcb0d1; 
+    background-color: #ffffff;
+    color: #ffad9d; 
     border: 2px solid #000;
     border-radius: 8px;
     margin-bottom: 20px;
