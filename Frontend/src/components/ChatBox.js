@@ -1,25 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  TextField,
-  IconButton,
-  List,
-  ListItem,
-  Typography,
-} from "@mui/material";
+import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-/*
-Notes:
-- Message Format: Messages are sent with the user ID and text; needs to be changed to nickname or email or something else
-- Error Handling: need to add error handling for network requests and Ably operations
-*/
+const ResizeHandle = styled("div")({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  height: "5px",
+  cursor: "ns-resize",
+  borderTop: "5px solid #000",
+  '&:hover': {
+    borderTopColor: "#666",
+  },
+  zIndex: 10,
+});
 
 function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [chatHeight, setChatHeight] = useState(300);
   const messagesEndRef = useRef(null);
   const defaultGuestColor = "#aaff69";
+  const chatBoxRef = useRef(null);
 
   useEffect(() => {
     if (ablyClient) {
@@ -89,6 +92,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       borderRadius: "16px",
       color: getContrastYIQ(bubbleColor),
       boxShadow: "0 2px 2px rgba(0,0,0,0.2)",
+      wordBreak: "break-word",
     };
   };
 
@@ -102,15 +106,49 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
     return yiq >= 128 ? "#000" : "#fff";
   };
 
+  // Function to calculate the maximum height
+  const calculateMaxHeight = () => {
+    const chatBoxTop = chatBoxRef.current.getBoundingClientRect().top;
+    return window.innerHeight - chatBoxTop;
+  };
+
+  const handleMouseDown = (event) => {
+    event.preventDefault();
+    const startY = event.clientY;
+    const startHeight = chatBoxRef.current.clientHeight;
+
+    const handleMouseMove = (moveEvent) => {
+      // Calculate the new height
+      let newHeight = startHeight - (moveEvent.clientY - startY);
+      
+      // Calculate the maximum allowable height
+      const maxAvailableHeight = chatBoxRef.current.offsetTop;
+
+      // Clamp new height within the minimum and maximum limits
+      newHeight = Math.max(newHeight, 100); // Minimum 100px
+      newHeight = Math.min(newHeight, maxAvailableHeight); 
+
+      setChatHeight(newHeight);
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+};
+
   const chatBoxStyles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
-    height: "30%",
-    position: "absolute",
-    right: 10,
-    bottom: 10,
-    left: 10,
+    height: `${chatHeight}px`,
+    position: "relative",
+    width: "100%",
+    right: 0,
+    left: 0,
     bgcolor: "#D7E8EF",
     border: "2px solid #000",
     borderRadius: "16px",
@@ -147,7 +185,8 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
   };
 
   return (
-    <Box sx={chatBoxStyles}>
+    <Box ref={chatBoxRef} sx={chatBoxStyles}>
+      <ResizeHandle onMouseDown={handleMouseDown} />
       <List
         sx={{
           overflowY: "auto",
