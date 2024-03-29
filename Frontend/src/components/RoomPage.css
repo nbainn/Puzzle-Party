@@ -64,17 +64,16 @@ body, html {
   overflow: auto;
   flex: 1;
 }
-.settings {
 
-  position: absolute;
+.settings {
+  position: relative;
   top: 10px; /* Adjust as needed */
-  right: 10px; /* Adjust as needed */
+  right: 0; /* Align to the far right */
   padding: 10px;
   background-color: transparent; /* Transparent background */
   border: none; /* Remove border */
   font-size: 1.5rem; /* Adjust font size */
   cursor: pointer;
-
 }
 
 /* Responsive design adjustments for smaller screens */

@@ -12,7 +12,7 @@ const GridContainer = styled(Box)(({ size }) => ({
   display: "grid",
   //gridTemplateRows: `repeat(${gridSize}, 1fr)`,
   gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-  gap: "1px", // Uniform gap between cells for visual clarity
+  gap: "-4px", // Uniform gap between cells for visual clarity
   padding: "10px",
   maxWidth: "100%",
   margin: "auto",
@@ -24,7 +24,7 @@ const GridContainer = styled(Box)(({ size }) => ({
 const GridCell = styled(Box)({
   position: "relative",
   backgroundColor: "#fff", // White background for cells
-  border: "1px solid #ddd", // Border for visual separation of cells
+  border: "2px solid #545454", // Border for visual separation of cells
   "&:after": {
     content: '""',
     display: "block",
@@ -65,7 +65,20 @@ const StyledInput = styled(TextField)({
   },
 });
 
-const CrosswordGrid = ({ puzzle }) => {
+const CrosswordGrid = ({
+  puzzle,
+  timer,
+  hints,
+  guesses,
+  revealGrid,
+  setRevealGrid,
+  revealHint,
+  setRevealHint,
+  checkWord,
+  setCheckWord,
+  checkGrid,
+  setCheckGrid,
+}) => {
   console.log("PUZZLE:" + puzzle);
   let numRows = 10;
   let numCols = 10;
@@ -76,22 +89,14 @@ const CrosswordGrid = ({ puzzle }) => {
 
   const [grid, setGrid] = useState(
     Array(numRows).fill(
-      Array(numCols).fill({ value: "", highlighted: false, hidden: false })
+      Array(numCols).fill({
+        value: "",
+        highlighted: false,
+        hidden: false,
+        color: null,
+      })
     )
   );
-
-  /*useEffect(() => {
-    if (puzzle) {
-      const resetGrid = grid.map((row, rowIndex) =>
-        row.map((cell, colIndex) => ({
-          value: puzzle.puzzle.grid[rowIndex][colIndex], // Align value with corresponding value in other array
-          highlighted: false,
-          hidden: puzzle.puzzle.grid[rowIndex][colIndex] === " " ? true : false,
-        }))
-      );
-      setGrid(resetGrid);
-    }
-  }, [puzzle]);*/
 
   let tempGrid = [];
 
@@ -106,12 +111,18 @@ const CrosswordGrid = ({ puzzle }) => {
         for (let j = 0; j < numCols; j++) {
           //console.log(puzzle.puzzle.grid[i][j]);
           if (puzzle.puzzle.grid[i][j] === " ") {
-            tempGrid[i][j] = { value: "", highlighted: false, hidden: true };
+            tempGrid[i][j] = {
+              value: "",
+              highlighted: false,
+              hidden: true,
+              color: null,
+            };
           } else {
             tempGrid[i][j] = {
-              value: puzzle.puzzle.grid[i][j],
+              value: "",
               highlighted: false,
               hidden: false,
+              color: null,
             };
           }
         }
@@ -121,33 +132,162 @@ const CrosswordGrid = ({ puzzle }) => {
     }
   }, [puzzle]);
 
+  useEffect(() => {
+    if (revealGrid) {
+      numRows = puzzle.puzzle.size.rows;
+      numCols = puzzle.puzzle.size.columns;
+      for (let i = 0; i < numRows; i++) {
+        tempGrid.push(new Array(numCols).fill(null));
+      }
+      for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
+          //console.log(puzzle.puzzle.grid[i][j]);
+          if (puzzle.puzzle.grid[i][j] === " ") {
+            tempGrid[i][j] = {
+              value: "",
+              highlighted: false,
+              hidden: true,
+              color: null,
+            };
+          } else {
+            tempGrid[i][j] = {
+              value: puzzle.puzzle.grid[i][j],
+              highlighted: false,
+              hidden: false,
+              color: null,
+            };
+          }
+        }
+      }
+      setGrid(tempGrid);
+      console.log("GRID REVEALED", tempGrid);
+    }
+    setRevealGrid(false);
+  }, [revealGrid]);
+
+  useEffect(() => {
+    if (hints) {
+      console.log(location);
+      if (revealHint) {
+        const resetGrid = grid.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (
+              !cell.hidden &&
+              rowIndex === location[0] &&
+              colIndex === location[1]
+            ) {
+              console.log("HINT", puzzle.puzzle.grid[rowIndex][colIndex]);
+              return {
+                ...cell,
+                value: puzzle.puzzle.grid[rowIndex][colIndex],
+                color: "#86fe9e",
+              };
+            } else {
+              return { ...cell };
+            }
+          })
+        );
+        setGrid(resetGrid);
+      }
+    }
+    setRevealHint(false);
+  }, [revealHint]);
+
+  useEffect(() => {
+    if (guesses) {
+      if (checkWord) {
+        const resetGrid = grid.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (
+              !cell.hidden &&
+              cell.value !== "" &&
+              cell.highlighted &&
+              cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
+            ) {
+              return { ...cell, color: "#ffda4d" };
+            } else {
+              return { ...cell };
+            }
+          })
+        );
+        setGrid(resetGrid);
+      } else {
+        console.log("WHATTTTT?");
+      }
+    } else {
+      console.log("Guesses is not enabled!");
+    }
+    setCheckWord(false);
+  }, [checkWord]);
+
+  useEffect(() => {
+    if (guesses) {
+      if (checkGrid) {
+        const resetGrid = grid.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (
+              !cell.hidden &&
+              cell.value !== "" &&
+              cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
+            ) {
+              return { ...cell, color: "#ffda4d" };
+            } else {
+              return { ...cell };
+            }
+          })
+        );
+        setGrid(resetGrid);
+      } else {
+        console.log("WHATTTTT?");
+      }
+    } else {
+      console.log("Guesses is not enabled!");
+    }
+    setCheckGrid(false);
+  }, [checkGrid]);
+
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
   const [currentWordEnd, setCurrentWordEnd] = useState(null);
   const [inputChar, setInputChar] = useState("");
-  const [favcolor, setColor] = useState("#e08794");
+  const [favcolor, setColor] = useState("#f07aff");
   // State for responsive grid size
   const [size, setSize] = useState(300);
+  const [location, setLocation] = useState(0, 0);
 
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.keyCode === 32) {
-        // Spacebar key
-        setCurrentDirection(currentDirection === "across" ? "down" : "across");
-      }
-    };
+  //useEffect(() => {
+  const handleKeyPress = (event, rowIndex, colIndex) => {
+    if (event.keyCode === 32) {
+      // Spacebar key
+      setCurrentDirection(currentDirection === "across" ? "down" : "across");
+      handleCellClick(rowIndex, colIndex);
+    } else {
+      const updatedGrid = grid.map((row, i) =>
+        i === rowIndex
+          ? row.map((cell, j) =>
+              j === colIndex
+                ? { ...cell, value: event.key.toUpperCase() }
+                : cell
+            )
+          : row
+      );
+      setGrid(updatedGrid);
+    }
+    event.preventDefault();
+  };
 
-    document.addEventListener("keydown", handleKeyPress);
+  //window.addEventListener("keydown", handleKeyPress);
 
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [currentDirection]);
+  //return () => {
+  //window.removeEventListener("keydown", handleKeyPress);
+  //};
+  //}, [currentDirection]);
   const handleCellClick = (rowIndex, colIndex) => {
     // Reset highlighting
     const resetGrid = grid.map((row) =>
       row.map((cell) => ({ ...cell, highlighted: false }))
     );
+    setLocation([rowIndex, colIndex]);
     setGrid(resetGrid);
 
     // Highlight cells in the current direction
@@ -235,6 +375,7 @@ const CrosswordGrid = ({ puzzle }) => {
           )
         : row
     );
+    console.log("UPDATED GRID");
     setGrid(newGrid);
   };
 
@@ -286,7 +427,6 @@ const CrosswordGrid = ({ puzzle }) => {
       console.log("error");
     }
   };*/
-  console.log(grid);
 
   return (
     <div className="crossword-grid">
@@ -321,13 +461,19 @@ const CrosswordGrid = ({ puzzle }) => {
                       onChange={(event) =>
                         handleCellChange(event, rowIndex, colIndex)
                       }
+                      onKeyDown={(event) =>
+                        handleKeyPress(event, rowIndex, colIndex)
+                      }
                       maxLength={1}
                       style={{
-                        backgroundColor: cell.highlighted
+                        backgroundColor: cell.color
+                          ? cell.color
+                          : cell.highlighted
                           ? hexToRGBA(favcolor, 0.5)
                           : "white",
                       }}
                     />
+                    {(cell.color = null)}
                   </InputWrapper>
                 </GridCell>
               )

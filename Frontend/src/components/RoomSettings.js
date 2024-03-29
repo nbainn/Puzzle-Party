@@ -1,30 +1,48 @@
-import React, { useState } from 'react';
-import './RoomSettings.css'; // You can create this CSS file to style your popup
+import React, { useState, useEffect } from "react";
+import "./RoomSettings.css"; // You can create this CSS file to style your popup
 
-function RoomSettings() {
+function RoomSettings({
+  timer,
+  hints,
+  guesses,
+  setTimer,
+  setHints,
+  setGuesses,
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [timerEnabled, setTimerEnabled] = useState(true);
-  const [hintsEnabled, setHintsEnabled] = useState(true);
-  const [guessesEnabled, setGuessesEnabled] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(60); // Initial time left in seconds
+
+  useEffect(() => {
+    if (timer && timeLeft > 0) {
+      const timerId = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }
+  }, [timer, timeLeft]);
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
 
   const handleTimerChange = () => {
-    setTimerEnabled(!timerEnabled);
+    setTimer(!timer);
   };
 
   const handleHintsChange = () => {
-    setHintsEnabled(!hintsEnabled);
+    setHints(!hints);
   };
 
   const handleGuessesChange = () => {
-    setGuessesEnabled(!guessesEnabled);
+    setGuesses(!guesses);
   };
 
   return (
     <div className="settings-popup">
+      <label>{timer && <p>Time left: {timeLeft} seconds</p>}</label>
       <button onClick={togglePopup} className="settings-button">
         ⚙️
       </button>
@@ -34,15 +52,13 @@ function RoomSettings() {
           <label>
             <input
               type="checkbox"
-              checked={timerEnabled}
+              checked={timer}
               onChange={handleTimerChange}
             />
             Enable Timer
-          </label>
-          <label>
             <input
               type="checkbox"
-              checked={hintsEnabled}
+              checked={hints}
               onChange={handleHintsChange}
             />
             Enable Hints
@@ -50,7 +66,7 @@ function RoomSettings() {
           <label>
             <input
               type="checkbox"
-              checked={guessesEnabled}
+              checked={guesses}
               onChange={handleGuessesChange}
             />
             Enable Guesses

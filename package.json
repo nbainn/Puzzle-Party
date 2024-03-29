@@ -27,5 +27,8 @@
     "sequelize": "^6.37.1",
     "url": "^0.11.3",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "axios-mock-adapter": "^1.22.0"
   }
 }
