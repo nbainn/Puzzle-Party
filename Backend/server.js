@@ -706,7 +706,9 @@ app.get("/find-rooms", async (req, res) => {
     const limit = req.query.limit;
     console.log("Limit: ", limit);
     const rooms = await Room.findAll({
+      where: { public_status: true },
       limit: limit,
+
       //attributes: ["host", "room_code"],
     });
     if (rooms) {
