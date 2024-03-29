@@ -80,7 +80,7 @@ const CrosswordGrid = ({ puzzle }) => {
     )
   );
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (puzzle) {
       const resetGrid = grid.map((row, rowIndex) =>
         row.map((cell, colIndex) => ({
@@ -91,9 +91,9 @@ const CrosswordGrid = ({ puzzle }) => {
       );
       setGrid(resetGrid);
     }
-  }, [puzzle]);
+  }, [puzzle]);*/
 
-  /*let tempGrid = [];
+  let tempGrid = [];
 
   useEffect(() => {
     if (puzzle) {
@@ -119,7 +119,7 @@ const CrosswordGrid = ({ puzzle }) => {
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
     }
-  }, [puzzle]);*/
+  }, [puzzle]);
 
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
