@@ -1,0 +1,5 @@
+const CLIENT_ID = "899953893413-scrnpms6ea3r4ph7ko8e030amj5t6hqr.apps.googleusercontent.com"
+
+module.exports = {
+    CLIENT_ID
+};

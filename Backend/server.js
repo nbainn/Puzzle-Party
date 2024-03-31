@@ -7,11 +7,11 @@ const http = require("http");
 const path = require("path");
 const bodyParser = require("body-parser");
 const Ably = require("ably");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
-const ColorThief = require('color-thief-node');
+//const ColorThief = require('color-thief-node');
 app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
@@ -171,9 +171,10 @@ const verifyGoogleToken = async (token) => {
 // Function to get the dominant color from an image URL
 async function getDominantColor(imageUrl) {
   try {
-    const dominantColor = await ColorThief.getColorFromURL(imageUrl);
+    //const dominantColor = await ColorThief.getColorFromURL(imageUrl);
     // Convert the RGB array to a hex string
-    const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+    //const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+    const hexColor = '#FFFFFF';
     return hexColor;
   } catch (error) {
     console.error("Error fetching dominant color:", error);

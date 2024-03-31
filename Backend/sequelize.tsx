@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes, Model, Op } = require('sequelize');
 const config = require('./config');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Option 1: Passing a connection URI
 const sequelize = new Sequelize(config.PostgresPassword) // Example for postgres
