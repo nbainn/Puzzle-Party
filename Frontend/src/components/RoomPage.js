@@ -153,7 +153,9 @@ function RoomPage() {
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
-        <GeneratePuzzleForm setPuzzle={setPuzzleHelper} />
+        <GeneratePuzzleForm 
+          setPuzzle={setPuzzleHelper}
+        />
         <Cheating
           setRevealGrid={setRevealGrid}
           setRevealHint={setRevealHint}
@@ -164,6 +166,8 @@ function RoomPage() {
       <div className="game-container">
         <PlayerList />
         <CrosswordGrid
+          ablyClient = {ablyClient}
+          roomId={roomId}
           puzzle={puzzle}
           hints={hints}
           guesses={guesses}
@@ -177,7 +181,10 @@ function RoomPage() {
           setCheckGrid={setCheckGrid}
         />
         <div className="hints-chat-container">
-          <ClueList />
+          <ClueList 
+          puzzle = {puzzle}
+          ablyClient={ablyClient}
+          roomId={roomId}/>
           <ChatBox
             ablyClient={ablyClient}
             roomId={roomId}

@@ -19,17 +19,15 @@ const ResizeHandle = styled("div")({
 
 const filter = new Filter();
 
-function ChatBox({ roomId, userColor, nickname, ablyClient }) {
+function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatHeight, setChatHeight] = useState(300);
   const messagesEndRef = useRef(null);
-  const defaultGuestColor = "#aaff69";
+  const defaultColor = "#aaff69";
   const chatBoxRef = useRef(null);
   const [players, setPlayers] = useState([]); // State variable to store unique nicknames
   
-
-
   useEffect(() => {
     if (ablyClient) {
       console.log("Ably client provided to ChatBox", ablyClient);
@@ -130,9 +128,10 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       const channel = ablyClient.channels.get(`room:${roomId}`);
       try {
         await channel.publish("message", {
+          userId: userId,
           nickname: nickname,
           text: safeMessage,
-          color: userColor || defaultGuestColor,
+          color: userColor || defaultColor,
         });
         console.log("Message sent:", safeMessage);
         setNewMessage("");
@@ -151,7 +150,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       bgcolor: bubbleColor,
       margin: "10px",
       maxWidth: "80%",
-      alignSelf: message.nickname === nickname ? "flex-end" : "flex-start",
+      alignSelf: message.userId === userId ? "flex-end" : "flex-start",
       textAlign: "left",
       padding: "10px",
       borderRadius: "16px",
@@ -242,7 +241,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
       color: "#FF00B6",
     },
   };
-
 
   return (
     <Box ref={chatBoxRef} sx={chatBoxStyles}>
