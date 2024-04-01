@@ -168,13 +168,23 @@ const verifyGoogleToken = async (token) => {
   }
 };
 
+// Temperary random color generator
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 // Function to get the dominant color from an image URL
 async function getDominantColor(imageUrl) {
   try {
     //const dominantColor = await ColorThief.getColorFromURL(imageUrl);
     // Convert the RGB array to a hex string
     //const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
-    const hexColor = '#FFFFFF';
+    const hexColor = getRandomColor();
     return hexColor;
   } catch (error) {
     console.error("Error fetching dominant color:", error);

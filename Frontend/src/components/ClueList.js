@@ -9,7 +9,7 @@ function ClueList({ablyClient, roomId, puzzle}) {
 
     useEffect(() => {
     if (ablyClient) {
-      console.log("Ably client provided to ChatBox", ablyClient);
+      console.log("Ably client provided to ClueList", ablyClient);
 
       const onConnected = () => {
         console.log(
@@ -41,7 +41,6 @@ function ClueList({ablyClient, roomId, puzzle}) {
   useEffect(() => {
     setChannel(ablyClient.channels.get(`room:${roomId}`));
 
-    // Your existing code...
   }, [ablyClient, roomId]); 
 
   useEffect(() => {

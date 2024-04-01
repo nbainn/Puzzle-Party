@@ -104,7 +104,7 @@ const CrosswordGrid = ({
 
   useEffect(() => {
     if (ablyClient) {
-      console.log("Ably client provided to ChatBox", ablyClient);
+      console.log("Ably client provided to Grid", ablyClient);
 
       const onConnected = () => {
         console.log(
@@ -135,7 +135,6 @@ const CrosswordGrid = ({
     useEffect(() => {
     setChannel(ablyClient.channels.get(`room:${roomId}`));
 
-    // Your existing code...
   }, [ablyClient, roomId]); 
 
   useEffect(() => {
