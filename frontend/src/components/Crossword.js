@@ -66,6 +66,8 @@ const StyledInput = styled(TextField)({
 });
 
 const CrosswordGrid = ({
+  ablyClient,
+  roomId, 
   puzzle,
   timer,
   hints,
@@ -86,7 +88,7 @@ const CrosswordGrid = ({
     numRows = puzzle.puzzle.size.rows;
     numCols = puzzle.puzzle.size.columns;
   }
-
+  const [channel, setChannel] = useState(null)
   const [grid, setGrid] = useState(
     Array(numRows).fill(
       Array(numCols).fill({
@@ -99,6 +101,41 @@ const CrosswordGrid = ({
   );
 
   let tempGrid = [];
+
+  useEffect(() => {
+    if (ablyClient) {
+      console.log("Ably client provided to Grid", ablyClient);
+
+      const onConnected = () => {
+        console.log(
+          "Ably client connected, now subscribing to channel:",
+          `room:${roomId}`
+        );
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        const onGrid = (grid) => {
+          console.log("Grid received:", grid);
+          setGrid(grid.data.grid);
+        };
+        channel.subscribe("grid", onGrid);
+
+        return () => {
+          channel.unsubscribe("grid", onGrid);
+          ablyClient.connection.off("connected", onConnected);
+        };
+      };
+
+      if (ablyClient.connection.state === "connected") {
+        onConnected();
+      } else {
+        ablyClient.connection.once("connected", onConnected);
+      }
+    }
+  }, [ablyClient, roomId]);
+
+    useEffect(() => {
+    setChannel(ablyClient.channels.get(`room:${roomId}`));
+
+  }, [ablyClient, roomId]); 
 
   useEffect(() => {
     if (puzzle) {
@@ -129,6 +166,24 @@ const CrosswordGrid = ({
       }
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
+      const ably = async() => {
+        if (ablyClient) {
+          const channel = ablyClient.channels.get(`room:${roomId}`);
+          try {
+            await channel.publish("grid", {
+              grid: tempGrid
+            });
+            console.log("Grid sent:", tempGrid);
+          } catch (error) {
+            console.error("Error sending grid:", error);
+          }
+      } else {
+        console.log("Ably client not initialized.");
+      }
+    }
+    ably()
+      
+
     }
   }, [puzzle]);
 
@@ -256,7 +311,7 @@ const CrosswordGrid = ({
   const [location, setLocation] = useState(0, 0);
 
   //useEffect(() => {
-  const handleKeyPress = (event, rowIndex, colIndex) => {
+  const handleKeyPress = async (event, rowIndex, colIndex) => {
     if (event.keyCode === 32) {
       // Spacebar key
       setCurrentDirection(currentDirection === "across" ? "down" : "across");
@@ -272,6 +327,20 @@ const CrosswordGrid = ({
           : row
       );
       setGrid(updatedGrid);
+      if (ablyClient) {
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        try {
+          await channel.publish("grid", {
+            grid: updatedGrid
+          });
+          console.log("Grid sent:", updatedGrid);
+        } catch (error) {
+          console.error("Error sending grid:", error);
+        }
+    } else {
+      console.log("Ably client not initialized.");
+    }
+
     }
     event.preventDefault();
   };

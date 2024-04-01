@@ -1,8 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import './ClueList.css';
 
-function ClueList() {
-  // Example clues for demonstration
+function ClueList({ablyClient, roomId, puzzle}) {
+
+  const [downClues, setDown] = useState(['No Down Clues!'])
+  const [acrossClues, setAcross] = useState(['No Across Clues!'])
+  const [channel, setChannel] = useState(null)
+
+    useEffect(() => {
+    if (ablyClient) {
+      console.log("Ably client provided to ClueList", ablyClient);
+
+      const onConnected = () => {
+        console.log(
+          "Ably client connected, now subscribing to channel:",
+          `room:${roomId}`
+        );
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        const onClue = (clue) => {
+          console.log("Clues received:", clue.across);
+          setAcross(clue.data.across)
+          setDown(clue.data.down);
+        };
+        channel.subscribe("clue", onClue);
+
+        return () => {
+          channel.unsubscribe("clue", onClue);
+          ablyClient.connection.off("connected", onConnected);
+        };
+      };
+
+      if (ablyClient.connection.state === "connected") {
+        onConnected();
+      } else {
+        ablyClient.connection.once("connected", onConnected);
+      }
+    }
+  }, [ablyClient, roomId]);
+
+  useEffect(() => {
+    setChannel(ablyClient.channels.get(`room:${roomId}`));
+
+  }, [ablyClient, roomId]); 
+
+  useEffect(() => {
+    if (puzzle) {
+      const across = puzzle.puzzle.clues.across;
+
+      const acrossC = across.map(item => `${item.number}. ${item.clue}`);
+      setAcross(acrossC)
+
+      const down = puzzle.puzzle.clues.down;
+      const downC = down.map(item => `${item.number}. ${item.clue}`);
+      setDown(downC)
+
+      const ably = async() => {
+        if (ablyClient) {
+          const channel = ablyClient.channels.get(`room:${roomId}`);
+          try {
+            await channel.publish("clue", {
+              across: acrossC,
+              down: downC
+            });
+            console.log("clues sent:" + acrossC + downC);
+          } catch (error) {
+            console.error("Error sending clues:", error);
+          }
+      } else {
+        console.log("Ably client not initialized.");
+      }
+    }
+    ably()
+    }
+  }, [ablyClient, puzzle, roomId]);
+/*   // Example clues for demonstration
   const acrossClues = [
     '1. A common pet',
     '3. Not day',
@@ -10,16 +81,16 @@ function ClueList() {
     '7. Skull Emoji',
     '9. Crying Emoji',
     // Add more clues as needed
-  ];
+  ]; */
 
-  const downClues = [
+/*   const downClues = [
     '2. A place for cooking',
     '4. To perceive sound',
     '6. A type of fruit',
     '8. A cool thingy',
     '10. A not cool thingy',
     // Add more clues as needed
-  ];
+  ]; */
 
   return (
     <div className="clue-list-container">

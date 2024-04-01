@@ -7,7 +7,7 @@ import "./generatePuzzleForm.css";
 import e from "cors";
 import axios from "axios";
 
-function GeneratePuzzleForm({ setPuzzle }) {
+function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
   const [seed, setSeed] = useState("");
   const [size, setSize] = useState("medium");
 
