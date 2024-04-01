@@ -27,6 +27,7 @@ function RoomPage() {
   const [revealHint, setRevealHint] = useState(false);
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
+  //const [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
     if (ablyClient) {
@@ -65,81 +66,72 @@ function RoomPage() {
         ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
-/*
-  useEffect(() => {
+
+useEffect(() => {
+  const fetchMembers = async () => {
     if (ablyClient) {
-      console.log("Ably client provided to RoomPage", ablyClient);
-
-      // Function to handle presence messages
-      const onPresence = (presenceMsg) => {
-        if (presenceMsg.action === "enter") {
-          const newPlayerNickname = presenceMsg.clientId; // Use clientId as nickname
-          setPlayers((prevPlayers) => {
-            if (!prevPlayers.includes(newPlayerNickname)) {
-              return [...prevPlayers, newPlayerNickname];
-            }
-            return prevPlayers;
-          });
-          
-        } else if (presenceMsg.action === "leave") {
-          const leftPlayerNickname = presenceMsg.clientId;
-          setPlayers((prevPlayers) =>
-            prevPlayers.filter((player) => player !== leftPlayerNickname)
-          );
-        }
-      };
-
-      // Subscribe to presence events
       const channel = ablyClient.channels.get(`room:${roomId}`);
-      channel.presence.subscribe(onPresence);
-
-      // Fetch current presence information
-      channel.presence.get((err, members) => {
-        if (!err) {
-          const currentPlayers = members.map((member) => member.clientId);
-          setPlayers(currentPlayers);
-        }
-      });
-
-      return () => {
-        channel.presence.unsubscribe(onPresence);
-      };
+      try {
+        await channel.presence.subscribe('enter', (member) => {
+          //console.log(member.clientId);
+          //alert('Member ' + member.clientId + ' entered ' + nickname);
+          console.log(member.clientId, "entered the room");
+          if (!players.includes(member.clientId)) {
+            setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
+          }
+        });
+        await channel.presence.enter();
+        const members = await channel.presence.get();
+        const existingMembers = members.map(member => member.clientId);
+        
+        // Update player list with existing members
+        setPlayers(existingMembers);
+      } catch (error) {
+        console.error("Error getting current members:", error);
+        // You might want to handle the error more gracefully here
+      }
+    } else {
+      console.log("Ably client not initialized.");
     }
-  }, [ablyClient, roomId]);
-*/
-  useEffect(() => {
+  };
+
+  fetchMembers();
+
+  // Return a cleanup function if needed
+  return () => {
+    // Perform cleanup actions here if necessary
+  };
+}, [roomId, ablyClient]); 
+
+  
+/*useEffect(() => {
     console.log("Players updated:", players);
   }, [players]);
-
+*/
   // Use the 'ablyReady' state to control your loading screen
   if (!ablyReady) {
     return <div>Loading...</div>;
   }
+
 
   function setPuzzleHelper(puzzle) {
     setPuzzle(puzzle);
     console.log("Puzzle set to:", puzzle);
   }
 
-/*
-  function PlayerList({ players }) {
-    return (
-      <div>
-        <h3>Players in the room:</h3>
-        <ul>
-          {players.map((player, index) => (
-            <li key={index}>{player}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-*/
   return (
     <div className="room-page">
       <div>
         <ExitRoom />
         <RoomStatus roomId={roomId} />
+      </div>
+      <div>
+        <h2>Player List</h2>
+        <ul>
+          {players.map(player => (
+            <li key={player}>{player}</li>
+          ))}
+        </ul>
       </div>
       <div className="settings">
         <RoomSettings
