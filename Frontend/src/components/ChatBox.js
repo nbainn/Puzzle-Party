@@ -73,32 +73,35 @@ function ChatBox({ roomId, userColor, nickname, ablyClient }) {
     // Array to store current users
     const currentUsers = [];
   
-    // Subscription for user enter event
     channel.presence.subscribe('enter', (member) => {
       console.log(`${member.clientId} entered the room`);
-      currentUsers.push(member.clientId); // Add user to current users array
+      if (!currentUsers.includes(member.clientId)) {
+          currentUsers.push(member.clientId); // Add user to current users array
+      }
       console.log('Current users:', currentUsers);
-    });
-  
-    // Subscription for user leave event
-    channel.presence.subscribe('leave', (member) => {
+  });
+
+  // Subscription for user leave event
+  channel.presence.subscribe('leave', (member) => {
       console.log(`${member.clientId} left the room`);
       const index = currentUsers.indexOf(member.clientId);
       if (index !== -1) {
-        currentUsers.splice(index, 1); // Remove user from current users array
+          currentUsers.splice(index, 1); // Remove user from current users array
       }
       console.log('Current users:', currentUsers);
-    });
-  
-    // Get initial presence set
-    const presenceSet = await channel.presence.get();
-    presenceSet.forEach((member) => {
-      currentUsers.push(member.clientId); // Add existing users to current users array
-    });
-    console.log('Initial current users:', currentUsers);
-  
-    // Optional: You can continue listening for presence events or perform other tasks here
-    return currentUsers; // Return the current users array
+  });
+
+  // Get initial presence set
+  const presenceSet = await channel.presence.get();
+  presenceSet.forEach((member) => {
+      if (!currentUsers.includes(member.clientId)) {
+          currentUsers.push(member.clientId); // Add existing users to current users array
+      }
+  });
+  console.log('Initial current users:', currentUsers);
+
+  // Optional: You can continue listening for presence events or perform other tasks here
+  return currentUsers; 
   }
     // Optional: You can continue listening for presence events or perform other tasks here
   
