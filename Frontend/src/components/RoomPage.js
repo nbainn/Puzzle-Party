@@ -154,7 +154,8 @@ function RoomPage() {
       <div className="game-container">
         <PlayerList />
         <CrosswordGrid
-          ablyClient={ablyClient}
+          userId={userId}
+          ablyClient = {ablyClient}
           roomId={roomId}
           puzzle={puzzle}
           hints={hints}
