@@ -378,6 +378,18 @@ app.post("/puzzle", async (req, res) => {
   console.log("built puzzle");
   res.json({ puzzle });
 });
+// STATS ENDPOINT
+app.post('/addTime', async (req, res) => {
+  const userId = req.body.userId;
+  const time = req.body.time;
+  await addUserTime(userId, time);
+  res.status(200).send("Time added successfully");
+});
+app.post('/addWin', async (req, res) => { 
+  const userId = req.body.userId;
+  await addUserWins(userId);
+  res.status(200).send("Win added successfully");
+});
 
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
@@ -615,6 +627,33 @@ async function buildPuzzle(seed, size) {
   sortClues(puzzle);
 
   return puzzle;
+}
+
+async function addUserTime(userId, time) {
+  const stat = await Statistics.findOne(
+    {where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    return res.status(404).json({ message: "User Statistic not found" });
+  } else {
+    stat.timePlayed = stat.timePlayed + time;
+    await stat.save();
+  }
+
+}
+async function addUserWins(userId) {
+  const stat = await Statistics.findOne(
+    {where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    return res.status(404).json({ message: "User Statistic not found" });
+  }
+  stat.wins = stat.wins + 1;
+  stat.save();
 }
 
 // SAMPLE FUNCTION TO CHECK GUESSES**** will go client side later
