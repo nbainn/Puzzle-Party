@@ -36,7 +36,7 @@ function RoomPage() {
         "Current Ably connection state:",
         ablyClient.connection.state
       );
-      
+
       // Set up a listener for when the connection state changes
       const onConnectionStateChange = (stateChange) => {
         console.log("Ably connection state has changed:", stateChange.current);
@@ -67,44 +67,43 @@ function RoomPage() {
     }
   }, [ablyClient]);
 
-useEffect(() => {
-  const fetchMembers = async () => {
-    if (ablyClient) {
-      const channel = ablyClient.channels.get(`room:${roomId}`);
-      try {
-        await channel.presence.subscribe('enter', (member) => {
-          //console.log(member.clientId);
-          //alert('Member ' + member.clientId + ' entered ' + nickname);
-          console.log(member.clientId, "entered the room");
-          if (!players.includes(member.clientId)) {
-            setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
-          }
-        });
-        await channel.presence.enter();
-        const members = await channel.presence.get();
-        const existingMembers = members.map(member => member.clientId);
-        
-        // Update player list with existing members
-        setPlayers(existingMembers);
-      } catch (error) {
-        console.error("Error getting current members:", error);
-        // You might want to handle the error more gracefully here
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (ablyClient) {
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        try {
+          await channel.presence.subscribe("enter", (member) => {
+            //console.log(member.clientId);
+            //alert('Member ' + member.clientId + ' entered ' + nickname);
+            console.log(member.clientId, "entered the room");
+            if (!players.includes(member.clientId)) {
+              setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
+            }
+          });
+          await channel.presence.enter();
+          const members = await channel.presence.get();
+          const existingMembers = members.map((member) => member.clientId);
+
+          // Update player list with existing members
+          setPlayers(existingMembers);
+        } catch (error) {
+          console.error("Error getting current members:", error);
+          // You might want to handle the error more gracefully here
+        }
+      } else {
+        console.log("Ably client not initialized.");
       }
-    } else {
-      console.log("Ably client not initialized.");
-    }
-  };
+    };
 
-  fetchMembers();
+    fetchMembers();
 
-  // Return a cleanup function if needed
-  return () => {
-    // Perform cleanup actions here if necessary
-  };
-}, [roomId, ablyClient]); 
+    // Return a cleanup function if needed
+    return () => {
+      // Perform cleanup actions here if necessary
+    };
+  }, [roomId, ablyClient]);
 
-  
-/*useEffect(() => {
+  /*useEffect(() => {
     console.log("Players updated:", players);
   }, [players]);
 */
@@ -112,7 +111,6 @@ useEffect(() => {
   if (!ablyReady) {
     return <div>Loading...</div>;
   }
-
 
   function setPuzzleHelper(puzzle) {
     setPuzzle(puzzle);
@@ -128,7 +126,7 @@ useEffect(() => {
       <div>
         <h2>Player List</h2>
         <ul>
-          {players.map(player => (
+          {players.map((player) => (
             <li key={player}>{player}</li>
           ))}
         </ul>
@@ -145,9 +143,7 @@ useEffect(() => {
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
-        <GeneratePuzzleForm 
-          setPuzzle={setPuzzleHelper}
-        />
+        <GeneratePuzzleForm setPuzzle={setPuzzleHelper} />
         <Cheating
           setRevealGrid={setRevealGrid}
           setRevealHint={setRevealHint}
@@ -158,7 +154,7 @@ useEffect(() => {
       <div className="game-container">
         <PlayerList />
         <CrosswordGrid
-          ablyClient = {ablyClient}
+          ablyClient={ablyClient}
           roomId={roomId}
           puzzle={puzzle}
           hints={hints}
@@ -173,10 +169,7 @@ useEffect(() => {
           setCheckGrid={setCheckGrid}
         />
         <div className="hints-chat-container">
-          <ClueList 
-          puzzle = {puzzle}
-          ablyClient={ablyClient}
-          roomId={roomId}/>
+          <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />
           <ChatBox
             ablyClient={ablyClient}
             roomId={roomId}
