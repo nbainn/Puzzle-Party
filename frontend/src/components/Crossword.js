@@ -280,34 +280,51 @@ const CrosswordGrid = ({
   }, [checkWord]);
 
   useEffect(() => {
-    let numCorrect = 0;
-    if (guesses) {
-      if (checkGrid) {
-        const resetGrid = grid.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            if (
-              !cell.hidden &&
-              cell.value !== "" &&
-              cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
-            ) {
-              numCorrect += 1;
-              return { ...cell, color: "#ffda4d" };
-            } else {
-              return { ...cell };
+    async function fetchData() {
+      let numCorrect = 0;
+      if (guesses) {
+        if (checkGrid) {
+          const resetGrid = grid.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (
+                !cell.hidden &&
+                cell.value !== "" &&
+                cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
+              ) {
+                numCorrect += 1;
+                return { ...cell, color: "#ffda4d" };
+              } else {
+                return { ...cell };
+              }
+            })
+          );
+          if (numCorrect === numLetters) {
+            alert("Congratulations! You have completed the puzzle!");
+            try {
+              const response = await axios.post("/addWin", { userId: userId });
+              if (response.status === 200) {
+                console.log("win stat added!");
+              } else if (response.status === 404) {
+                console.log("Error", response.data);
+              } else {
+                console.error("Unexpected response status:", response.status);
+              }
+            } catch (error) {
+              console.error("Error contacting server", error);
+              console.log("error");
             }
-          })
-        );
-        if (numCorrect === numLetters) {
-          alert("Congratulations! You have completed the puzzle!");
+          }
+          setGrid(resetGrid);
+        } else {
+          console.log("WHATTTTT?");
         }
-        setGrid(resetGrid);
       } else {
-        console.log("WHATTTTT?");
+        console.log("Guesses is not enabled!");
       }
-    } else {
-      console.log("Guesses is not enabled!");
+      setCheckGrid(false);
     }
-    setCheckGrid(false);
+
+    fetchData();
   }, [checkGrid]);
 
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
@@ -320,12 +337,25 @@ const CrosswordGrid = ({
   const [location, setLocation] = useState(0, 0);
 
 
-  window.addEventListener('beforeunload', function() {
+  window.addEventListener('beforeunload', async function() {
     let startTime = performance.now();
     let endTime = performance.now();
     let timeSpent = (endTime - startTime) / 1000;
     console.log('Time spent on page:', timeSpent, 'seconds');
     
+    try {
+        const response = await axios.post("/addTime", { userId, timeSpent });
+        if (response.status === 200) {
+          console.log("time spent added!");
+        } else if (response.status === 404) {
+          console.log("Error", response.data);
+        } else {
+          console.error("Unexpected response status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error contacting server", error);
+        console.log("error");
+      }
   });
 
   //useEffect(() => {
