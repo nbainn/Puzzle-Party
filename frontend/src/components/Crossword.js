@@ -310,6 +310,14 @@ const CrosswordGrid = ({
   const [size, setSize] = useState(300);
   const [location, setLocation] = useState(0, 0);
 
+
+  window.addEventListener('beforeunload', function() {
+    let startTime = performance.now();
+    let endTime = performance.now();
+    let timeSpent = (endTime - startTime) / 1000;
+    console.log('Time spent on page:', timeSpent, 'seconds');
+  });
+
   //useEffect(() => {
   const handleKeyPress = async (event, rowIndex, colIndex) => {
     if (event.keyCode === 32) {
