@@ -1,13 +1,31 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SuggestionBox.css";
+import axios from "axios";
 
 function SuggestionBox() {
   const [word, setWord] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(`Word: ${word}, Description: ${description}`);
+    if (setWord !== "" && setDescription !== "") {
+      try {
+        const response = await axios.post("/suggestion", { word, description });
+        if (response.status === 200) {
+          console.log("suggestion sent!");
+        } else if (response.status === 404) {
+          console.log("Error", response.data);
+        } else {
+          console.error("Unexpected response status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error contacting server", error);
+        console.log("error");
+      }
+      setWord("");
+      setDescription("");
+    }
     // Add code here to submit the suggestion
   };
 

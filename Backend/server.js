@@ -11,6 +11,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
+const fs = require("fs");
+//import wu from "./wordUpdater";
 //const ColorThief = require('color-thief-node');
 app.use(bodyParser.json());
 // Import Sequelize and your models
@@ -24,7 +26,6 @@ const jwtSecret = config.JWT_SECRET;
 const ablyApiKey = config.ABLY_API_KEY;
 // Google Client ID
 const CLIENT_ID = config.CLIENT_ID;
-
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -50,8 +51,8 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 function generateJwtPayload(user) {
   return {
     id: user.id,
-    nickname: user.nickname || user.email.split('@')[0], // Fallback to part of the email if nickname is null
-    userColor: user.userColor || '#FFFFFF', // Default color if null
+    nickname: user.nickname || user.email.split("@")[0], // Fallback to part of the email if nickname is null
+    userColor: user.userColor || "#FFFFFF", // Default color if null
   };
 }
 
@@ -75,11 +76,9 @@ app.post("/signup", async (req, res) => {
     });
 
     // Generate a token
-    const token = jwt.sign(
-      generateJwtPayload(newUser),
-      jwtSecret,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign(generateJwtPayload(newUser), jwtSecret, {
+      expiresIn: "1h",
+    });
 
     res.status(201).json({
       token,
@@ -111,18 +110,16 @@ app.post("/login", async (req, res) => {
     }
 
     // Generate a token
-    const token = jwt.sign(
-      generateJwtPayload(user),
-      jwtSecret,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign(generateJwtPayload(user), jwtSecret, {
+      expiresIn: "1h",
+    });
 
     res.json({
       token,
       userId: user.id,
       email: user.email,
       nickname: user.nickname,
-      userColor: user.userColor
+      userColor: user.userColor,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error during login", error });
@@ -170,8 +167,8 @@ const verifyGoogleToken = async (token) => {
 
 // Temperary random color generator
 const getRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
+  const letters = "0123456789ABCDEF";
+  let color = "#";
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
@@ -189,7 +186,7 @@ async function getDominantColor(imageUrl) {
   } catch (error) {
     console.error("Error fetching dominant color:", error);
     // Return a default color if something goes wrong
-    return '#FFFFFF';
+    return "#FFFFFF";
   }
 }
 
@@ -211,21 +208,19 @@ app.post("/googleLogin", async (req, res) => {
 
     // If user exists, create a token for them
     if (user) {
-      const token = jwt.sign(
-        generateJwtPayload(user),
-        jwtSecret,
-        { expiresIn: "1h" }
-      );
+      const token = jwt.sign(generateJwtPayload(user), jwtSecret, {
+        expiresIn: "1h",
+      });
       res.json({
         token,
         userId: user.id,
         email: user.email,
         nickname: user.nickname,
-        userColor: user.userColor
+        userColor: user.userColor,
       });
     } else {
       // If the user does not exist, create a new user entry in your database
-      
+
       const pictureUrl = payload["picture"]; // URL of profile picture
       const userColor = await getDominantColor(pictureUrl); // Get the dominant color from the profile picture
       user = await User.create({
@@ -236,11 +231,9 @@ app.post("/googleLogin", async (req, res) => {
       });
 
       // Create a token for the new user
-      const newToken = jwt.sign(
-        generateJwtPayload(user),
-        jwtSecret,
-        { expiresIn: "1h" }
-      );
+      const newToken = jwt.sign(generateJwtPayload(user), jwtSecret, {
+        expiresIn: "1h",
+      });
 
       // Send the token and user info back to the client
       res.status(201).json({
@@ -253,7 +246,9 @@ app.post("/googleLogin", async (req, res) => {
     }
   } catch (error) {
     console.error("Error during Google Login:", error);
-    res.status(500).json({ message: "Server error during Google login", error });
+    res
+      .status(500)
+      .json({ message: "Server error during Google login", error });
   }
 });
 
@@ -348,15 +343,29 @@ const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
   path: "/myapp",
   ssl: {},
 });*/
-
 // Using peerServer to handle peerJS requests through defined path
 //app.use(peerServer);
 
-// ***HTTP REQUESTS****************************************************
-// Root of the webpage, serves the react build to be displayed
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build/index.html"));
 });
+
+// ***WORD/DESCRIPTIONS SUGGESTIONS****************************************
+app.post("/suggestion", async (req, res) => {
+  console.log("Suggestion request received");
+  const word = req.body.word;
+  const description = req.body.description;
+  let suggestion = word + "," + description + "\n";
+  fs.appendFile("wordsDescriptions.txt", suggestion, (err) => {
+    if (err) {
+      console.error("Error writing to file:", err);
+      return;
+    }
+  });
+});
+
+// ***PUZZLE GENERATION****************************************************
+// Creates an empty puzzle object with only the size of the puzzle specified
 
 // Request for puzzle generaation
 app.post("/puzzle", async (req, res) => {
@@ -370,8 +379,6 @@ app.post("/puzzle", async (req, res) => {
   res.json({ puzzle });
 });
 
-// ***PUZZLE GENERATION****************************************************
-// Creates an empty puzzle object with only the size of the puzzle specified
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
     size: {
@@ -679,7 +686,7 @@ app.post("/change-status", async (req, res) => {
       throw new Error("Room code is missing in the request body");
     }
     console.log("Changing private/public status", roomCode);
-    await Room.update(  
+    await Room.update(
       { public_status: newStatus },
       { where: { room_code: roomCode } }
     );
