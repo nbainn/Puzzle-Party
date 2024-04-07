@@ -79,8 +79,18 @@ useEffect(() => {
           if (!players.includes(member.clientId)) {
             setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
           }
+          //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
         });
         await channel.presence.enter();
+
+        // Subscribe to presence events for members leaving the room
+        await channel.presence.subscribe('leave', (member) => {
+          console.log(member.clientId, "left the room");
+          if (players.includes(member.clientId)) {
+            setPlayers((prevPlayers) => prevPlayers.filter(player => player !== member.clientId));
+          }
+        });
+
         const members = await channel.presence.get();
         const existingMembers = members.map(member => member.clientId);
         
