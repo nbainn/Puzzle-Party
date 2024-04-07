@@ -66,6 +66,7 @@ const StyledInput = styled(TextField)({
 });
 
 const CrosswordGrid = ({
+  userId, 
   ablyClient,
   roomId, 
   puzzle,
@@ -89,6 +90,7 @@ const CrosswordGrid = ({
     numCols = puzzle.puzzle.size.columns;
   }
   const [channel, setChannel] = useState(null)
+  const [numLetters, setNumLetters] = useState(0);
   const [grid, setGrid] = useState(
     Array(numRows).fill(
       Array(numCols).fill({
@@ -161,6 +163,7 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
+
           }
         }
       }
@@ -211,6 +214,7 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
+            setNumLetters(numLetters + 1);
           }
         }
       }
@@ -276,6 +280,7 @@ const CrosswordGrid = ({
   }, [checkWord]);
 
   useEffect(() => {
+    let numCorrect = 0;
     if (guesses) {
       if (checkGrid) {
         const resetGrid = grid.map((row, rowIndex) =>
@@ -285,12 +290,16 @@ const CrosswordGrid = ({
               cell.value !== "" &&
               cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
             ) {
+              numCorrect += 1;
               return { ...cell, color: "#ffda4d" };
             } else {
               return { ...cell };
             }
           })
         );
+        if (numCorrect === numLetters) {
+          alert("Congratulations! You have completed the puzzle!");
+        }
         setGrid(resetGrid);
       } else {
         console.log("WHATTTTT?");
@@ -316,6 +325,7 @@ const CrosswordGrid = ({
     let endTime = performance.now();
     let timeSpent = (endTime - startTime) / 1000;
     console.log('Time spent on page:', timeSpent, 'seconds');
+    
   });
 
   //useEffect(() => {

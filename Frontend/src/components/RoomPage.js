@@ -158,6 +158,7 @@ useEffect(() => {
       <div className="game-container">
         <PlayerList />
         <CrosswordGrid
+          userId={userId}
           ablyClient = {ablyClient}
           roomId={roomId}
           puzzle={puzzle}
