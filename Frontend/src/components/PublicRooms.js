@@ -29,7 +29,7 @@ function PublicRooms() {
     }, []);
 
     const handleJoin = (roomCode) => {
-        navigate(`/room/${roomCode}`);
+        navigate(/room/${roomCode});
     };
 
     return (
