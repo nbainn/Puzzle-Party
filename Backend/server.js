@@ -794,3 +794,28 @@ app.get("/find-rooms", async (req, res) => {
     res.status(500).send("Error finding field");
   }
 });
+
+app.post("/add-ban", async (req, res) => {
+  try {
+    const roomCode = req.body.roomCode;
+    const player = req.body.player;
+    if (!roomCode || !player) {
+      throw new Error("Room code or player is missing in the request body");
+    }
+    console.log("Banning player", player);
+    const room = await Room.findOne({ where: { room_code: roomCode } });
+    if (!room) {
+      throw new Error("Room not found");
+    }
+    let bannedPlayers = room.banned_players || []; // Initialize to empty array if null
+    bannedPlayers.push(player); // Add the player to the banned list
+    await Room.update(
+      { banned_players: bannedPlayers },
+      { where: { room_code: roomCode } }
+    );
+    res.send("Player banned successfully!");
+  } catch (error) {
+    console.error("Error banning player:", error);
+    res.status(500).send("Error banning player");
+  }
+});

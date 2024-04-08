@@ -15,6 +15,7 @@ import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 
 
+
 function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
@@ -148,17 +149,32 @@ useEffect(() => {
     }; 
 }, [userId, startTime]);
 
-function kickUser(roomCode, player) {
-  //need to disconnect user from room channel. 
-  //implement where this automatically redirects users home on disconnect
-  //navigate(`/`);
-  //const channel = ablyClient.channels.get(`room:${roomId}`);
-  //channel.presence.leave();
-  //alert('Member ' + player + ' kicked from room');
-  //console.log("Kicked user:", player);
-  console.log('something is happening');
-  //setPlayers((prevPlayers) => prevPlayers.filter(p => p !== player));
+function handleKick(roomCode, player) {
+  console.log("Kicking player:", player);
+  const channel = ablyClient.channels.get(`room:${roomCode}`);
+  channel.presence.leave(player);
+  setPlayers(players.filter(p => p !== player));
 }
+
+
+async function handleBan(roomCode, player) {
+  console.log("Banning player:", player);
+  //implement with database and rooms
+  try {
+    const response = await axios.post('/add-ban', { roomCode, player });
+    if (response.status === 200) {
+      console.log('Banned:', player);
+    } else if (response.status === 404){
+      console.log('Room/player not found:', response.data);
+    } else {
+      console.error('Unexpected response status:', response.status);
+    }
+  } catch (error) {
+    console.error('Error banning', error);
+    console.log("error")
+  }
+}
+
 /*useEffect(() => {
     console.log("Players updated:", players);
   }, [players]);
@@ -186,9 +202,10 @@ function kickUser(roomCode, player) {
         <ul>
           {players.map(player => (
             <div>
-            <li key={player}>{player}</li>
-            <button onClick={() => kickUser(roomId)}>Kick</button>
-            </div>
+             <li key={player}>{player}</li>
+             <button onClick={() => handleKick(roomId, player)}>Kick</button>
+             <button onClick={() => handleBan(roomId, player)}>Ban</button>
+           </div>
           ))}
         </ul>
       </div>

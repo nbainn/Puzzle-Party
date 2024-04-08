@@ -227,6 +227,10 @@ Room.init({
     default: true,
     allowNull: false
   },
+  banned_players : {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: true
+  }
 }, {
   sequelize,
   modelName: "Room"
