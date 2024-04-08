@@ -146,6 +146,7 @@ const CrosswordGrid = ({
       for (let i = 0; i < numRows; i++) {
         tempGrid.push(new Array(numCols).fill(null));
       }
+      let letters = 0;
       for (let i = 0; i < numRows; i++) {
         for (let j = 0; j < numCols; j++) {
           //console.log(puzzle.puzzle.grid[i][j]);
@@ -163,10 +164,11 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
-
+            letters += 1;
           }
         }
       }
+      setNumLetters(letters);
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
       const ably = async() => {
@@ -214,7 +216,7 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
-            setNumLetters(numLetters + 1);
+            
           }
         }
       }
@@ -291,13 +293,16 @@ const CrosswordGrid = ({
                 cell.value !== "" &&
                 cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
               ) {
-                numCorrect += 1;
                 return { ...cell, color: "#ffda4d" };
               } else {
+                if (!cell.hidden && cell.value === puzzle.puzzle.grid[rowIndex][colIndex]) {
+                  numCorrect += 1;
+                }
                 return { ...cell };
               }
             })
           );
+          console.log(numCorrect, numLetters)
           if (numCorrect === numLetters) {
             alert("Congratulations! You have completed the puzzle!");
             try {
