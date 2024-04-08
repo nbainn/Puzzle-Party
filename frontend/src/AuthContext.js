@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Invalid login parameters:', { token, userId });
       return;
     }
+    console.log('Logging in, received token:', token);
     // Store user details in localStorage
     localStorage.setItem('userToken', token);
     localStorage.setItem('userId', userId);
@@ -77,6 +78,24 @@ export const AuthProvider = ({ children }) => {
     setNickname(nickname);
     setUserColor(userColor);
   };
+
+  useEffect(() => {
+    console.log('Checking local storage for token...');
+    const storedToken = localStorage.getItem('userToken');
+    const storedUserId = localStorage.getItem('userId');
+    const storedNickname = localStorage.getItem('nickname');
+    const storedUserColor = localStorage.getItem('userColor');
+    if (storedToken) {
+      console.log('Token found in local storage:', storedToken);
+      setIsAuthenticated(true);
+      setUserId(storedUserId);
+      setNickname(storedNickname);
+      setUserColor(storedUserColor);
+      fetchAndSetAblyClient(storedUserId);
+    } else {
+      console.log('No token found in local storage.');
+    }
+  }, []);
 
   // Function to generate a random hex color
   const getRandomColor = () => {

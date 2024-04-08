@@ -14,8 +14,10 @@ import CrosswordGrid from "./components/Crossword";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isGuest } = useAuth();
+  console.log('ProtectedRoute, isAuthenticated:', isAuthenticated, 'isGuest:', isGuest);
+
   if (!isAuthenticated && !isGuest) {
-    // Redirect them to the / page if not authenticated
+    console.log('User not authenticated, redirecting to LandingPage...');
     return <Navigate to="/" />;
   }
   return children;
