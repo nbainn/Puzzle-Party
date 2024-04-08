@@ -328,10 +328,12 @@ app.post("/getAblyToken", async (req, res) => {
 // Allows server to serve react build files
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
+/*
 // Catch-all route to serve React app for any other route not handled by API
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
 });
+*/
 
 // Listening for http requests on port 3000
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
