@@ -119,10 +119,10 @@ function kickUser(roomCode, player) {
   //implement where this automatically redirects users home on disconnect
   //navigate(`/`);
   const channel = ablyClient.channels.get(`room:${roomId}`);
-  channel.presence.leave();
+  //channel.presence.leave();
   //alert('Member ' + player + ' kicked from room');
   console.log("Kicked user:", player);
-  setPlayers((prevPlayers) => prevPlayers.filter(p => p !== player));
+  //setPlayers((prevPlayers) => prevPlayers.filter(p => p !== player));
 }
 /*useEffect(() => {
     console.log("Players updated:", players);
