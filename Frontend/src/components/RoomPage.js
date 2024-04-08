@@ -10,8 +10,10 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import RoomSettings from "./RoomSettings";
+import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
+
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -27,6 +29,7 @@ function RoomPage() {
   const [revealHint, setRevealHint] = useState(false);
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
+  const [startTime, setStartTime] = useState(performance.now());
   //const [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
@@ -67,6 +70,7 @@ function RoomPage() {
     }
   }, [ablyClient]);
 
+  
 useEffect(() => {
   const fetchMembers = async () => {
     if (ablyClient) {
@@ -113,7 +117,36 @@ useEffect(() => {
   };
 }, [roomId, ablyClient]); 
 
-  
+  useEffect(() => {
+    const handleBeforeUnload = async function() {
+        let endTime = performance.now();
+        let timeSpent = (endTime - startTime);
+        console.log('Time spent on page:', timeSpent, 'seconds');
+
+        try {
+            const response = await axios.post("/addTime", { userId: userId, time: timeSpent });
+            if (response.status === 200) {
+                console.log("time spent added!");
+            } else if (response.status === 404) {
+                console.log("Error", response.data);
+            } else {
+                console.error("Unexpected response status:", response.status);
+            }
+        } catch (error) {
+            console.error("Error contacting server", error);
+            console.log("error");
+        }
+    };
+
+    handleBeforeUnload();
+    
+    window.addEventListener('unload', handleBeforeUnload);
+
+    return () => {
+        window.removeEventListener('unload', handleBeforeUnload);
+    }; 
+}, [userId, startTime]);
+
 /*useEffect(() => {
     console.log("Players updated:", players);
   }, [players]);
@@ -123,6 +156,7 @@ useEffect(() => {
     return <div>Loading...</div>;
   }
 
+   
 
   function setPuzzleHelper(puzzle) {
     setPuzzle(puzzle);
