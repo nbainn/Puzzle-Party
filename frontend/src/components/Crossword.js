@@ -395,31 +395,6 @@ const CrosswordGrid = ({
     setGrid(resetGrid);
   }, [currentDirection]);
 
-  /*window.addEventListener("beforeunload", function () {
-    let startTime = performance.now();
-    let endTime = performance.now();
-    let timeSpent = (endTime - startTime) / 1000;
-    console.log("Time spent on page:", timeSpent, "seconds");*/
-  window.addEventListener("beforeunload", async function () {
-    let endTime = performance.now();
-    let timeSpent = (endTime - startTime) / 1000;
-    console.log("Time spent on page:", timeSpent, "seconds");
-
-    try {
-      const response = await axios.post("/addTime", { userId, timeSpent });
-      if (response.status === 200) {
-        console.log("time spent added!");
-      } else if (response.status === 404) {
-        console.log("Error", response.data);
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error contacting server", error);
-      console.log("error");
-    }
-  });
-
   //useEffect(() => {
   const handleKeyPress = async (event, rowIndex, colIndex) => {
     if (event.keyCode === 32) {
