@@ -335,10 +335,10 @@ const CrosswordGrid = ({
   // State for responsive grid size
   const [size, setSize] = useState(300);
   const [location, setLocation] = useState(0, 0);
+  const [startTime, setStartTime] = useState(performance.now());
 
 
   window.addEventListener('beforeunload', async function() {
-    let startTime = performance.now();
     let endTime = performance.now();
     let timeSpent = (endTime - startTime) / 1000;
     console.log('Time spent on page:', timeSpent, 'seconds');

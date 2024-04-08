@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
-const { Room, Word, Puzzle } = sq.models;
+const { Room, Word, Puzzle, Statistics } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
 // Ably API Key
@@ -634,27 +634,36 @@ async function buildPuzzle(seed, size) {
 }
 
 async function addUserTime(userId, time) {
-  const stat = await Statistics.findOne(
+  let stat = await Statistics.findOne(
     {where: {
       userId: userId
     }
   });
   if (!stat) {
-    return res.status(404).json({ message: "User Statistic not found" });
-  } else {
+      stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
     stat.timePlayed = stat.timePlayed + time;
     await stat.save();
-  }
 
 }
 async function addUserWins(userId) {
-  const stat = await Statistics.findOne(
+  let stat = await Statistics.findOne(
     {where: {
       userId: userId
     }
   });
   if (!stat) {
-    return res.status(404).json({ message: "User Statistic not found" });
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
   }
   stat.wins = stat.wins + 1;
   stat.save();
