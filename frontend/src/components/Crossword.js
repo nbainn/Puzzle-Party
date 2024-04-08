@@ -66,9 +66,9 @@ const StyledInput = styled(TextField)({
 });
 
 const CrosswordGrid = ({
-  userId, 
+  userId,
   ablyClient,
-  roomId, 
+  roomId,
   puzzle,
   timer,
   hints,
@@ -82,6 +82,15 @@ const CrosswordGrid = ({
   checkGrid,
   setCheckGrid,
 }) => {
+  const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
+  const [currentWordStart, setCurrentWordStart] = useState(null);
+  const [currentWordEnd, setCurrentWordEnd] = useState(null);
+  const [inputChar, setInputChar] = useState("");
+  const [favcolor, setColor] = useState("#f07aff");
+  // State for responsive grid size
+  const [size, setSize] = useState(300);
+  const [location, setLocation] = useState(0, 0);
+
   console.log("PUZZLE:" + puzzle);
   let numRows = 10;
   let numCols = 10;
@@ -89,7 +98,7 @@ const CrosswordGrid = ({
     numRows = puzzle.puzzle.size.rows;
     numCols = puzzle.puzzle.size.columns;
   }
-  const [channel, setChannel] = useState(null)
+  const [channel, setChannel] = useState(null);
   const [numLetters, setNumLetters] = useState(0);
   const [grid, setGrid] = useState(
     Array(numRows).fill(
@@ -134,10 +143,9 @@ const CrosswordGrid = ({
     }
   }, [ablyClient, roomId]);
 
-    useEffect(() => {
+  useEffect(() => {
     setChannel(ablyClient.channels.get(`room:${roomId}`));
-
-  }, [ablyClient, roomId]); 
+  }, [ablyClient, roomId]);
 
   useEffect(() => {
     if (puzzle) {
@@ -163,30 +171,27 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
-
           }
         }
       }
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
-      const ably = async() => {
+      const ably = async () => {
         if (ablyClient) {
           const channel = ablyClient.channels.get(`room:${roomId}`);
           try {
             await channel.publish("grid", {
-              grid: tempGrid
+              grid: tempGrid,
             });
             console.log("Grid sent:", tempGrid);
           } catch (error) {
             console.error("Error sending grid:", error);
           }
-      } else {
-        console.log("Ably client not initialized.");
-      }
-    }
-    ably()
-      
-
+        } else {
+          console.log("Ably client not initialized.");
+        }
+      };
+      ably();
     }
   }, [puzzle]);
 
@@ -310,31 +315,78 @@ const CrosswordGrid = ({
     setCheckGrid(false);
   }, [checkGrid]);
 
-  const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
-  const [currentWordStart, setCurrentWordStart] = useState(null);
-  const [currentWordEnd, setCurrentWordEnd] = useState(null);
-  const [inputChar, setInputChar] = useState("");
-  const [favcolor, setColor] = useState("#f07aff");
-  // State for responsive grid size
-  const [size, setSize] = useState(300);
-  const [location, setLocation] = useState(0, 0);
+  useEffect(() => {
+    let rowIndex = location[0];
+    let colIndex = location[1];
+    const resetGrid = grid.map((row) =>
+      row.map((cell) => ({ ...cell, highlighted: false }))
+    );
+    setLocation([rowIndex, colIndex]);
+    setGrid(resetGrid);
 
+    if (currentDirection === "across") {
+      let i = colIndex;
+      console.log("ACROSSSSSS");
+      while (i > 0 && puzzle.puzzle.grid[rowIndex][i - 1] !== " ") {
+        i--;
+      }
+      while (i < numCols && puzzle.puzzle.grid[rowIndex][i] !== " ") {
+        console.log("HIGHLIGHTEDDDDDDDDDD");
+        resetGrid[rowIndex][i].highlighted = true;
+        i++;
+      }
+    } else if (currentDirection === "down") {
+      let i = rowIndex;
+      while (i > 0 && puzzle.puzzle.grid[i - 1][colIndex] !== " ") {
+        i--;
+      }
+      console.log("DOWNNNNNNN");
+      console.log(rowIndex);
+      console.log(grid[i][colIndex].value);
+      while (i < numRows && puzzle.puzzle.grid[i][colIndex] !== " ") {
+        console.log("HIGHLIGHTEDDDDDDDDDD");
+        resetGrid[i][colIndex].highlighted = true;
+        i++;
+      }
+    }
+    /*const newGrid = resetGrid.map((row, rIndex) =>
+      row.map((cell, cIndex) => {
+        if (
+          ((currentDirection === "across" && rIndex === rowIndex) ||
+            (currentDirection === "down" && cIndex === colIndex)) &&
+          cell.value != ""
+          end != 2
+        ) {
+          end = 1;
+          console.log("HIGHLIGHTEDDDDDDDDDD");
+          return { ...cell, highlighted: true };
+        }
+        if (end == 1) {
+          end = 2;
+        }
+        return cell;
+      })
+    );*/
+    setGrid(resetGrid);
+  }, [currentDirection]);
 
-  window.addEventListener('beforeunload', function() {
+  window.addEventListener("beforeunload", function () {
     let startTime = performance.now();
     let endTime = performance.now();
     let timeSpent = (endTime - startTime) / 1000;
-    console.log('Time spent on page:', timeSpent, 'seconds');
-    
+    console.log("Time spent on page:", timeSpent, "seconds");
   });
 
   //useEffect(() => {
   const handleKeyPress = async (event, rowIndex, colIndex) => {
     if (event.keyCode === 32) {
       // Spacebar key
+      console.log("SPACEBAR PRESSED");
       setCurrentDirection(currentDirection === "across" ? "down" : "across");
-      handleCellClick(rowIndex, colIndex);
-    } else {
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      event.preventDefault();
+    } else if (/^[a-zA-Z]$/.test(event.key)) {
       const updatedGrid = grid.map((row, i) =>
         i === rowIndex
           ? row.map((cell, j) =>
@@ -344,23 +396,44 @@ const CrosswordGrid = ({
             )
           : row
       );
+      event.preventDefault();
       setGrid(updatedGrid);
+      rowIndex = currentDirection === "down" ? rowIndex + 1 : rowIndex;
+      colIndex = currentDirection === "across" ? colIndex + 1 : colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      console.log("UPDATED GRID");
       if (ablyClient) {
         const channel = ablyClient.channels.get(`room:${roomId}`);
         try {
           await channel.publish("grid", {
-            grid: updatedGrid
+            grid: updatedGrid,
           });
           console.log("Grid sent:", updatedGrid);
         } catch (error) {
           console.error("Error sending grid:", error);
         }
+      } else {
+        console.log("Ably client not initialized.");
+      }
+    } else if (event.keyCode !== 8 && event.keyCode !== 46) {
+      event.preventDefault();
     } else {
-      console.log("Ably client not initialized.");
+      //backsapce or delete key
+      const updatedGrid = grid.map((row, i) =>
+        i === rowIndex
+          ? row.map((cell, j) =>
+              j === colIndex ? { ...cell, value: "" } : cell
+            )
+          : row
+      );
+      rowIndex =
+        currentDirection === "down" && rowIndex > 0 ? rowIndex - 1 : rowIndex;
+      colIndex =
+        currentDirection === "across" && colIndex > 0 ? colIndex - 1 : colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      setGrid(updatedGrid);
+      event.preventDefault();
     }
-
-    }
-    event.preventDefault();
   };
 
   //window.addEventListener("keydown", handleKeyPress);
@@ -454,7 +527,7 @@ const CrosswordGrid = ({
     );
   };
 
-  const handleCellChange = (event, rowIndex, colIndex) => {
+  /*const handleCellChange = (event, rowIndex, colIndex) => {
     const newGrid = grid.map((row, rIndex) =>
       rIndex === rowIndex
         ? row.map((cell, cIndex) =>
@@ -464,7 +537,7 @@ const CrosswordGrid = ({
     );
     console.log("UPDATED GRID");
     setGrid(newGrid);
-  };
+  };*/
 
   function hexToRGBA(hex, alpha) {
     hex = hex.replace("#", "");
@@ -538,6 +611,7 @@ const CrosswordGrid = ({
                 <GridCell key={`${rowIndex}-${colIndex}`}>
                   <InputWrapper>
                     <StyledInput
+                      id={`cell-${rowIndex}-${colIndex}`} // Unique id for each cell
                       className={`cell ${
                         isCellInCurrentWord(rowIndex, colIndex)
                           ? "current-word"
@@ -545,9 +619,9 @@ const CrosswordGrid = ({
                       }`}
                       value={cell.value}
                       onClick={() => handleCellClick(rowIndex, colIndex)}
-                      onChange={(event) =>
+                      /*onChange={(event) =>
                         handleCellChange(event, rowIndex, colIndex)
-                      }
+                      }*/
                       onKeyDown={(event) =>
                         handleKeyPress(event, rowIndex, colIndex)
                       }

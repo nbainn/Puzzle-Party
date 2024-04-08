@@ -40,6 +40,7 @@ function SuggestionBox() {
             type="text"
             value={word}
             onChange={(event) => setWord(event.target.value)}
+            autocomplete="off"
           />
         </div>
         <div>
@@ -49,6 +50,7 @@ function SuggestionBox() {
             type="text"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
+            autocomplete="off"
           />
         </div>
         <button type="submit">Submit Suggestion</button>
