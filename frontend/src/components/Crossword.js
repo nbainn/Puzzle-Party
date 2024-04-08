@@ -154,6 +154,7 @@ const CrosswordGrid = ({
       for (let i = 0; i < numRows; i++) {
         tempGrid.push(new Array(numCols).fill(null));
       }
+      let letters = 0;
       for (let i = 0; i < numRows; i++) {
         for (let j = 0; j < numCols; j++) {
           //console.log(puzzle.puzzle.grid[i][j]);
@@ -171,9 +172,11 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
+            letters += 1;
           }
         }
       }
+      setNumLetters(letters);
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
       const ably = async () => {
@@ -219,7 +222,6 @@ const CrosswordGrid = ({
               hidden: false,
               color: null,
             };
-            setNumLetters(numLetters + 1);
           }
         }
       }
@@ -285,34 +287,57 @@ const CrosswordGrid = ({
   }, [checkWord]);
 
   useEffect(() => {
-    let numCorrect = 0;
-    if (guesses) {
-      if (checkGrid) {
-        const resetGrid = grid.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            if (
-              !cell.hidden &&
-              cell.value !== "" &&
-              cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
-            ) {
-              numCorrect += 1;
-              return { ...cell, color: "#ffda4d" };
-            } else {
-              return { ...cell };
+    async function fetchData() {
+      let numCorrect = 0;
+      if (guesses) {
+        if (checkGrid) {
+          const resetGrid = grid.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (
+                !cell.hidden &&
+                cell.value !== "" &&
+                cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
+              ) {
+                return { ...cell, color: "#ffda4d" };
+              } else {
+                if (
+                  !cell.hidden &&
+                  cell.value === puzzle.puzzle.grid[rowIndex][colIndex]
+                ) {
+                  numCorrect += 1;
+                }
+                return { ...cell };
+              }
+            })
+          );
+          console.log(numCorrect, numLetters);
+          if (numCorrect === numLetters) {
+            alert("Congratulations! You have completed the puzzle!");
+            try {
+              const response = await axios.post("/addWin", { userId: userId });
+              if (response.status === 200) {
+                console.log("win stat added!");
+              } else if (response.status === 404) {
+                console.log("Error", response.data);
+              } else {
+                console.error("Unexpected response status:", response.status);
+              }
+            } catch (error) {
+              console.error("Error contacting server", error);
+              console.log("error");
             }
-          })
-        );
-        if (numCorrect === numLetters) {
-          alert("Congratulations! You have completed the puzzle!");
+          }
+          setGrid(resetGrid);
+        } else {
+          console.log("WHATTTTT?");
         }
-        setGrid(resetGrid);
       } else {
-        console.log("WHATTTTT?");
+        console.log("Guesses is not enabled!");
       }
-    } else {
-      console.log("Guesses is not enabled!");
+      setCheckGrid(false);
     }
-    setCheckGrid(false);
+
+    fetchData();
   }, [checkGrid]);
 
   useEffect(() => {
@@ -370,11 +395,29 @@ const CrosswordGrid = ({
     setGrid(resetGrid);
   }, [currentDirection]);
 
-  window.addEventListener("beforeunload", function () {
+  /*window.addEventListener("beforeunload", function () {
     let startTime = performance.now();
     let endTime = performance.now();
     let timeSpent = (endTime - startTime) / 1000;
+    console.log("Time spent on page:", timeSpent, "seconds");*/
+  window.addEventListener("beforeunload", async function () {
+    let endTime = performance.now();
+    let timeSpent = (endTime - startTime) / 1000;
     console.log("Time spent on page:", timeSpent, "seconds");
+
+    try {
+      const response = await axios.post("/addTime", { userId, timeSpent });
+      if (response.status === 200) {
+        console.log("time spent added!");
+      } else if (response.status === 404) {
+        console.log("Error", response.data);
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error contacting server", error);
+      console.log("error");
+    }
   });
 
   //useEffect(() => {

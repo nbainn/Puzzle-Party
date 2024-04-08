@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
-const { Room, Word, Puzzle } = sq.models;
+const { Room, Word, Puzzle, Statistics } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
 // Ably API Key
@@ -165,7 +165,7 @@ const verifyGoogleToken = async (token) => {
   }
 };
 
-// Temperary random color generator
+// Temporary random color generator
 const getRandomColor = () => {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -219,14 +219,13 @@ app.post("/googleLogin", async (req, res) => {
         userColor: user.userColor,
       });
     } else {
-      // If the user does not exist, create a new user entry in your database
-
+      // If the user does not exist, create a new user entry in database
       const pictureUrl = payload["picture"]; // URL of profile picture
       const userColor = await getDominantColor(pictureUrl); // Get the dominant color from the profile picture
       user = await User.create({
         email,
         nickname: givenName, // Use the given name as the user's nickname
-        userColor: userColor, // Use the dominant color of their PFP as the user's color
+        userColor: userColor,
         hashedPassword: googleId, // Pass the plain googleId; hashing is handled by the model in sequelize
       });
 
@@ -328,6 +327,13 @@ app.post("/getAblyToken", async (req, res) => {
 // ***SERVER SETUP****************************************************
 // Allows server to serve react build files
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
+
+/*
+// Catch-all route to serve React app for any other route not handled by API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+});
+*/
 
 // Listening for http requests on port 3000
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
@@ -630,27 +636,36 @@ async function buildPuzzle(seed, size) {
 }
 
 async function addUserTime(userId, time) {
-  const stat = await Statistics.findOne(
+  let stat = await Statistics.findOne(
     {where: {
       userId: userId
     }
   });
   if (!stat) {
-    return res.status(404).json({ message: "User Statistic not found" });
-  } else {
+      stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
     stat.timePlayed = stat.timePlayed + time;
     await stat.save();
-  }
 
 }
 async function addUserWins(userId) {
-  const stat = await Statistics.findOne(
+  let stat = await Statistics.findOne(
     {where: {
       userId: userId
     }
   });
   if (!stat) {
-    return res.status(404).json({ message: "User Statistic not found" });
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
   }
   stat.wins = stat.wins + 1;
   stat.save();

@@ -38,7 +38,6 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
           `room:${roomId}`
         );
         console.log("Nickname:", nickname);
-        //setPlayers((prevPlayers) => [...prevPlayers, nickname]);
         const channel = ablyClient.channels.get(`room:${roomId}`);
         const onMessage = (message) => {
           console.log("Message received:", message);
