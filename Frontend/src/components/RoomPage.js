@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate} from "react-router-dom";
 import ChatBox from "./ChatBox";
 import ClueList from "./ClueList";
 import Grid from "./Grid";
@@ -19,6 +19,7 @@ function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
+  const navigate = useNavigate();
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -147,6 +148,16 @@ useEffect(() => {
     }; 
 }, [userId, startTime]);
 
+function kickUser(roomCode, player) {
+  //need to disconnect user from room channel. 
+  //implement where this automatically redirects users home on disconnect
+  //navigate(`/`);
+  const channel = ablyClient.channels.get(`room:${roomId}`);
+  channel.presence.leave();
+  //alert('Member ' + player + ' kicked from room');
+  console.log("Kicked user:", player);
+  setPlayers((prevPlayers) => prevPlayers.filter(p => p !== player));
+}
 /*useEffect(() => {
     console.log("Players updated:", players);
   }, [players]);
@@ -173,7 +184,10 @@ useEffect(() => {
         <h2>Player List</h2>
         <ul>
           {players.map(player => (
+            <div>
             <li key={player}>{player}</li>
+            <button onClick={() => kickUser(roomId, player)}>Kick</button>
+            </div>
           ))}
         </ul>
       </div>
