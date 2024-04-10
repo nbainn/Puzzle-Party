@@ -635,24 +635,30 @@ async function buildPuzzle(seed, size) {
   return puzzle;
 }
 
-async function addUserTime(userId, time) {
-  let stat = await Statistics.findOne(
-    {where: {
+// Assuming time is in milliseconds; these adjustments were made just so the server runs properly, specific adjustments may need to be made
+async function addUserTime(userId, timeInMillis) {
+  let stat = await Statistics.findOne({
+    where: {
       userId: userId
     }
   });
+  
   if (!stat) {
-      stat = await Statistics.create({
+    stat = await Statistics.create({
       userId: userId,
       gamesPlayed: 1,
       gamesWon: 0,
       timePlayed: 0,
     });
   }
-    stat.timePlayed = stat.timePlayed + time;
-    await stat.save();
 
+  // Convert milliseconds to seconds and round off to the nearest whole number
+  const timeInSeconds = Math.round(timeInMillis / 1000);
+  
+  stat.timePlayed += timeInSeconds;
+  await stat.save();
 }
+
 async function addUserWins(userId) {
   let stat = await Statistics.findOne(
     {where: {
