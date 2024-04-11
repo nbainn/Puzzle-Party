@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Ably from 'ably/promises';
 import axios from 'axios';
 
@@ -12,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [nickname, setNickname] = useState(null);
   const [userColor, setUserColor] = useState(null);
   const [ablyClient, setAblyClient] = useState(null);
+  const [isAuthCheckComplete, setIsAuthCheckComplete] = useState(false);
+  const [handleRedirection, setHandleRedirection] = useState(null);
 
   const fetchAndSetAblyClient = useCallback(async (clientId) => {
     if (ablyClient) {
@@ -59,7 +60,6 @@ export const AuthProvider = ({ children }) => {
       console.error('Invalid login parameters:', { token, userId });
       return;
     }
-    console.log('Logging in, received token:', token);
     // Store user details in localStorage
     localStorage.setItem('userToken', token);
     localStorage.setItem('userId', userId);
@@ -92,10 +92,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const guestLogin = async () => {
-    const guestUserId = generateGuestUserId();
-    setNickname(guestUserId);
-    const randomColor = getRandomColor();
-    setUserColor(randomColor);
+    const guestUserId = `guest_${Date.now()}`;
     setIsAuthenticated(true);
     setIsGuest(true);
     setUserId(guestUserId);
@@ -129,7 +126,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     console.log('Checking local storage for token...');
     const initializeAuth = async () => {
-      console.log('Set IACC False');
       setIsAuthCheckComplete(false); 
       
       const storedToken = localStorage.getItem('userToken');
@@ -145,11 +141,9 @@ export const AuthProvider = ({ children }) => {
           setUserColor(storedUserColor);
           await fetchAndSetAblyClient(storedUserId);
         } else {
-          console.log('Logout');
           logout();
         }
       }
-      console.log('Set IACC True');
       setIsAuthCheckComplete(true);
     };
   
