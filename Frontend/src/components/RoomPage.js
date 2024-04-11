@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate} from "react-router-dom";
 import ChatBox from "./ChatBox";
 import ClueList from "./ClueList";
 import Grid from "./Grid";
@@ -9,6 +9,8 @@ import RoomStatus from "./RoomStatus";
 import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
+import RoomSettings from "./RoomSettings";
+import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 
@@ -16,7 +18,19 @@ function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  const [puzzleData, setPuzzleData] = useState(null);
+  const navigate = useNavigate();
+  // State to store the puzzle object
+  const [puzzle, setPuzzle] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [timer, setTimer] = useState(true);
+  const [hints, setHints] = useState(true);
+  const [guesses, setGuesses] = useState(true);
+  const [revealGrid, setRevealGrid] = useState(false);
+  const [revealHint, setRevealHint] = useState(false);
+  const [checkWord, setCheckWord] = useState(false);
+  const [checkGrid, setCheckGrid] = useState(false);
+  const [startTime, setStartTime] = useState(performance.now());
+  //const [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
     let timeout;
@@ -195,16 +209,62 @@ function RoomPage() {
         <ExitRoom />
         <RoomStatus roomId={roomId} />
       </div>
+      <div>
+        <h2>Player List</h2>
+        <ul>
+          {players.map(player => (
+            <div>
+             <li key={player}>{player}</li>
+             <button onClick={() => handleKick(roomId, player)}>Kick</button>
+             <button onClick={() => handleBan(roomId, player)}>Ban</button>
+           </div>
+          ))}
+        </ul>
+      </div>
+      <div className="settings">
+        <RoomSettings
+          timer={timer}
+          hints={hints}
+          guesses={guesses}
+          setTimer={setTimer}
+          setHints={setHints}
+          setGuesses={setGuesses}
+        />
+      </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
-        <GeneratePuzzleForm />
-        <Cheating />
+        <GeneratePuzzleForm 
+          setPuzzle={setPuzzleHelper}
+        />
+        <Cheating
+          setRevealGrid={setRevealGrid}
+          setRevealHint={setRevealHint}
+          setCheckWord={setCheckWord}
+          setCheckGrid={setCheckGrid}
+        />
       </div>
       <div className="game-container">
         <PlayerList />
-        <CrosswordGrid />
+        <CrosswordGrid
+          ablyClient = {ablyClient}
+          roomId={roomId}
+          puzzle={puzzle}
+          hints={hints}
+          guesses={guesses}
+          revealGrid={revealGrid}
+          setRevealGrid={setRevealGrid}
+          revealHint={revealHint}
+          setRevealHint={setRevealHint}
+          checkWord={checkWord}
+          setCheckWord={setCheckWord}
+          checkGrid={checkGrid}
+          setCheckGrid={setCheckGrid}
+        />
         <div className="hints-chat-container">
-          <ClueList />
+          <ClueList 
+          puzzle = {puzzle}
+          ablyClient={ablyClient}
+          roomId={roomId}/>
           <ChatBox
             ablyClient={ablyClient}
             roomId={roomId}

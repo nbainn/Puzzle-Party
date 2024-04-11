@@ -1,9 +1,9 @@
-.grid {
+/*.grid {
     display: grid;
-    grid-template-columns: repeat(10, 30px);
     grid-template-rows: repeat(10, 30px);
+    grid-template-columns: repeat(10, 30px);
     gap: 1px;
-}
+}*/
 .crossword-grid {
 
 }
@@ -16,11 +16,22 @@
 .cell {
     width: 30px;
     height: 30px;
-    border: 1px solid #ccc;
-    display: flex;
+    border: 2px solid #ccc;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+}
+.cell-wrapper {
+  width: 48px; /* Adjust width to match the width of each cell */
+  height: 48px; /* Adjust height to match the height of each cell */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cell-wrapper::after {
+  display: block;
+  padding-bottom: 100%; /* Maintains square shape */
 }
 
 .cell:hover {

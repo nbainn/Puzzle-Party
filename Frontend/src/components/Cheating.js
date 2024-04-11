@@ -8,7 +8,28 @@ import catSleep from "../assets/PartyCatSleep.gif";
 import e from "cors";
 import axios from "axios";
 
-function Cheating() {
+function Cheating({
+  setRevealGrid,
+  setRevealHint,
+  setCheckWord,
+  setCheckGrid,
+}) {
+  const handleRevealGrid = () => {
+    setRevealGrid(true);
+  };
+
+  const handleRevealHint = () => {
+    setRevealHint(true);
+  };
+
+  const handleCheckWord = () => {
+    setCheckWord(true);
+  };
+
+  const handleCheckGrid = () => {
+    setCheckGrid(true);
+  };
+
   return (
     <div className="cheating">
       <div className="image-container">
@@ -19,9 +40,18 @@ function Cheating() {
         />
       </div>
       <div className="button-container">
-        <button type="button">Get Hint</button>
-        <button type="button">Check Word</button>
-        <button type="button">Check Grid</button>
+        <button type="button" onClick={handleRevealHint}>
+          Get Hint
+        </button>
+        <button type="button" onClick={handleCheckWord}>
+          Check Word
+        </button>
+        <button type="button" onClick={handleCheckGrid}>
+          Check Grid
+        </button>
+        <button type="button" onClick={handleRevealGrid}>
+          Reveal Grid
+        </button>
       </div>
     </div>
   );

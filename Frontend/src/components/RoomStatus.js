@@ -1,12 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import './RoomStatus.css'; 
 import { useNavigate } from 'react-router-dom';
-import {useState } from "react";
 import  axios  from 'axios';
 
 function RoomStatus({roomId}) {
   const navigate = useNavigate();
-  const [status, setStatus] = useState('public');
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    // Fetch the initial status of the room from the database
+    const fetchRoomStatus = async () => {
+      try {
+        const response = await axios.post('/room-status', {roomId});
+        //console.log('response.data', response.data);
+        const pub_stat= response.data;
+        console.log('pub_stat', pub_stat);
+        setStatus(pub_stat === true ? 'public' : 'private');
+      } catch (error) {
+        console.error('Error fetching room status:', error);
+        setStatus('public');
+      }
+    };
+
+    fetchRoomStatus();
+  }, [roomId]);
 
   const handleRoomStatus = async(event) => {
     event.preventDefault();
@@ -20,7 +37,7 @@ function RoomStatus({roomId}) {
 
   return (
     <div className="exit-room">
-      <button onClick={handleRoomStatus} className="room-status-button">
+      <button type ="button "onClick={handleRoomStatus} className="room-status-button">
       {status === 'public' ? 'Public' : 'Private'}
       </button>
     </div>

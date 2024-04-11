@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Invalid login parameters:', { token, userId });
       return;
     }
+    console.log('Logging in, received token:', token);
     // Store user details in localStorage
     localStorage.setItem('userToken', token);
     localStorage.setItem('userId', userId);
@@ -91,7 +92,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const guestLogin = async () => {
-    const guestUserId = `guest_${Date.now()}`;
+    const guestUserId = generateGuestUserId();
+    setNickname(guestUserId);
+    const randomColor = getRandomColor();
+    setUserColor(randomColor);
     setIsAuthenticated(true);
     setIsGuest(true);
     setUserId(guestUserId);

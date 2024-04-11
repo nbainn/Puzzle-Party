@@ -7,24 +7,25 @@ const http = require("http");
 const path = require("path");
 const bodyParser = require("body-parser");
 const Ably = require("ably");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
-const ColorThief = require('color-thief-node');
+const fs = require("fs");
+//import wu from "./wordUpdater";
+//const ColorThief = require('color-thief-node');
 app.use(bodyParser.json());
 // Import Sequelize and your models
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
-const { Room, Word, Puzzle } = sq.models;
+const { Room, Word, Puzzle, Statistics } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
 // Ably API Key
 const ablyApiKey = config.ABLY_API_KEY;
 // Google Client ID
 const CLIENT_ID = config.CLIENT_ID;
-
 
 // Use the testDbConnection function to authenticate and sync models
 testDbConnection();
@@ -50,8 +51,8 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 function generateJwtPayload(user) {
   return {
     id: user.id,
-    nickname: user.nickname || user.email.split('@')[0], // Fallback to part of the email if nickname is null
-    userColor: user.userColor || '#FFFFFF', // Default color if null
+    nickname: user.nickname || user.email.split("@")[0], // Fallback to part of the email if nickname is null
+    userColor: user.userColor || "#FFFFFF", // Default color if null
   };
 }
 
@@ -75,11 +76,9 @@ app.post("/signup", async (req, res) => {
     });
 
     // Generate a token
-    const token = jwt.sign(
-      generateJwtPayload(newUser),
-      jwtSecret,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign(generateJwtPayload(newUser), jwtSecret, {
+      expiresIn: "1h",
+    });
 
     res.status(201).json({
       token,
@@ -111,18 +110,16 @@ app.post("/login", async (req, res) => {
     }
 
     // Generate a token
-    const token = jwt.sign(
-      generateJwtPayload(user),
-      jwtSecret,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign(generateJwtPayload(user), jwtSecret, {
+      expiresIn: "1h",
+    });
 
     res.json({
       token,
       userId: user.id,
       email: user.email,
       nickname: user.nickname,
-      userColor: user.userColor
+      userColor: user.userColor,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error during login", error });
@@ -168,17 +165,28 @@ const verifyGoogleToken = async (token) => {
   }
 };
 
+// Temporary random color generator
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 // Function to get the dominant color from an image URL
 async function getDominantColor(imageUrl) {
   try {
-    const dominantColor = await ColorThief.getColorFromURL(imageUrl);
+    //const dominantColor = await ColorThief.getColorFromURL(imageUrl);
     // Convert the RGB array to a hex string
-    const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+    //const hexColor = `#${dominantColor.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+    const hexColor = getRandomColor();
     return hexColor;
   } catch (error) {
     console.error("Error fetching dominant color:", error);
     // Return a default color if something goes wrong
-    return '#FFFFFF';
+    return "#FFFFFF";
   }
 }
 
@@ -200,36 +208,31 @@ app.post("/googleLogin", async (req, res) => {
 
     // If user exists, create a token for them
     if (user) {
-      const token = jwt.sign(
-        generateJwtPayload(user),
-        jwtSecret,
-        { expiresIn: "1h" }
-      );
+      const token = jwt.sign(generateJwtPayload(user), jwtSecret, {
+        expiresIn: "1h",
+      });
       res.json({
         token,
         userId: user.id,
         email: user.email,
         nickname: user.nickname,
-        userColor: user.userColor
+        userColor: user.userColor,
       });
     } else {
-      // If the user does not exist, create a new user entry in your database
-      
+      // If the user does not exist, create a new user entry in database
       const pictureUrl = payload["picture"]; // URL of profile picture
       const userColor = await getDominantColor(pictureUrl); // Get the dominant color from the profile picture
       user = await User.create({
         email,
         nickname: givenName, // Use the given name as the user's nickname
-        userColor: userColor, // Use the dominant color of their PFP as the user's color
+        userColor: userColor,
         hashedPassword: googleId, // Pass the plain googleId; hashing is handled by the model in sequelize
       });
 
       // Create a token for the new user
-      const newToken = jwt.sign(
-        generateJwtPayload(user),
-        jwtSecret,
-        { expiresIn: "1h" }
-      );
+      const newToken = jwt.sign(generateJwtPayload(user), jwtSecret, {
+        expiresIn: "1h",
+      });
 
       // Send the token and user info back to the client
       res.status(201).json({
@@ -242,7 +245,9 @@ app.post("/googleLogin", async (req, res) => {
     }
   } catch (error) {
     console.error("Error during Google Login:", error);
-    res.status(500).json({ message: "Server error during Google login", error });
+    res
+      .status(500)
+      .json({ message: "Server error during Google login", error });
   }
 });
 
@@ -339,12 +344,10 @@ app.post("/getAblyToken", async (req, res) => {
 // Allows server to serve react build files
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
-
 // Catch-all route to serve React app for any other route not handled by API
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
 });
-
 
 // Listening for http requests on port 3000
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
@@ -360,15 +363,29 @@ const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
   path: "/myapp",
   ssl: {},
 });*/
-
 // Using peerServer to handle peerJS requests through defined path
 //app.use(peerServer);
 
-// ***HTTP REQUESTS****************************************************
-// Root of the webpage, serves the react build to be displayed
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build/index.html"));
 });
+
+// ***WORD/DESCRIPTIONS SUGGESTIONS****************************************
+app.post("/suggestion", async (req, res) => {
+  console.log("Suggestion request received");
+  const word = req.body.word;
+  const description = req.body.description;
+  let suggestion = word + "," + description + "\n";
+  fs.appendFile("wordsDescriptions.txt", suggestion, (err) => {
+    if (err) {
+      console.error("Error writing to file:", err);
+      return;
+    }
+  });
+});
+
+// ***PUZZLE GENERATION****************************************************
+// Creates an empty puzzle object with only the size of the puzzle specified
 
 // Request for puzzle generaation
 app.post("/puzzle", async (req, res) => {
@@ -381,9 +398,19 @@ app.post("/puzzle", async (req, res) => {
   console.log("built puzzle");
   res.json({ puzzle });
 });
+// STATS ENDPOINT
+app.post('/addTime', async (req, res) => {
+  const userId = req.body.userId;
+  const time = req.body.time;
+  await addUserTime(userId, time);
+  res.status(200).send("Time added successfully");
+});
+app.post('/addWin', async (req, res) => { 
+  const userId = req.body.userId;
+  await addUserWins(userId);
+  res.status(200).send("Win added successfully");
+});
 
-// ***PUZZLE GENERATION****************************************************
-// Creates an empty puzzle object with only the size of the puzzle specified
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
     size: {
@@ -622,6 +649,48 @@ async function buildPuzzle(seed, size) {
   return puzzle;
 }
 
+// Assuming time is in milliseconds; these adjustments were made just so the server runs properly, specific adjustments may need to be made
+async function addUserTime(userId, timeInMillis) {
+  let stat = await Statistics.findOne({
+    where: {
+      userId: userId
+    }
+  });
+  
+  if (!stat) {
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
+
+  // Convert milliseconds to seconds and round off to the nearest whole number
+  const timeInSeconds = Math.round(timeInMillis / 1000);
+  
+  stat.timePlayed += timeInSeconds;
+  await stat.save();
+}
+
+async function addUserWins(userId) {
+  let stat = await Statistics.findOne(
+    {where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
+  stat.wins = stat.wins + 1;
+  stat.save();
+}
+
 // SAMPLE FUNCTION TO CHECK GUESSES**** will go client side later
 function checkAllWords(realPuzzle, guessPuzzle) {
   for (let i = 0; i < guessPuzzle.size.rows; i++) {
@@ -657,6 +726,25 @@ app.post("/add-entry", async (req, res) => {
   }
 });
 
+app.post("/room-status", async (req, res) => {
+  try {
+    const roomCode = req.body.roomId;
+    let foundRoom = await Room.findOne({
+      where: { room_code: roomCode },
+      attributes: ["public_status"],
+    });
+    if (foundRoom) {
+      console.log(foundRoom.public_status);
+      res.status(200).send(foundRoom.public_status);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
 app.post("/change-status", async (req, res) => {
   try {
     const roomCode = req.body.roomId; // Access roomCode directly from req.body
@@ -672,7 +760,7 @@ app.post("/change-status", async (req, res) => {
       throw new Error("Room code is missing in the request body");
     }
     console.log("Changing private/public status", roomCode);
-    await Room.update(  
+    await Room.update(
       { public_status: newStatus },
       { where: { room_code: roomCode } }
     );
@@ -710,7 +798,9 @@ app.get("/find-rooms", async (req, res) => {
     const limit = req.query.limit;
     console.log("Limit: ", limit);
     const rooms = await Room.findAll({
+      where: { public_status: true },
       limit: limit,
+
       //attributes: ["host", "room_code"],
     });
     if (rooms) {
@@ -722,5 +812,30 @@ app.get("/find-rooms", async (req, res) => {
   } catch (error) {
     console.error("Error finding field:", error);
     res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/add-ban", async (req, res) => {
+  try {
+    const roomCode = req.body.roomCode;
+    const player = req.body.player;
+    if (!roomCode || !player) {
+      throw new Error("Room code or player is missing in the request body");
+    }
+    console.log("Banning player", player);
+    const room = await Room.findOne({ where: { room_code: roomCode } });
+    if (!room) {
+      throw new Error("Room not found");
+    }
+    let bannedPlayers = room.banned_players || []; // Initialize to empty array if null
+    bannedPlayers.push(player); // Add the player to the banned list
+    await Room.update(
+      { banned_players: bannedPlayers },
+      { where: { room_code: roomCode } }
+    );
+    res.send("Player banned successfully!");
+  } catch (error) {
+    console.error("Error banning player:", error);
+    res.status(500).send("Error banning player");
   }
 });

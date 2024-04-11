@@ -1,9 +1,48 @@
 const { Sequelize, DataTypes, Model, Op } = require('sequelize');
 const config = require('./config');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Option 1: Passing a connection URI
 const sequelize = new Sequelize(config.PostgresPassword) // Example for postgres
+
+
+class Statistics extends Model {}
+
+Statistics.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  //link to user
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  //number of games played
+  gamesPlayed: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  //number of games won
+  gamesWon: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  //time spent playing
+  timePlayed: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+
+}, {
+  sequelize,
+  modelName: 'Statistics',
+});
+
 
 // Define the User model with email and hashedPassword fields
 class User extends Model {}
@@ -51,6 +90,8 @@ User.init({
   },
 });
 
+User.hasOne(Statistics, {onDelete: 'CASCADE', foreignKey: 'userId'});
+Statistics.belongsTo(User, {foreignKey: 'userId'});
 /*class Character extends Model 
 {
   index;
@@ -186,6 +227,10 @@ Room.init({
     default: true,
     allowNull: false
   },
+  banned_players : {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: true
+  }
 }, {
   sequelize,
   modelName: "Room"

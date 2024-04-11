@@ -7,7 +7,7 @@ import "./generatePuzzleForm.css";
 import e from "cors";
 import axios from "axios";
 
-function GeneratePuzzleForm() {
+function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
   const [seed, setSeed] = useState("");
   const [size, setSize] = useState("medium");
 
@@ -25,6 +25,8 @@ function GeneratePuzzleForm() {
         const response = await axios.post("/puzzle", { seed, size });
         if (response.status === 200) {
           console.log("Puzzle Received", response.data);
+          setPuzzle(response.data);
+          console.log("puzzle set!");
         } else if (response.status === 404) {
           console.log("Error", response.data);
         } else {
