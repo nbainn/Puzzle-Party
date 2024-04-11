@@ -124,10 +124,14 @@ function RoomPage() {
         console.log('Time spent on page:', timeSpent, 'seconds');
 
         try {
+            if (Number.isInteger(userId) === false) {
+              return;
+            }
             const response = await axios.post("/addTime", { userId: userId, time: timeSpent });
             if (response.status === 200) {
                 console.log("time spent added!");
             } else if (response.status === 404) {
+                console.log("User", userId, "not found")
                 console.log("Error", response.data);
             } else {
                 console.error("Unexpected response status:", response.status);

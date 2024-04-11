@@ -436,8 +436,10 @@ app.post("/puzzle", async (req, res) => {
 });
 // STATS ENDPOINT
 app.post('/addTime', async (req, res) => {
+
   const userId = req.body.userId;
   const time = req.body.time;
+
   await addUserTime(userId, time);
   res.status(200).send("Time added successfully");
 });
