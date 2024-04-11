@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import Ably from 'ably/promises';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -10,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [nickname, setNickname] = useState(null);
   const [userColor, setUserColor] = useState(null);
   const [ablyClient, setAblyClient] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAblyReady, setIsAblyReady] = useState(false);
 
   const fetchAndSetAblyClient = useCallback(async (clientId) => {
     if (ablyClient) {
@@ -17,6 +20,10 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     console.log('Creating new Ably client with clientId:', clientId);
+  
+    // Ensure clientId is a string
+    const clientIdString = String(clientId);
+  
     const client = new Ably.Realtime.Promise({
       authCallback: async (tokenParams, callback) => {
         console.log('Ably authCallback called with tokenParams:', tokenParams);
@@ -26,7 +33,7 @@ export const AuthProvider = ({ children }) => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ clientId })
+            body: JSON.stringify({ clientId: clientIdString })
           });
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -40,62 +47,74 @@ export const AuthProvider = ({ children }) => {
         }
       }
     });
-
+  
     client.connection.on('connected', () => {
       console.log('Ably client connected');
+      setIsAblyReady(true);
     });
-
+  
     client.connection.on('failed', () => {
       console.error('Ably client connection failed');
+      setIsAblyReady(false);
     });
-
+  
     setAblyClient(client);
   }, [ablyClient]);
 
   useEffect(() => {
+    const authenticateUser = async () => {
+      setIsLoading(true);
+      try {
+        // Check with the server to validate the token
+        const response = await axios.get('/verifyToken', { withCredentials: true });
+        if (response.status === 200 && response.data.user) {
+          setIsAuthenticated(true);
+          setUserId(response.data.user.id);
+          setNickname(response.data.user.nickname);
+          setUserColor(response.data.user.userColor);
+          await fetchAndSetAblyClient(response.data.user.id);
+        } else {
+          // User is not authenticated with token
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error verifying token:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    authenticateUser();
+  }, []);
+
+// I don't think we need this but I'm keeping it just in case
+/*
+  useEffect(() => {
     // This effect runs when isAuthenticated becomes true and when userId is set
     if (isAuthenticated && userId) {
-      console.log('User authenticated. Setting up Ably client:', userId);
+      console.log('User Re-authenticated. Setting up Ably client:', userId);
       fetchAndSetAblyClient(userId);
     }
   }, [isAuthenticated, userId, fetchAndSetAblyClient]);
-
-  const login = async (token, userId, nickname, userColor) => {
-    if (!token || !userId) {
-      console.error('Invalid login parameters:', { token, userId });
-      return;
+*/
+  const login = async () => {
+    try {
+      const response = await axios.get('/user/profile');
+      if (response.status === 200 && response.data) {
+        setIsAuthenticated(true);
+        setUserId(response.data.id || null);
+        setNickname(response.data.nickname || null);
+        setUserColor(response.data.userColor || '#FFFFFF');
+        fetchAndSetAblyClient(response.data.id);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      setIsAuthenticated(false);
     }
-    console.log('Logging in, received token:', token);
-    // Store user details in localStorage
-    localStorage.setItem('userToken', token);
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('nickname', nickname);
-    localStorage.setItem('userColor', userColor);
-  
-    // Set state values
-    setIsAuthenticated(true);
-    setUserId(String(userId));
-    setNickname(nickname);
-    setUserColor(userColor);
   };
-
-  useEffect(() => {
-    console.log('Checking local storage for token...');
-    const storedToken = localStorage.getItem('userToken');
-    const storedUserId = localStorage.getItem('userId');
-    const storedNickname = localStorage.getItem('nickname');
-    const storedUserColor = localStorage.getItem('userColor');
-    if (storedToken) {
-      console.log('Token found in local storage:', storedToken);
-      setIsAuthenticated(true);
-      setUserId(storedUserId);
-      setNickname(storedNickname);
-      setUserColor(storedUserColor);
-      fetchAndSetAblyClient(storedUserId);
-    } else {
-      console.log('No token found in local storage.');
-    }
-  }, []);
 
   // Function to generate a random hex color
   const getRandomColor = () => {
@@ -126,9 +145,8 @@ export const AuthProvider = ({ children }) => {
     await fetchAndSetAblyClient(guestUserId);
   };
 
-  const logout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userId');
+  const logout = async () => {
+    await axios.get('/logout'); // Make an API call to logout
     setIsAuthenticated(false);
     setIsGuest(false);
     setUserId(null);
@@ -141,7 +159,7 @@ export const AuthProvider = ({ children }) => {
 
   // Expose the states and functions through context
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout, isLoading, isAblyReady }}>
       {children}
     </AuthContext.Provider>
   );

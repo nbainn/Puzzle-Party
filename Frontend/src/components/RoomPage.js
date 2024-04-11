@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams , useNavigate} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ChatBox from "./ChatBox";
 import ClueList from "./ClueList";
-import Grid from "./Grid";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import RoomStatus from "./RoomStatus";
@@ -20,7 +19,6 @@ function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  const navigate = useNavigate();
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -73,51 +71,51 @@ function RoomPage() {
   }, [ablyClient]);
 
   
-useEffect(() => {
-  const fetchMembers = async () => {
-    if (ablyClient) {
-      const channel = ablyClient.channels.get(`room:${roomId}`);
-      try {
-        await channel.presence.subscribe('enter', (member) => {
-          //console.log(member.clientId);
-          //alert('Member ' + member.clientId + ' entered ' + nickname);
-          console.log(member.clientId, "entered the room");
-          if (!players.includes(member.clientId)) {
-            setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
-          }
-          //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
-        });
-        await channel.presence.enter();
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (ablyClient) {
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        try {
+          await channel.presence.subscribe('enter', (member) => {
+            //console.log(member.clientId);
+            //alert('Member ' + member.clientId + ' entered ' + nickname);
+            console.log(member.clientId, "entered the room");
+            if (!players.includes(member.clientId)) {
+              setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
+            }
+            //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
+          });
+          await channel.presence.enter();
 
-        // Subscribe to presence events for members leaving the room
-        await channel.presence.subscribe('leave', (member) => {
-          console.log(member.clientId, "left the room");
-          if (players.includes(member.clientId)) {
-            setPlayers((prevPlayers) => prevPlayers.filter(player => player !== member.clientId));
-          }
-        });
+          // Subscribe to presence events for members leaving the room
+          await channel.presence.subscribe('leave', (member) => {
+            console.log(member.clientId, "left the room");
+            if (players.includes(member.clientId)) {
+              setPlayers((prevPlayers) => prevPlayers.filter(player => player !== member.clientId));
+            }
+          });
 
-        const members = await channel.presence.get();
-        const existingMembers = members.map(member => member.clientId);
-        
-        // Update player list with existing members
-        setPlayers(existingMembers);
-      } catch (error) {
-        console.error("Error getting current members:", error);
-        // You might want to handle the error more gracefully here
+          const members = await channel.presence.get();
+          const existingMembers = members.map(member => member.clientId);
+          
+          // Update player list with existing members
+          setPlayers(existingMembers);
+        } catch (error) {
+          console.error("Error getting current members:", error);
+          // You might want to handle the error more gracefully here
+        }
+      } else {
+        console.log("Ably client not initialized.");
       }
-    } else {
-      console.log("Ably client not initialized.");
-    }
-  };
+    };
 
-  fetchMembers();
+    fetchMembers();
 
-  // Return a cleanup function if needed
-  return () => {
-    // Perform cleanup actions here if necessary
-  };
-}, [roomId, ablyClient]); 
+    // Return a cleanup function if needed
+    return () => {
+      // Perform cleanup actions here if necessary
+    };
+  }, [roomId, ablyClient]); 
 
   useEffect(() => {
     const handleBeforeUnload = async function() {
@@ -147,44 +145,38 @@ useEffect(() => {
     return () => {
         window.removeEventListener('unload', handleBeforeUnload);
     }; 
-}, [userId, startTime]);
+  }, [userId, startTime]);
 
-function handleKick(roomCode, player) {
-  console.log("Kicking player:", player);
-  const channel = ablyClient.channels.get(`room:${roomCode}`);
-  channel.presence.leave(player);
-  setPlayers(players.filter(p => p !== player));
-}
+  function handleKick(roomCode, player) {
+    console.log("Kicking player:", player);
+    const channel = ablyClient.channels.get(`room:${roomCode}`);
+    channel.presence.leave(player);
+    setPlayers(players.filter(p => p !== player));
+  }
 
 
-async function handleBan(roomCode, player) {
-  console.log("Banning player:", player);
-  //implement with database and rooms
-  try {
-    const response = await axios.post('/add-ban', { roomCode, player });
-    if (response.status === 200) {
-      console.log('Banned:', player);
-    } else if (response.status === 404){
-      console.log('Room/player not found:', response.data);
-    } else {
-      console.error('Unexpected response status:', response.status);
+  async function handleBan(roomCode, player) {
+    console.log("Banning player:", player);
+    //implement with database and rooms
+    try {
+      const response = await axios.post('/add-ban', { roomCode, player });
+      if (response.status === 200) {
+        console.log('Banned:', player);
+      } else if (response.status === 404){
+        console.log('Room/player not found:', response.data);
+      } else {
+        console.error('Unexpected response status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error banning', error);
+      console.log("error")
     }
-  } catch (error) {
-    console.error('Error banning', error);
-    console.log("error")
-  }
-}
-
-/*useEffect(() => {
-    console.log("Players updated:", players);
-  }, [players]);
-*/
-  // Use the 'ablyReady' state to control your loading screen
-  if (!ablyReady) {
-    return <div>Loading...</div>;
   }
 
-   
+  /*useEffect(() => {
+      console.log("Players updated:", players);
+    }, [players]);
+  */
 
   function setPuzzleHelper(puzzle) {
     setPuzzle(puzzle);

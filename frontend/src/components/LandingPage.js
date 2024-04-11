@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Box, Card, CardContent, Typography, Link, TextField, Container, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
@@ -13,6 +13,7 @@ function LandingPage() {
   const [serverError, setServerError] = useState('');
   const [genericError, setGenericError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const auth = useAuth();
   const navigate = useNavigate();
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
@@ -23,8 +24,8 @@ function LandingPage() {
       return;
     }
     try {
-      const response = await axios.post('/login', { email, password });
-      login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
+      await axios.post('/login', { email, password });
+      login();
       navigate('/home');
     } catch (error) {
       if (!error.response) {
@@ -47,8 +48,8 @@ function LandingPage() {
         return;
       }
       
-      const googleUser = await axios.post('/googleLogin', { token });
-      login(googleUser.data.token, googleUser.data.userId, googleUser.data.nickname, googleUser.data.userColor);
+      await axios.post('/googleLogin', { token: tokenResponse.credential });
+      login();
       navigate('/home');
     } catch (error) {
       console.error('Google Login Error:', error.response?.data?.message || error.message);
@@ -68,6 +69,13 @@ function LandingPage() {
     display: 'flex',
     justifyContent: 'center',
   };
+
+  useEffect(() => {
+    // If the user is authenticated, redirect them to the HomePage
+    if (auth.isAuthenticated) {
+      navigate('/home');
+    }
+  }, [auth.isAuthenticated, navigate]);
 
   return (
     <Container component="main" maxWidth="xs" sx={{
