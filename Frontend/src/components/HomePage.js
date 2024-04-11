@@ -5,7 +5,6 @@ import SuggestionBox from "./SuggestionBox";
 import "./HomePage.css";
 import axios from "axios";
 //import { loadScript, createHost} from  './peer2peer.js';
-
 function HomePage() {
   const navigate = useNavigate();
   //const [peer, setPeer] = useState(null);

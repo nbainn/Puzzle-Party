@@ -389,7 +389,6 @@ app.use(express.static(path.join(__dirname, "../Frontend/build")));
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
   console.log(`Server running at ${rootConfig.BASE_URL}:${rootConfig.PORT}`);
 });
-
 // This lets the peer JS server run on the same port as local host because we can define a path
 // denoted by /myapp (arbitrary)
 // Going to localhost:3000/myapp would be the same thing as going to peerJS servers available online

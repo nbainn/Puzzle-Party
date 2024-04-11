@@ -85,21 +85,30 @@ function RoomPage() {
             }
             //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
           });
-          await channel.presence.enter();
+          
 
           // Subscribe to presence events for members leaving the room
           await channel.presence.subscribe('leave', (member) => {
             console.log(member.clientId, "left the room");
-            if (players.includes(member.clientId)) {
+            //if (players.includes(member.clientId)) {
               setPlayers((prevPlayers) => prevPlayers.filter(player => player !== member.clientId));
-            }
+            //}
           });
-
+          //console.log("before", players);
+          await channel.presence.enter();
           const members = await channel.presence.get();
-          const existingMembers = members.map(member => member.clientId);
-          
+          let existingMembers = members.map(member => member.clientId);
+          let isFirstOneFiltered = false;
+          existingMembers = existingMembers.filter(member => {
+          if (member === '1' && !isFirstOneFiltered) {
+            isFirstOneFiltered = true;
+            return false;
+          }
+            return true;
+          });
           // Update player list with existing members
           setPlayers(existingMembers);
+          //console.log("after", players);
         } catch (error) {
           console.error("Error getting current members:", error);
           // You might want to handle the error more gracefully here
@@ -110,13 +119,17 @@ function RoomPage() {
     };
 
     fetchMembers();
-
+    //console.log("after after", players);
     // Return a cleanup function if needed
     return () => {
       // Perform cleanup actions here if necessary
     };
   }, [roomId, ablyClient]); 
-
+{/*
+  useEffect(() => {
+    console.log("Players:", players); // Log the current state of players whenever it changes
+  }, [players]);
+*/}
   useEffect(() => {
     const handleBeforeUnload = async function() {
         let endTime = performance.now();
@@ -190,7 +203,9 @@ function RoomPage() {
   return (
     <div className="room-page">
       <div>
-        <ExitRoom />
+        <ExitRoom
+          roomId = {roomId} 
+          ablyClient = {ablyClient}/>
         <RoomStatus roomId={roomId} />
       </div>
       <div>
