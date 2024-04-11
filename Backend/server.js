@@ -289,6 +289,22 @@ app.post("/updateProfile", authenticateToken, async (req, res) => {
   }
 });
 
+// ***VERIFY TOKEN ENDPOINT**************************************************
+app.post('/verifyToken', (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ isValid: false });
+  }
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      res.json({ isValid: false });
+    } else {
+      res.json({ isValid: true });
+    }
+  });
+});
+
 // ***ABLY TOKEN ENDPOINT****************************************************
 // Endpoint to get an Ably token
 app.post("/getAblyToken", async (req, res) => {
@@ -322,6 +338,13 @@ app.post("/getAblyToken", async (req, res) => {
 // ***SERVER SETUP****************************************************
 // Allows server to serve react build files
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
+
+
+// Catch-all route to serve React app for any other route not handled by API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+});
+
 
 // Listening for http requests on port 3000
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {

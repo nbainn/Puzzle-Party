@@ -16,6 +16,12 @@ function LandingPage() {
   const navigate = useNavigate();
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
+  const redirectToLastLocation = () => {
+    const lastLocation = sessionStorage.getItem('lastLocation') || '/home';
+    navigate(lastLocation, { replace: true });
+    sessionStorage.removeItem('lastLocation'); // Clear the stored location
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
     if (!isValidEmail(email)) {
@@ -25,7 +31,7 @@ function LandingPage() {
     try {
       const response = await axios.post('/login', { email, password });
       login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
-      navigate('/home');
+      redirectToLastLocation();
     } catch (error) {
       if (!error.response) {
         setNetworkError('Unable to connect to the server. Please try again later.');
@@ -49,7 +55,7 @@ function LandingPage() {
       
       const googleUser = await axios.post('/googleLogin', { token });
       login(googleUser.data.token, googleUser.data.userId, googleUser.data.nickname, googleUser.data.userColor);
-      navigate('/home');
+      redirectToLastLocation();
     } catch (error) {
       console.error('Google Login Error:', error.response?.data?.message || error.message);
     }

@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Ably from 'ably/promises';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -11,15 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [userColor, setUserColor] = useState(null);
   const [ablyClient, setAblyClient] = useState(null);
 
-  useEffect(() => {
-    // This effect runs when isAuthenticated becomes true and when userId is set
-    if (isAuthenticated && userId) {
-      console.log('User authenticated. Setting up Ably client:', userId);
-      fetchAndSetAblyClient(userId);
-    }
-  }, [isAuthenticated, userId]);
-
-  const fetchAndSetAblyClient = async (clientId) => {
+  const fetchAndSetAblyClient = useCallback(async (clientId) => {
     if (ablyClient) {
       // Ably client already exists. No need to fetch a new token
       return;
@@ -58,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     setAblyClient(client);
-  };
+  }, [ablyClient]);
 
   const login = async (token, userId, nickname, userColor) => {
     if (!token || !userId) {
@@ -78,6 +72,24 @@ export const AuthProvider = ({ children }) => {
     setUserColor(userColor);
   };
 
+  // Function to generate a random hex color
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const generateGuestUserId = () => {
+    const timestamp = Date.now().toString(); // Get timestamp as string
+    const lastFourDigits = timestamp.slice(-4); // Take last 4 digits for uniqueness
+    const randomThreeDigits = Math.floor(100 + Math.random() * 900); // Random number between 100 and 999
+
+    return `guest_${lastFourDigits}${randomThreeDigits}`; // Combine them
+  };
+
   const guestLogin = async () => {
     const guestUserId = `guest_${Date.now()}`;
     setIsAuthenticated(true);
@@ -86,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     await fetchAndSetAblyClient(guestUserId);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('userId');
     setIsAuthenticated(false);
@@ -97,11 +109,52 @@ export const AuthProvider = ({ children }) => {
       console.log('Ably client disconnected');
       setAblyClient(null);
     }
-  };
+  }, []);
+
+  // Verify token with backend
+  const verifyToken = async (token) => {
+    try {
+      const response = await axios.post('/verifyToken', { token });
+      return response.data.isValid;
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      return false;
+    }
+  }; 
+
+  useEffect(() => {
+    console.log('Checking local storage for token...');
+    const initializeAuth = async () => {
+      console.log('Set IACC False');
+      setIsAuthCheckComplete(false); 
+      
+      const storedToken = localStorage.getItem('userToken');
+      if (storedToken) {
+        const isValid = await verifyToken(storedToken);
+        if (isValid) {
+          const storedUserId = localStorage.getItem('userId');
+          const storedNickname = localStorage.getItem('nickname');
+          const storedUserColor = localStorage.getItem('userColor');
+          setIsAuthenticated(true);
+          setUserId(storedUserId);
+          setNickname(storedNickname);
+          setUserColor(storedUserColor);
+          await fetchAndSetAblyClient(storedUserId);
+        } else {
+          console.log('Logout');
+          logout();
+        }
+      }
+      console.log('Set IACC True');
+      setIsAuthCheckComplete(true);
+    };
+  
+    initializeAuth();
+  }, [logout, fetchAndSetAblyClient]);
 
   // Expose the states and functions through context
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, isAuthCheckComplete, login, guestLogin, logout, handleRedirection, setHandleRedirection }}>
       {children}
     </AuthContext.Provider>
   );
