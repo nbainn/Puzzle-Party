@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
       authCallback: async (tokenParams, callback) => {
         console.log('Ably authCallback called with tokenParams:', tokenParams);
         try {
+          // Fetch an Ably token from the server and perchance send username with it
           const response = await fetch('/getAblyToken', {
             method: 'POST',
             headers: {

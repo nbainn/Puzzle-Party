@@ -18,6 +18,9 @@ function JoinRoomForm() {
       const response = await axios.post('/search-entry', { roomCode });
       if (response.status === 200) {
         console.log('Found room:', response.data);
+        //check if they are banned
+        console.log('Found banned:', response.data.banned);
+        console.log('Found banned:', response.banned);
         navigate(`/room/${roomCode}`);
       } else if (response.status === 404){
         console.log('Room not found:', response.data);

@@ -113,6 +113,7 @@ class Room extends Model {
   num_players;
   isActive;
   public_status;
+  banned_players;
   */
  
 }

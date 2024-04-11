@@ -765,11 +765,11 @@ app.post("/search-entry", async (req, res) => {
     }
     let foundRoom = await Room.findOne({
       where: { room_code: roomCode },
-      attributes: ["host"],
+      attributes: ["host", "banned_players"],
     });
     if (foundRoom) {
       console.log(foundRoom.host);
-      res.status(200).send(foundRoom.host);
+      res.status(200).send(foundRoom);
     } else {
       res.status(404).send(null);
     }

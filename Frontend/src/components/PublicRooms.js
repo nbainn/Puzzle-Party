@@ -30,6 +30,7 @@ function PublicRooms() {
 
   const handleJoin = (roomCode) => {
     navigate(`/room/${roomCode}`);
+    //check if they are banned
   };
 
   return (
