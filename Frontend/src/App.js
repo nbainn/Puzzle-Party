@@ -10,17 +10,24 @@ import SignupPage from "./components/SignupPage";
 import RoomPage from "./components/RoomPage";
 import PublicRooms from "./components/PublicRooms";
 import ProfilePage from './components/ProfilePage';
-import CrosswordGrid from "./components/Crossword";
+import LoadingScreen from './components/LoadingScreen';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isGuest } = useAuth();
-  console.log('ProtectedRoute, isAuthenticated:', isAuthenticated, 'isGuest:', isGuest);
+  const { isAuthenticated, isGuest, isLoading, isAblyReady } = useAuth();
 
-  if (!isAuthenticated && !isGuest) {
-    console.log('User not authenticated, redirecting to LandingPage...');
+  if (isLoading) {
+    // Still loading the auth status
+    return <LoadingScreen message="Loading, please wait..." />;
+  } else if (!isAuthenticated && !isGuest) {
+    // Not authenticated and not a guest, redirect to '/'
     return <Navigate to="/" />;
+  } else if (!isAblyReady) {
+    // Authenticated or guest, but Ably is not ready
+    return <LoadingScreen message="Waiting for Ably connection..." />;
+  } else {
+    // Everything is ready, render the children
+    return children;
   }
-  return children;
 };
 
 function App() {
@@ -31,7 +38,6 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path = "/crossword" element={<CrosswordGrid />} />
             {/* Conditionally rendered routes using ProtectedRoute */}
             <Route path="/home" element={
               <ProtectedRoute>

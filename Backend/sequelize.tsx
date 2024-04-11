@@ -33,7 +33,7 @@ Statistics.init({
   },
   //time spent playing
   timePlayed: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
     defaultValue: 0,
   },

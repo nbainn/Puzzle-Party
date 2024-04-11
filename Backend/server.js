@@ -11,6 +11,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
+const cookieParser = require('cookie-parser');
 const fs = require("fs");
 //import wu from "./wordUpdater";
 //const ColorThief = require('color-thief-node');
@@ -46,6 +47,7 @@ Character.update({ value: "b" }, { where: { id: newCharacter.id } });
 */
 
 // ***SIGNUP/LOGIN ENDPOINT****************************************************
+app.use(cookieParser());
 
 // Function to generate a consistent JWT payload
 function generateJwtPayload(user) {
@@ -80,12 +82,21 @@ app.post("/signup", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.status(201).json({
-      token,
-      userId: newUser.id,
-      email: newUser.email,
-      nickname: newUser.nickname,
-      userColor: newUser.userColor,
+    // Set the cookie with the token
+    const cookieOptions = {
+      httpOnly: true,
+      expires: new Date(Date.now() + 3600000), // 1 hour
+      sameSite: 'strict',
+      //secure: true,
+    };
+    res.cookie('token', token, cookieOptions);
+
+    // Send response
+    res.status(201).json({ 
+      userId: newUser.id, 
+      email: newUser.email, 
+      nickname: newUser.nickname, 
+      userColor: newUser.userColor 
     });
   } catch (error) {
     res.status(500).json({ message: "Error creating new user", error });
@@ -114,12 +125,21 @@ app.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({
-      token,
-      userId: user.id,
-      email: user.email,
-      nickname: user.nickname,
-      userColor: user.userColor,
+    // Set the cookie with the token
+    const cookieOptions = {
+      httpOnly: true,
+      expires: new Date(Date.now() + 3600000), // 1 hour
+      sameSite: 'strict',
+      //secure: true,
+    };
+    res.cookie('token', token, cookieOptions);
+
+    // Send response
+    res.json({ 
+      userId: user.id, 
+      email: user.email, 
+      nickname: user.nickname, 
+      userColor: user.userColor 
     });
   } catch (error) {
     res.status(500).json({ message: "Server error during login", error });
@@ -201,7 +221,7 @@ app.post("/googleLogin", async (req, res) => {
     const payload = await verifyGoogleToken(token);
     const googleId = payload["sub"];
     const email = payload["email"];
-    const givenName = payload["given_name"]; //  given name (first name)
+    const givenName = payload["given_name"]; // given name (first name)
 
     // Check if user already exists in database
     let user = await User.findOne({ where: { email } });
@@ -211,8 +231,18 @@ app.post("/googleLogin", async (req, res) => {
       const token = jwt.sign(generateJwtPayload(user), jwtSecret, {
         expiresIn: "1h",
       });
+
+      // Set the cookie with the token
+      const cookieOptions = {
+        httpOnly: true,
+        expires: new Date(Date.now() + 3600000), // 1 hour
+        sameSite: 'strict',
+        //secure: true,
+      };
+      res.cookie('token', token, cookieOptions);
+
+      // Send response
       res.json({
-        token,
         userId: user.id,
         email: user.email,
         nickname: user.nickname,
@@ -234,9 +264,11 @@ app.post("/googleLogin", async (req, res) => {
         expiresIn: "1h",
       });
 
-      // Send the token and user info back to the client
+      // Set the cookie with the new token
+      res.cookie('token', newToken, cookieOptions);
+
+      // Send response
       res.status(201).json({
-        token: newToken,
         userId: user.id,
         email: user.email,
         nickname: givenName,
@@ -245,21 +277,17 @@ app.post("/googleLogin", async (req, res) => {
     }
   } catch (error) {
     console.error("Error during Google Login:", error);
-    res
-      .status(500)
-      .json({ message: "Server error during Google login", error });
+    res.status(500).json({ message: "Server error during Google login", error });
   }
 });
 
-// Middleware to authenticate and decode JWT
+// Middleware to authenticate and decode Token
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) return res.sendStatus(401);
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: 'No token provided' });
 
   jwt.verify(token, jwtSecret, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.status(403).json({ message: 'Token is invalid' });
     req.user = user;
     next();
   });
@@ -271,7 +299,12 @@ app.get("/user/profile", authenticateToken, async (req, res) => {
     const user = await User.findByPk(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ email: user.email, name: user.name }); // Adjust according to the fields in your User model
+    res.json({ 
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      userColor: user.userColor
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
@@ -292,6 +325,30 @@ app.post("/updateProfile", authenticateToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error updating profile", error });
   }
+});
+
+// Verify Token Endpoint
+app.get('/verifyToken', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    // No token provided
+    return res.status(200).json({ user: null });
+  }
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      // Token is invalid
+      return res.status(200).json({ user: null });
+    }
+    // Token is valid, return the user information
+    return res.status(200).json({ user });
+  });
+});
+
+// Logout Endpoint
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 // ***ABLY TOKEN ENDPOINT****************************************************
@@ -327,13 +384,6 @@ app.post("/getAblyToken", async (req, res) => {
 // ***SERVER SETUP****************************************************
 // Allows server to serve react build files
 app.use(express.static(path.join(__dirname, "../Frontend/build")));
-
-/*
-// Catch-all route to serve React app for any other route not handled by API
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
-});
-*/
 
 // Listening for http requests on port 3000
 const server = app.listen(rootConfig.PORT, "0.0.0.0", () => {
@@ -386,8 +436,10 @@ app.post("/puzzle", async (req, res) => {
 });
 // STATS ENDPOINT
 app.post('/addTime', async (req, res) => {
+
   const userId = req.body.userId;
   const time = req.body.time;
+
   await addUserTime(userId, time);
   res.status(200).send("Time added successfully");
 });
@@ -824,4 +876,9 @@ app.post("/add-ban", async (req, res) => {
     console.error("Error banning player:", error);
     res.status(500).send("Error banning player");
   }
+});
+
+// Catch-all route to serve React app for any other route not handled by API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
 });

@@ -4,13 +4,12 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import "./Crossword.css"; // You can define your own CSS for styling
 // gridSize can be dynamically set in the future based on user preference for small, medium, or large puzzles
-const gridSize = 10;
 
 // Styling for the grid container using Material UI
 // Uses CSS grid layout to organize cells, with flexibility to accommodate different grid sizes
-const GridContainer = styled(Box)(({ size }) => ({
+const GridContainer = styled(Box)(({ size, gridSize }) => ({
   display: "grid",
-  //gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+  gridTemplateRows: `repeat(${gridSize}, 1fr)`,
   gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
   gap: "-4px", // Uniform gap between cells for visual clarity
   padding: "10px",
@@ -32,6 +31,18 @@ const GridCell = styled(Box)({
   },
 });
 
+const GridCellHidden = styled(Box)({
+  position: "relative",
+  backgroundColor: "#fff", // White background for cells
+  border: "2px solid #545454", // Border for visual separation of cells
+  "&:after": {
+    content: '""',
+    display: "block",
+    paddingBottom: "100%", // Maintains square shape
+  },
+  visibility: "hidden",
+});
+
 // Wrapper for the input field within each grid cell
 // Centers the input field within the cell
 const InputWrapper = styled("div")({
@@ -49,6 +60,7 @@ const InputWrapper = styled("div")({
 const StyledInput = styled(TextField)({
   width: "100%",
   height: "100%",
+  userSelect: "none", // Prevents user selection of text
   "& input": {
     textAlign: "center",
     fontSize: "1.5rem",
@@ -62,6 +74,9 @@ const StyledInput = styled(TextField)({
     "& fieldset": {
       border: "none", // Hides default border to blend with cell border
     },
+  },
+  "&::selection": {
+    background: "transparent", // Prevent text selection
   },
 });
 
@@ -90,6 +105,7 @@ const CrosswordGrid = ({
   // State for responsive grid size
   const [size, setSize] = useState(300);
   const [location, setLocation] = useState(0, 0);
+  const [refresh, setRefresh] = useState(false);
 
   console.log("PUZZLE:" + puzzle);
   let numRows = 10;
@@ -98,6 +114,7 @@ const CrosswordGrid = ({
     numRows = puzzle.puzzle.size.rows;
     numCols = puzzle.puzzle.size.columns;
   }
+  //gridSize = numRows;
   const [channel, setChannel] = useState(null);
   const [numLetters, setNumLetters] = useState(0);
   const [grid, setGrid] = useState(
@@ -105,7 +122,7 @@ const CrosswordGrid = ({
       Array(numCols).fill({
         value: "",
         highlighted: false,
-        hidden: false,
+        hidden: true,
         color: null,
       })
     )
@@ -393,7 +410,7 @@ const CrosswordGrid = ({
       })
     );*/
     setGrid(resetGrid);
-  }, [currentDirection]);
+  }, [currentDirection, refresh]);
 
   //useEffect(() => {
   const handleKeyPress = async (event, rowIndex, colIndex) => {
@@ -418,6 +435,8 @@ const CrosswordGrid = ({
       setGrid(updatedGrid);
       rowIndex = currentDirection === "down" ? rowIndex + 1 : rowIndex;
       colIndex = currentDirection === "across" ? colIndex + 1 : colIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       console.log("UPDATED GRID");
       if (ablyClient) {
@@ -433,6 +452,48 @@ const CrosswordGrid = ({
       } else {
         console.log("Ably client not initialized.");
       }
+    } else if (event.keyCode === 38) {
+      // Arrow Up pressed
+      rowIndex =
+        rowIndex > 0 && puzzle.puzzle.grid[rowIndex - 1][colIndex] != " "
+          ? rowIndex - 1
+          : rowIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      setRefresh(!refresh);
+    } else if (event.keyCode === 40) {
+      // Arrow Down pressed
+      rowIndex =
+        rowIndex < numRows - 1 &&
+        puzzle.puzzle.grid[rowIndex + 1][colIndex] != " "
+          ? rowIndex + 1
+          : rowIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      setRefresh(!refresh);
+    } else if (event.keyCode === 37) {
+      // Arrow Left pressed
+      colIndex =
+        colIndex > 0 && puzzle.puzzle.grid[rowIndex][colIndex - 1] != " "
+          ? colIndex - 1
+          : colIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      setRefresh(!refresh);
+    } else if (event.keyCode === 39) {
+      // Arrow Right pressed
+      colIndex =
+        colIndex < numCols - 1 &&
+        puzzle.puzzle.grid[rowIndex][colIndex + 1] != " "
+          ? colIndex + 1
+          : colIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      setRefresh(!refresh);
     } else if (event.keyCode !== 8 && event.keyCode !== 46) {
       event.preventDefault();
     } else {
@@ -445,9 +506,19 @@ const CrosswordGrid = ({
           : row
       );
       rowIndex =
-        currentDirection === "down" && rowIndex > 0 ? rowIndex - 1 : rowIndex;
+        currentDirection === "down" &&
+        rowIndex > 0 &&
+        puzzle.puzzle.grid[rowIndex - 1][colIndex] != " "
+          ? rowIndex - 1
+          : rowIndex;
       colIndex =
-        currentDirection === "across" && colIndex > 0 ? colIndex - 1 : colIndex;
+        currentDirection === "across" &&
+        colIndex > 0 &&
+        puzzle.puzzle.grid[rowIndex][colIndex - 1] != " "
+          ? colIndex - 1
+          : colIndex;
+      location[0] = rowIndex;
+      location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setGrid(updatedGrid);
       event.preventDefault();
@@ -461,26 +532,14 @@ const CrosswordGrid = ({
   //};
   //}, [currentDirection]);
   const handleCellClick = (rowIndex, colIndex) => {
-    // Reset highlighting
-    const resetGrid = grid.map((row) =>
-      row.map((cell) => ({ ...cell, highlighted: false }))
-    );
-    setLocation([rowIndex, colIndex]);
-    setGrid(resetGrid);
-
-    // Highlight cells in the current direction
-    const newGrid = resetGrid.map((row, rIndex) =>
-      row.map((cell, cIndex) => {
-        if (currentDirection === "across" && rIndex === rowIndex) {
-          return { ...cell, highlighted: true };
-        }
-        if (currentDirection === "down" && cIndex === colIndex) {
-          return { ...cell, highlighted: true };
-        }
-        return cell;
-      })
-    );
-    setGrid(newGrid);
+    if (location[0] === rowIndex && location[1] === colIndex) {
+      setCurrentDirection(currentDirection === "across" ? "down" : "across");
+      setRefresh(!refresh);
+    } else {
+      location[0] = rowIndex;
+      location[1] = colIndex;
+      setRefresh(!refresh);
+    }
 
     // Update current word
     setCurrentWordStart(findWordStart(rowIndex, colIndex));
@@ -619,46 +678,44 @@ const CrosswordGrid = ({
         ></input>
       </div>
 
-      <GridContainer size={size}>
-        {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="row">
-            {row.map((cell, colIndex) =>
-              cell.hidden ? (
-                <div key={`${rowIndex}-${colIndex}`} className="cell-wrapper" />
-              ) : (
-                <GridCell key={`${rowIndex}-${colIndex}`}>
-                  <InputWrapper>
-                    <StyledInput
-                      id={`cell-${rowIndex}-${colIndex}`} // Unique id for each cell
-                      className={`cell ${
-                        isCellInCurrentWord(rowIndex, colIndex)
-                          ? "current-word"
-                          : ""
-                      }`}
-                      value={cell.value}
-                      onClick={() => handleCellClick(rowIndex, colIndex)}
-                      /*onChange={(event) =>
+      <GridContainer size={size} gridSize={numRows}>
+        {grid.map((row, rowIndex) =>
+          row.map((cell, colIndex) =>
+            cell.hidden ? (
+              <GridCellHidden key={`${rowIndex}-${colIndex}`} />
+            ) : (
+              <GridCell key={`${rowIndex}-${colIndex}`}>
+                <InputWrapper>
+                  <StyledInput
+                    id={`cell-${rowIndex}-${colIndex}`} // Unique id for each cell
+                    className={`cell ${
+                      isCellInCurrentWord(rowIndex, colIndex)
+                        ? "current-word"
+                        : ""
+                    }`}
+                    value={cell.value}
+                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                    /*onChange={(event) =>
                         handleCellChange(event, rowIndex, colIndex)
                       }*/
-                      onKeyDown={(event) =>
-                        handleKeyPress(event, rowIndex, colIndex)
-                      }
-                      maxLength={1}
-                      style={{
-                        backgroundColor: cell.color
-                          ? cell.color
-                          : cell.highlighted
-                          ? hexToRGBA(favcolor, 0.5)
-                          : "white",
-                      }}
-                    />
-                    {(cell.color = null)}
-                  </InputWrapper>
-                </GridCell>
-              )
-            )}
-          </div>
-        ))}
+                    onKeyDown={(event) =>
+                      handleKeyPress(event, rowIndex, colIndex)
+                    }
+                    maxLength={1}
+                    style={{
+                      backgroundColor: cell.color
+                        ? cell.color
+                        : cell.highlighted
+                        ? hexToRGBA(favcolor, 0.5)
+                        : "white",
+                    }}
+                  />
+                  {(cell.color = null)}
+                </InputWrapper>
+              </GridCell>
+            )
+          )
+        )}
       </GridContainer>
     </div>
   );

@@ -50,8 +50,8 @@ function SignupPage() {
     }
     setLoading(true);
     try {
-      const response = await axios.post('/signup', { email, password, nickname, userColor });
-      login(response.data.token, response.data.userId, response.data.nickname, response.data.userColor);
+      await axios.post('/signup', { email, password, nickname, userColor });
+      login();
       navigate('/home');
     } catch (err) {
       setLoading(false);
