@@ -33,7 +33,6 @@
   display: block;
   padding-bottom: 100%; /* Maintains square shape */
 }
-
 .cell:hover {
     background-color: #f0f0f0;
 }
