@@ -12,6 +12,7 @@ import RoomSettings from "./RoomSettings";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -31,7 +32,7 @@ function RoomPage() {
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(performance.now());
   //const [playerList, setPlayerList] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (ablyClient) {
       // Log the current connection state
@@ -99,13 +100,14 @@ function RoomPage() {
           const members = await channel.presence.get();
           let existingMembers = members.map(member => member.clientId);
           let isFirstOneFiltered = false;
-          existingMembers = existingMembers.filter(member => {
-          if (member === '1' && !isFirstOneFiltered) {
+          //existingMembers = existingMembers.filter(member => {  
+          {/*}
+            if (member === '1' && !isFirstOneFiltered) {
             isFirstOneFiltered = true;
             return false;
           }
             return true;
-          });
+          });*/}
           // Update player list with existing members
           setPlayers(existingMembers);
           //console.log("after", players);
@@ -164,13 +166,45 @@ function RoomPage() {
     }; 
   }, [userId, startTime]);
 
-  function handleKick(roomCode, player) {
+  async function handleKick(roomCode, player) {
     console.log("Kicking player:", player);
     const channel = ablyClient.channels.get(`room:${roomCode}`);
     channel.presence.leave(player);
-    setPlayers(players.filter(p => p !== player));
+    //setPlayers(players.filter(p => p !== player));
+    await ablyClient.channels.get(`user:${player}`).publish('kick', { message: 'You have been kicked from the room.' });
   }
+  {/*
 
+  useEffect(() => {
+    const kickMembers = async () => {
+    if (ablyClient) {
+      const channel = ablyClient.channels.get(`room:${roomId}`);
+    // Subscribe to kick messages
+      channel.subscribe('kick', (message) => {
+      console.log('Kick message:', message);
+      // Navigate user back to homepage
+      navigate('/home');
+    });
+    await channel.detach();
+    const onGrid = (grid) => {
+      console.log("Grid received:", grid);
+      setGrid(grid.data.grid);
+    };
+  channel.subscribe("grid", onGrid);
+    }else {
+      console.log("Ably client not initialized.");
+    }
+  };
+  kickMembers();
+  
+    return () => {
+      // Unsubscribe from kick messages when component unmounts
+      const channel = ablyClient.channels.get(`room:${roomId}`);
+      channel.unsubscribe();
+    };
+  }, [ablyClient, roomId]);
+
+*/}
 
   async function handleBan(roomCode, player) {
     console.log("Banning player:", player);
