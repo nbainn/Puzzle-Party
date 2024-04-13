@@ -11,6 +11,7 @@ import RoomPage from "./components/RoomPage";
 import PublicRooms from "./components/PublicRooms";
 import ProfilePage from './components/ProfilePage';
 import LoadingScreen from './components/LoadingScreen';
+import Statistics from "./components/Statistics";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isGuest, isLoading, isAblyReady } = useAuth();
@@ -57,6 +58,11 @@ function App() {
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/statistics/:userId" element={
+              <ProtectedRoute>
+                <Statistics />
               </ProtectedRoute>
             } />
           </Routes>

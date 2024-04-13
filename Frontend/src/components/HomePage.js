@@ -4,11 +4,14 @@ import JoinRoomForm from "./JoinRoomForm";
 import SuggestionBox from "./SuggestionBox";
 import "./HomePage.css";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
+
+
 //import { loadScript, createHost} from  './peer2peer.js';
 function HomePage() {
   const navigate = useNavigate();
   //const [peer, setPeer] = useState(null);
-
+  const { userId } = useAuth();
   const handleCreateRoom = async () => {
     //console.log('supposed to get hostid')
     //const hostId = createHost();
@@ -32,6 +35,10 @@ function HomePage() {
     navigate("/rooms/");
   };
 
+  const handleStatistics = async () => {
+    navigate(`/statistics/${userId}`);
+  }
+
   return (
     <div className="home-page">
       <h1 className="home-title">Welcome to Puzzle Party</h1>
@@ -40,6 +47,9 @@ function HomePage() {
       </button>
       <button onClick={handleJoinList} className="create-room-button">
         Join Public Room
+      </button>
+      <button onClick={handleStatistics} className="create-room-button">
+        Go to statistics
       </button>
       <JoinRoomForm />
       <SuggestionBox />
