@@ -14,8 +14,6 @@ import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
 import { useNavigate } from 'react-router-dom';
 
-
-
 function RoomPage() {
   const { roomId } = useParams();
   const { ablyClient, userId, userColor, nickname } = useAuth();
@@ -70,8 +68,6 @@ function RoomPage() {
         ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
-
-  
   useEffect(() => {
     const fetchMembers = async () => {
       if (ablyClient) {
@@ -99,15 +95,16 @@ function RoomPage() {
           await channel.presence.enter();
           const members = await channel.presence.get();
           let existingMembers = members.map(member => member.clientId);
-          let isFirstOneFiltered = false;
+          
+          //let isFirstOneFiltered = false;
           //existingMembers = existingMembers.filter(member => {  
-          {/*}
-            if (member === '1' && !isFirstOneFiltered) {
-            isFirstOneFiltered = true;
-            return false;
-          }
-            return true;
-          });*/}
+          //if (member === '1' && !isFirstOneFiltered) {
+          //  isFirstOneFiltered = true;
+          //  return false;
+          //}
+          //  return true;
+          //});
+          existingMembers = Array.from(new Set(existingMembers));
           // Update player list with existing members
           setPlayers(existingMembers);
           //console.log("after", players);
@@ -174,7 +171,6 @@ function RoomPage() {
     await ablyClient.channels.get(`user:${player}`).publish('kick', { message: 'You have been kicked from the room.' });
   }
   {/*
-
   useEffect(() => {
     const kickMembers = async () => {
     if (ablyClient) {
@@ -205,7 +201,6 @@ function RoomPage() {
   }, [ablyClient, roomId]);
 
 */}
-
   async function handleBan(roomCode, player) {
     console.log("Banning player:", player);
     //implement with database and rooms
