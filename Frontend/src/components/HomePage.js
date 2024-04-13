@@ -2,11 +2,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import JoinRoomForm from "./JoinRoomForm";
 import SuggestionBox from "./SuggestionBox";
+import ProfileDropdown from './ProfileDropdown';
 import "./HomePage.css";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
+
 //import { loadScript, createHost} from  './peer2peer.js';
 function HomePage() {
   const navigate = useNavigate();
+  const { isGuest } = useAuth();
   //const [peer, setPeer] = useState(null);
 
   const handleCreateRoom = async () => {
@@ -34,6 +38,7 @@ function HomePage() {
 
   return (
     <div className="home-page">
+      {!isGuest && <ProfileDropdown />}
       <h1 className="home-title">Welcome to Puzzle Party</h1>
       <button onClick={handleCreateRoom} className="create-room-button">
         Create Room

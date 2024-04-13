@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box } from '@mui/material';
 import axios from 'axios';
+import LoadingScreen from './LoadingScreen';
 
 /**
  * ProfilePage Component
@@ -35,7 +36,6 @@ function ProfilePage() {
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
-        // Handle error (e.g., redirect to login if unauthorized)
       }
       setIsLoading(false);
     };
@@ -49,7 +49,7 @@ function ProfilePage() {
   };
 
   if (isLoading) {
-    return <Typography>Loading user data...</Typography>;
+    return <LoadingScreen message="Loading user data..." />;
   }
 
   return (

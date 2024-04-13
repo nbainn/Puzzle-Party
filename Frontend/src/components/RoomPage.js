@@ -9,6 +9,7 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import RoomSettings from "./RoomSettings";
+import ProfileDropdown from './ProfileDropdown';
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import "./RoomPage.css";
@@ -16,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor, nickname } = useAuth();
+  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
@@ -231,6 +232,7 @@ function RoomPage() {
 
   return (
     <div className="room-page">
+      {!isGuest && <ProfileDropdown />}
       <div>
         <ExitRoom
           roomId = {roomId} 
