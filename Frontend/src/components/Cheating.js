@@ -2,11 +2,31 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Cheating.css";
 import catSleep from "../assets/PartyCatSleep.gif";
+import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
+import { Button, ButtonGroup } from "@mui/material";
 
 //import {fetchHost} from '../sequelize.tsx';
 //import {sq} from '../sequelize.tsx';
 import e from "cors";
 import axios from "axios";
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  fontSize: "100%",
+  lineHeight: 1,
+  fontFamily: "inherit",
+  marginTop: 5,
+  marginRight: 0
+});
+
 
 function Cheating({
   setRevealGrid,
@@ -31,29 +51,27 @@ function Cheating({
   };
 
   return (
+  <ThemeProvider theme={theme}>
     <div className="cheating">
-      <div className="image-container">
-        <img
-          src={catSleep}
-          alt="Your Animated GIF"
-          className="pixelated-image"
-        />
-      </div>
       <div className="button-container">
-        <button type="button" onClick={handleRevealHint}>
+        <ButtonGroup size="small" aria-label="Small button group">
+        <StyledButton onClick={handleRevealHint}>
           Get Hint
-        </button>
-        <button type="button" onClick={handleCheckWord}>
+        </StyledButton>
+        <StyledButton onClick={handleCheckWord}>
           Check Word
-        </button>
-        <button type="button" onClick={handleCheckGrid}>
+        </StyledButton>
+        <StyledButton onClick={handleCheckGrid}>
           Check Grid
-        </button>
-        <button type="button" onClick={handleRevealGrid}>
+        </StyledButton>
+        <StyledButton onClick={handleRevealGrid}>
           Reveal Grid
-        </button>
+        </StyledButton>
+        </ButtonGroup>
+        
       </div>
     </div>
+  </ThemeProvider>
   );
 }
 

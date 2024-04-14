@@ -13,7 +13,7 @@ const LoadingScreen = ({ message }) => {
       style={{ 
         height: '100vh', 
         backgroundColor: '#ffad9d', 
-        fontFamily: "'Bubblegum Sans', cursive" 
+        //fontFamily: "'Bubblegum Sans', cursive" 
       }}
     >
       <CircularProgress />
@@ -22,7 +22,7 @@ const LoadingScreen = ({ message }) => {
           variant="h6" 
           style={{ 
             marginTop: 20,
-            fontFamily: "'Bubblegum Sans', cursive"
+            //fontFamily: "'Bubblegum Sans', cursive"
           }}
         >
           {message}

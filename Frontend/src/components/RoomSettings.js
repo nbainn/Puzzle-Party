@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./RoomSettings.css"; // You can create this CSS file to style your popup
 
+import { styled } from "@mui/material/styles";
+import { Button } from "@mui/material";
+
+const StyledButton = styled(Button)({
+  fontSize: "1rem",
+});
+
 function RoomSettings({
   timer,
   hints,
@@ -42,10 +49,10 @@ function RoomSettings({
 
   return (
     <div className="settings-popup">
-      <label>{timer && <p>Time left: {timeLeft} seconds</p>}</label>
-      <button onClick={togglePopup} className="settings-button">
+      <label>{timer && <h2>Time left: {timeLeft} seconds</h2>}</label>
+      <StyledButton variant = "text" onClick={togglePopup} className="settings-button">
         ⚙️
-      </button>
+      </StyledButton>
       {isOpen && (
         <div className="popup-content">
           <h2>Settings</h2>

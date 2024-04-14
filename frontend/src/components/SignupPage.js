@@ -9,8 +9,8 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const Title = styled(Typography)({
-  fontFamily: "'Bubblegum Sans', cursive",
-  marginBottom: '16px',
+  //fontFamily: "'Bubblegum Sans', cursive",
+  marginBottom: '4px',
 });
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -83,7 +83,7 @@ function SignupPage() {
       minHeight: '100vh',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: '16px',
+      padding: '4px',
       overflow: 'auto'
     }}>
       <StyledCard elevation={3}>
