@@ -5,20 +5,44 @@ import ClueList from "./ClueList";
 import PlayerList from "./PlayerList";
 import ExitRoom from "./ExitRoom";
 import RoomStatus from "./RoomStatus";
+import SuggestionBox from "./SuggestionBox";
 import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import RoomSettings from "./RoomSettings";
+import ProfileDropdown from './ProfileDropdown';
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
+import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
+import { Button } from "@mui/material";
 import "./RoomPage.css";
 import { useNavigate } from 'react-router-dom';
+import catSleep from "../assets/PartyCatSleep.gif";
 
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  width: "50px",
+  fontSize: "10px",
+  fontFamily: "inherit",
+  lineHeight: 0,
+  minWidth: "50px",
+  marginLeft: 10,
+});
 
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor, nickname } = useAuth();
+  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
@@ -32,6 +56,8 @@ function RoomPage() {
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(performance.now());
   //const [playerList, setPlayerList] = useState([]);
+
+
   const navigate = useNavigate();
   useEffect(() => {
     if (ablyClient) {
@@ -70,8 +96,6 @@ function RoomPage() {
         ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
-
-  
   useEffect(() => {
     const fetchMembers = async () => {
       if (ablyClient) {
@@ -99,15 +123,16 @@ function RoomPage() {
           await channel.presence.enter();
           const members = await channel.presence.get();
           let existingMembers = members.map(member => member.clientId);
-          let isFirstOneFiltered = false;
+          
+          //let isFirstOneFiltered = false;
           //existingMembers = existingMembers.filter(member => {  
-          {/*}
-            if (member === '1' && !isFirstOneFiltered) {
-            isFirstOneFiltered = true;
-            return false;
-          }
-            return true;
-          });*/}
+          //if (member === '1' && !isFirstOneFiltered) {
+          //  isFirstOneFiltered = true;
+          //  return false;
+          //}
+          //  return true;
+          //});
+          existingMembers = Array.from(new Set(existingMembers));
           // Update player list with existing members
           setPlayers(existingMembers);
           //console.log("after", players);
@@ -174,7 +199,6 @@ function RoomPage() {
     await ablyClient.channels.get(`user:${player}`).publish('kick', { message: 'You have been kicked from the room.' });
   }
   {/*
-
   useEffect(() => {
     const kickMembers = async () => {
     if (ablyClient) {
@@ -205,7 +229,6 @@ function RoomPage() {
   }, [ablyClient, roomId]);
 
 */}
-
   async function handleBan(roomCode, player) {
     console.log("Banning player:", player);
     //implement with database and rooms
@@ -235,49 +258,54 @@ function RoomPage() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
     <div className="room-page">
-      <div>
-        <ExitRoom
-          roomId = {roomId} 
-          ablyClient = {ablyClient}/>
-        <RoomStatus roomId={roomId} />
-      </div>
-      <div>
-        <h2>Player List</h2>
-        <ul>
-          {players.map(player => (
-            <div>
-             <li key={player}>{player}</li>
-             <button onClick={() => handleKick(roomId, player)}>Kick</button>
-             <button onClick={() => handleBan(roomId, player)}>Ban</button>
-           </div>
-          ))}
-        </ul>
-      </div>
+      {!isGuest && <ProfileDropdown />}
       <div className="settings">
-        <RoomSettings
-          timer={timer}
-          hints={hints}
-          guesses={guesses}
-          setTimer={setTimer}
-          setHints={setHints}
-          setGuesses={setGuesses}
-        />
       </div>
       <div className="room-header">
         <h2>Room: {roomId}</h2>
         <GeneratePuzzleForm 
           setPuzzle={setPuzzleHelper}
         />
-        <Cheating
+      </div>
+      <div className="game-container">
+        <div className="players-list">
+          <Cheating
           setRevealGrid={setRevealGrid}
           setRevealHint={setRevealHint}
           setCheckWord={setCheckWord}
           setCheckGrid={setCheckGrid}
-        />
-      </div>
-      <div className="game-container">
-        <PlayerList />
+          />
+          <div>
+            <h2>Player List</h2>
+            <ul>
+              {players.map(player => (
+                <div>
+                <li key={player}>{player} 
+                  <StyledButton onClick={() => handleKick(roomId, player)}>Kick</StyledButton>
+                  <StyledButton onClick={() => handleBan(roomId, player)}>Ban</StyledButton>
+                </li>
+              </div>
+              ))}
+            </ul>
+          </div>
+            <RoomSettings
+            timer={timer}
+            hints={hints}
+            guesses={guesses}
+            setTimer={setTimer}
+            setHints={setHints}
+            setGuesses={setGuesses}
+          />
+          <div>
+            <ExitRoom
+              roomId = {roomId} 
+              ablyClient = {ablyClient}/>
+            <RoomStatus roomId={roomId} />
+          </div>
+          <SuggestionBox />
+        </div>
         <CrosswordGrid
           ablyClient = {ablyClient}
           roomId={roomId}
@@ -308,6 +336,7 @@ function RoomPage() {
         </div>
       </div>
     </div>
+    </ThemeProvider>
   );
 }
 

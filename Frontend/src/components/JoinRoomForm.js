@@ -5,6 +5,30 @@ import './JoinRoomForm.css';
 //import {sq} from '../sequelize.tsx';
 import e from 'cors';
 import axios from 'axios';
+import { styled, createTheme, ThemeProvider  } from '@mui/material/styles';
+import { Button, TextField } from '@mui/material';
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  fontSize: "1rem",
+  fontFamily: "inherit",
+  lineHeight: 1.5,
+  minWidth: "50px",
+  width: "100px", 
+  padding: "15px 10px",
+  marginLeft: "5px"
+});
 
 
 function JoinRoomForm() {
@@ -41,8 +65,9 @@ function JoinRoomForm() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <form onSubmit={handleSubmit} className="join-room-form">
-      <input
+      <TextField
         type="text"
         placeholder="Enter Room Code"
         value={roomCode}
@@ -50,9 +75,11 @@ function JoinRoomForm() {
         minLength="6"
         maxLength="6"
         className="join-room-input"
+        variant="outlined"
       />
-      <button type="submit" className="join-room-button">Join Room</button>
+      <StyledButton type="submit" className="join-room-button">Join Room</StyledButton>
     </form>
+    </ThemeProvider>
   );
 }
 

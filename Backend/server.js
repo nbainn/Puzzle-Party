@@ -710,6 +710,25 @@ async function addUserTime(userId, timeInMillis) {
   await stat.save();
 }
 
+async function getUserStatistics(userId) {
+  let stat = await Statistics.findOne({
+    where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    return null;
+  } 
+  return { timePlayed: stat.timePlayed, gamesPlayed: stat.gamesPlayed, gamesWon: stat.gamesWon };
+}
+
+async function getGlobalStatistics() { 
+  let totalTime = await Statistics.sum("timePlayed");
+  let totalGames = await Statistics.sum("gamesPlayed");
+  let totalWins = await Statistics.sum("gamesWon");
+  return { timePlayed: totalTime, gamesPlayed: totalGames, gamesWon: totalWins, gamesLost: totalGames - totalWins};
+}
+
 async function addUserWins(userId) {
   let stat = await Statistics.findOne(
     {where: {
@@ -843,6 +862,37 @@ app.get("/find-rooms", async (req, res) => {
     if (rooms) {
       console.log(rooms);
       res.status(200).send(rooms);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.get("/get-statistics", async(req, res) => {
+  try {
+    const userId = req.query.userId;
+    console.log("stats userid:", userId)
+    const stats = await getUserStatistics(userId);
+    if (stats) {
+      res.status(200).send(stats);
+    } else {
+      res.status(404).send(null);
+    }
+
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.get("/get-global-statistics", async(req, res) => {
+  try {
+    const stats = await getGlobalStatistics();
+    if (stats) {
+      res.status(200).send(stats);
     } else {
       res.status(404).send(null);
     }
