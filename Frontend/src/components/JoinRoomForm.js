@@ -26,7 +26,7 @@ const StyledButton = styled(Button)({
   lineHeight: 1.5,
   minWidth: "50px",
   width: "100px", 
-  padding: "15px 20px",
+  padding: "15px 10px",
   marginLeft: "5px"
 });
 
