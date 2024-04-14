@@ -1,10 +1,34 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import JoinRoomForm from "./JoinRoomForm";
-import SuggestionBox from "./SuggestionBox";
 import "./HomePage.css";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
+import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import { Button } from "@mui/material";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  fontSize: "1.5rem",
+  fontFamily: "inherit",
+  lineHeight: 2,
+  minWidth: "50px",
+  marginLeft: 10,
+  width: "300px", 
+  padding: "15px 30px",
+  margin: "10px",
+});
+
 
 
 //import { loadScript, createHost} from  './peer2peer.js';
@@ -40,20 +64,21 @@ function HomePage() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
     <div className="home-page">
       <h1 className="home-title">Welcome to Puzzle Party</h1>
-      <button onClick={handleCreateRoom} className="create-room-button">
+      <StyledButton onClick={handleCreateRoom} className="create-room-button">
         Create Room
-      </button>
-      <button onClick={handleJoinList} className="create-room-button">
+      </StyledButton>
+      <StyledButton onClick={handleJoinList} className="create-room-button">
         Join Public Room
-      </button>
-      <button onClick={handleStatistics} className="create-room-button">
-        Go to statistics
-      </button>
+      </StyledButton>
       <JoinRoomForm />
-      <SuggestionBox />
+      <StyledButton onClick={handleStatistics} className="create-room-button">
+        See Statistics
+      </StyledButton>
     </div>
+    </ThemeProvider>
   );
 }
 

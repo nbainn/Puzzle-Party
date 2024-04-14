@@ -59,10 +59,10 @@ const Statistics = () => {
             )}
             {globalStats ? (
                 <div>
-                    <p>Total Games Played: {globalStats.gamesPlayed}</p>
-                    <p>Total Games Won: {globalStats.gamesWon}</p>
-                    <p>Total Games Lost: {globalStats.gamesPlayed - globalStats.gamesWon}</p>
-                    <p>Total Time Played: {globalStats.timePlayed} seconds </p>
+                    <p>Global Games Played: {globalStats.gamesPlayed}</p>
+                    <p>Global Games Won: {globalStats.gamesWon}</p>
+                    <p>Global Games Lost: {globalStats.gamesPlayed - globalStats.gamesWon}</p>
+                    <p>Global Time Played: {globalStats.timePlayed} seconds </p>
                 </div>
                 ) : (
                     <p>No global stats yet!</p>

@@ -5,7 +5,7 @@
     justify-content: center;
     height: 100vh; /* Full height of the viewport */
     background-color: #ffad9d; 
-    font-family: 'Bubblegum Sans', cursive; 
+    /* font-family: 'Bubblegum Sans', cursive;  */
   }
   
   .home-title {

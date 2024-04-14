@@ -62,11 +62,13 @@ const StyledInput = styled(TextField)({
   height: "100%",
   userSelect: "none", // Prevents user selection of text
   "& input": {
+    fontFamily: "inherit",
     textAlign: "center",
     fontSize: "1.5rem",
     padding: "0",
     "&::placeholder": {
       fontSize: "1.5rem",
+      fontFamily: "inherit",
     },
   },
   "& .MuiOutlinedInput-root": {
