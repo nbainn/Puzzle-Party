@@ -114,6 +114,7 @@ const CrosswordGrid = ({
   setCheckWord,
   checkGrid,
   setCheckGrid,
+  color
 }) => {
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
@@ -149,6 +150,13 @@ const CrosswordGrid = ({
   );
 
   let tempGrid = [];
+  useEffect(() => {
+    if (color) {
+      setColor(color);
+    }
+
+  }, [color]);
+
 
   useEffect(() => {
     if (ablyClient) {
@@ -707,16 +715,6 @@ const CrosswordGrid = ({
 
   return (
     <div className="crossword-grid">
-      <div className="color-picker">
-        <label for="favcolor">Select your Cursor Color:</label>
-        <input
-          type="color"
-          id="favcolor1"
-          name="favcolor"
-          value="#e08794"
-          onChange={(e) => setColor(e.target.value)}
-        ></input>
-      </div>
 
       <GridContainer size={size} gridSize={numRows}>
         {grid.map((row, rowIndex) =>
