@@ -6,12 +6,14 @@ import { join } from "path-browserify";
 import axios from "axios";
 import cat from '../assets/public_cat.png';
 import { List, ListItem, ListItemButton } from "@mui/material";
+import { useAuth } from "../hooks/useAuth";
 
 
 function PublicRooms() {
   //createHost();
   //const host = createHost();
   //console.log("Adding peerID", host)
+  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
@@ -22,8 +24,12 @@ function PublicRooms() {
             limit: 10,
           },
         });
-        //console.log('Got rooms:', response.data);
-        setRooms(response.data);
+        console.log('Got rooms:', response.data);
+        let str = '' + userId;
+        const filteredRooms = response.data.filter(room => { 
+          return !room.banned_players || !room.banned_players.includes(str);
+        });
+        setRooms(filteredRooms);
       } catch (error) {
         console.error("Could not get rooms:", error);
       }
@@ -31,7 +37,7 @@ function PublicRooms() {
     fetchRooms();
   }, []);
 
-  const handleJoin = (roomCode) => {
+  const handleJoin = async (roomCode) => {
     navigate(`/room/${roomCode}`);
     //check if they are banned
   };

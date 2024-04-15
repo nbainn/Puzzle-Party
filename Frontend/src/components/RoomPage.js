@@ -58,6 +58,7 @@ function RoomPage() {
   const [startTime, setStartTime] = useState(performance.now());
   const [favColor, setColor] = React.useState("#e08794");
   const [isKicked, setIsKicked] = useState(false);
+  const [isBanned, setIsBanned] = useState(false);
   //const [playerList, setPlayerList] = useState([]);
 
   const handleColor = (newValue) => {
@@ -130,15 +131,6 @@ function RoomPage() {
           await channel.presence.enter();
           const members = await channel.presence.get();
           let existingMembers = members.map((member) => member.clientId);
-
-          //let isFirstOneFiltered = false;
-          //existingMembers = existingMembers.filter(member => {
-          //if (member === '1' && !isFirstOneFiltered) {
-          //  isFirstOneFiltered = true;
-          //  return false;
-          //}
-          //  return true;
-          //});
           existingMembers = Array.from(new Set(existingMembers));
           // Update player list with existing members
           setPlayers(existingMembers);
@@ -209,7 +201,13 @@ function RoomPage() {
         const onKick = (message) => {
           let str = '' + userId;
           if(message.data.text === str){
-            setIsKicked(true);
+            if (message.data.state === "kick") {
+              //console.log("Kicked from room");
+              setIsKicked(true);
+            } else if (message.data.state === "ban") {
+              //console.log("Banned from room");
+              setIsBanned(true);
+            }
           }
         };
         channel.subscribe("kick", onKick);
@@ -236,6 +234,7 @@ function RoomPage() {
       try {
         await channel.publish("kick", {
           userId: userId,
+          state: "kick",
           text: kickmes,
         });
         //console.log("Message sent:", kickmes);
@@ -253,22 +252,33 @@ useEffect(() => {
     setIsKicked(false);
   }
 }, [isKicked]);
+useEffect(() => {
+  if (isBanned) {
+    handleExitRoomBan();
+    setIsBanned(false);
+  }
+}, [isBanned]);
 
   const handleExitRoom = async () => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
-    //channel.unsubscribe('myEvent', myListener);
-    /* remove the listener registered for all events */
-    //channel.unsubscribe(myListener);
     createPopup('You have been kicked from the room');
     await channel.detach();
     navigate(`/home`);
   };
 
-  async function handleBan(roomCode, player) {
+  const handleExitRoomBan = async () => {
+    const channel = ablyClient.channels.get(`room:${roomId}`);
+    createPopup('You have been banned from the room');
+    await channel.detach();
+    navigate(`/home`);
+  };
+
+  const handleBan = async(event, roomId, player) => {
+    event.preventDefault();
     console.log("Banning player:", player);
     //implement with database and rooms
     try {
-      const response = await axios.post("/add-ban", { roomCode, player });
+      const response = await axios.post("/add-ban", { roomId, player });
       if (response.status === 200) {
         console.log("Banned:", player);
       } else if (response.status === 404) {
@@ -279,6 +289,22 @@ useEffect(() => {
     } catch (error) {
       console.error("Error banning", error);
       console.log("error");
+    }
+    if (ablyClient) {
+      const kickmes = player;
+      const channel = ablyClient.channels.get(`room:${roomId}`);
+      try {
+        await channel.publish("kick", {
+          userId: userId,
+          state: "ban",
+          text: kickmes,
+        });
+        //console.log("Message sent:", kickmes);
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
+      console.log("Ably client not initialized or no message to send.");
     }
   }
 
@@ -324,7 +350,7 @@ useEffect(() => {
                       <StyledButton onClick={(event) => handleKick(event, roomId, player)}>
                         Kick
                       </StyledButton>
-                      <StyledButton onClick={() => handleBan(roomId, player)}>
+                      <StyledButton onClick={(event) => handleBan(event, roomId, player)}>
                         Ban
                       </StyledButton>
                     </li>
