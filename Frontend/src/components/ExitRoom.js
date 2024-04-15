@@ -1,6 +1,20 @@
 import React from 'react';
 import './ExitRoom.css'; 
 import { useNavigate } from 'react-router-dom';
+import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
+import { Button, ButtonGroup } from "@mui/material";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+
+const StyledButton = styled(Button)({
+  fontSize: "1rem",
+  fontFamily: "inherit",
+});
+
 
 function ExitRoom({roomId, ablyClient}) {
   const navigate = useNavigate();
@@ -16,11 +30,11 @@ function ExitRoom({roomId, ablyClient}) {
   };
 
   return (
-    <div className="exit-room">
-      <button onClick={handleExitRoom} className="exit-room-button">
+    <ThemeProvider theme={theme}>
+      <StyledButton variant = "text" onClick={handleExitRoom} className="exit-room-button">
         Exit Room
-      </button>
-    </div>
+      </StyledButton>
+      </ThemeProvider>
   );
 }
 

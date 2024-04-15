@@ -1,11 +1,47 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./generatePuzzleForm.css";
-
+import {TextField, Button, Select, MenuItem, InputLabel, FormControl} from "@mui/material";
+import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
 //import {fetchHost} from '../sequelize.tsx';
 //import {sq} from '../sequelize.tsx';
 import e from "cors";
 import axios from "axios";
+import catSleep from "../assets/PartyCatSleep.gif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  fontSize: "100%",
+  lineHeight: 1,
+  marginLeft: 10,
+  fontFamily: "inherit",
+  marginTop: 5
+});
+
+const StyledSelect = styled(Select)({
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  fontSize: "100%",
+  lineHeight: 1,
+  marginLeft: 10,
+  height: 40,
+  fontFamily: "C&C Red Alert [INET]",
+});
+
+const StyledMenuItem = styled(MenuItem)({
+  fontFamily: "C&C Red Alert [INET]",
+});
 
 function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
   const [seed, setSeed] = useState("");
@@ -48,9 +84,10 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
   };
 
   return (
+     <ThemeProvider theme={theme}>
     <div>
       <form onSubmit={handleSubmit} className="generate-puzzle-form">
-        <input
+        <TextField
           id="seedInput"
           type="number"
           placeholder="Enter Seed"
@@ -60,18 +97,29 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
           max="9999999999"
           className="generate-puzzle-input"
         />
-        <button type="submit" className="generate-puzzle-button">
+        <br></br>
+              <label htmlFor="sizeDropdown">&nbsp;&nbsp;Select Size:</label>
+          <StyledSelect id="sizeDropdown" value={size} label = "Size" onChange={handleSizeChange}>
+          <StyledMenuItem value={"small"}>Small</StyledMenuItem>
+          <StyledMenuItem value={"medium"}>Medium</StyledMenuItem>
+          <StyledMenuItem value={"large"}>Large</StyledMenuItem>
+          </StyledSelect>
+          <br></br>
+        <StyledButton onClick={generateRandomNumber}>Randomize</StyledButton>
+        <StyledButton type="submit" className="generate-puzzle-button">
           Generate Puzzle
-        </button>
+        </StyledButton>
       </form>
-      <button onClick={generateRandomNumber}>Randomize</button>
-      <label htmlFor="sizeDropdown">&nbsp;&nbsp;Select Size:</label>
-      <select id="sizeDropdown" value={size} onChange={handleSizeChange}>
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
-        <option value="large">Large</option>
-      </select>
+        <div className="image-container">
+        <img
+          src={catSleep}
+          alt="Your Animated GIF"
+          className="pixelated-image"
+        />
+      </div>
+
     </div>
+    </ThemeProvider>
   );
 }
 

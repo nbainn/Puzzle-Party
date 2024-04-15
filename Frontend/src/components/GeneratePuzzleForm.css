@@ -3,3 +3,17 @@
   top: 10px;
   left: 10px;
 }
+
+.image-container {
+  margin-right: 2px;
+  /* Adjust the margin as needed */
+  margin-left: 5px;
+  margin-bottom: -30px;
+  position: relative;
+  /* Ensure the z-index works */
+  z-index: 9999;
+  /* Set a very high z-index value for the image */
+  display: flex;
+  margin-top: -90px;
+  width:fit-content;
+}

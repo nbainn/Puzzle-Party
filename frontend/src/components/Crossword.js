@@ -58,15 +58,21 @@ const InputWrapper = styled("div")({
 
 // Customized input field for entering crossword characters
 const StyledInput = styled(TextField)({
+  position: "absolute",
+  top: 0,
+  left: 0,
   width: "100%",
   height: "100%",
   userSelect: "none", // Prevents user selection of text
+  zIndex: 1,
   "& input": {
+    fontFamily: "inherit",
     textAlign: "center",
     fontSize: "1.5rem",
     padding: "0",
     "&::placeholder": {
       fontSize: "1.5rem",
+      fontFamily: "inherit",
     },
   },
   "& .MuiOutlinedInput-root": {
@@ -78,6 +84,18 @@ const StyledInput = styled(TextField)({
   "&::selection": {
     background: "transparent", // Prevent text selection
   },
+});
+
+const WordNumber = styled("label")({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "15px", // Set the width to 100 pixels
+  height: "15px",
+  color: "#000000",
+  zIndex: 999,
+  marginTop: "0px",
+  marginLeft: "0px",
 });
 
 const CrosswordGrid = ({
@@ -96,6 +114,7 @@ const CrosswordGrid = ({
   setCheckWord,
   checkGrid,
   setCheckGrid,
+  color
 }) => {
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
@@ -124,11 +143,20 @@ const CrosswordGrid = ({
         highlighted: false,
         hidden: true,
         color: null,
+        number: null,
+        flagged: false,
       })
     )
   );
 
   let tempGrid = [];
+  useEffect(() => {
+    if (color) {
+      setColor(color);
+    }
+
+  }, [color]);
+
 
   useEffect(() => {
     if (ablyClient) {
@@ -181,6 +209,8 @@ const CrosswordGrid = ({
               highlighted: false,
               hidden: true,
               color: null,
+              number: null,
+              flagged: false,
             };
           } else {
             tempGrid[i][j] = {
@@ -188,12 +218,29 @@ const CrosswordGrid = ({
               highlighted: false,
               hidden: false,
               color: null,
+              number: null,
+              flagged: false,
             };
             letters += 1;
           }
         }
       }
       setNumLetters(letters);
+
+      for (let i = 0; i < puzzle.puzzle.clues.across.length; i++) {
+        let row = puzzle.puzzle.clues.across[i].row;
+        let col = puzzle.puzzle.clues.across[i].column;
+        let number = puzzle.puzzle.clues.across[i].number;
+        tempGrid[row][col].number = number;
+      }
+
+      for (let i = 0; i < puzzle.puzzle.clues.down.length; i++) {
+        let row = puzzle.puzzle.clues.down[i].row;
+        let col = puzzle.puzzle.clues.down[i].column;
+        let number = puzzle.puzzle.clues.down[i].number;
+        tempGrid[row][col].number = number;
+      }
+
       setGrid(tempGrid);
       console.log("Grid set to:", tempGrid);
       const ably = async () => {
@@ -231,6 +278,8 @@ const CrosswordGrid = ({
               highlighted: false,
               hidden: true,
               color: null,
+              number: grid[i][j].number,
+              flagged: false,
             };
           } else {
             tempGrid[i][j] = {
@@ -238,6 +287,8 @@ const CrosswordGrid = ({
               highlighted: false,
               hidden: false,
               color: null,
+              number: grid[i][j].number,
+              flagged: false,
             };
           }
         }
@@ -287,7 +338,7 @@ const CrosswordGrid = ({
               cell.highlighted &&
               cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
             ) {
-              return { ...cell, color: "#ffda4d" };
+              return { ...cell, color: "#ffda4d", flagged: true };
             } else {
               return { ...cell };
             }
@@ -315,7 +366,7 @@ const CrosswordGrid = ({
                 cell.value !== "" &&
                 cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
               ) {
-                return { ...cell, color: "#ffda4d" };
+                return { ...cell, color: "#ffda4d", flagged: true };
               } else {
                 if (
                   !cell.hidden &&
@@ -374,7 +425,12 @@ const CrosswordGrid = ({
       }
       while (i < numCols && puzzle.puzzle.grid[rowIndex][i] !== " ") {
         console.log("HIGHLIGHTEDDDDDDDDDD");
-        resetGrid[rowIndex][i].highlighted = true;
+        if (i === colIndex) {
+          resetGrid[rowIndex][i].highlighted = true;
+          resetGrid[rowIndex][i].flagged = false;
+        } else if (!resetGrid[rowIndex][i].flagged) {
+          resetGrid[rowIndex][i].highlighted = true;
+        }
         i++;
       }
     } else if (currentDirection === "down") {
@@ -387,7 +443,12 @@ const CrosswordGrid = ({
       console.log(grid[i][colIndex].value);
       while (i < numRows && puzzle.puzzle.grid[i][colIndex] !== " ") {
         console.log("HIGHLIGHTEDDDDDDDDDD");
-        resetGrid[i][colIndex].highlighted = true;
+        if (i === rowIndex) {
+          resetGrid[i][colIndex].highlighted = true;
+          resetGrid[i][colIndex].flagged = false;
+        } else if (!resetGrid[i][colIndex].flagged) {
+          resetGrid[i][colIndex].highlighted = true;
+        }
         i++;
       }
     }
@@ -426,18 +487,30 @@ const CrosswordGrid = ({
         i === rowIndex
           ? row.map((cell, j) =>
               j === colIndex
-                ? { ...cell, value: event.key.toUpperCase() }
+                ? { ...cell, value: event.key.toUpperCase(), flagged: false }
                 : cell
             )
           : row
       );
       event.preventDefault();
-      setGrid(updatedGrid);
-      rowIndex = currentDirection === "down" ? rowIndex + 1 : rowIndex;
-      colIndex = currentDirection === "across" ? colIndex + 1 : colIndex;
+      rowIndex =
+        currentDirection === "down" &&
+        rowIndex < numRows - 1 &&
+        puzzle.puzzle.grid[rowIndex + 1][colIndex] != " "
+          ? rowIndex + 1
+          : rowIndex;
+      colIndex =
+        currentDirection === "across" &&
+        colIndex < numCols - 1 &&
+        puzzle.puzzle.grid[rowIndex][colIndex + 1] != " "
+          ? colIndex + 1
+          : colIndex;
       location[0] = rowIndex;
       location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
+      updatedGrid[rowIndex][colIndex].flagged = false;
+      setGrid(updatedGrid);
+      setRefresh(!refresh);
       console.log("UPDATED GRID");
       if (ablyClient) {
         const channel = ablyClient.channels.get(`room:${roomId}`);
@@ -640,43 +713,8 @@ const CrosswordGrid = ({
     };
   }, []);
 
-  /*const puzzle = async () => {
-    try {
-      var seed = 123456;
-      const response = await axios.post("/puzzle", { seed, size });
-      if (response.status === 200) {
-        let puzzleData = response.data;
-        console.log("Puzzle Received", puzzleData);
-        const updatedGrid = puzzle.grid.map((row) =>
-          row.map((cell) =>
-            cell === " " ? "-" : cell !== "" && cell !== "-" ? " " : cell
-          )
-        );
-
-        console.log(updatedGrid);
-      } else if (response.status === 404) {
-        console.log("Error", response.data);
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error contacting server", error);
-      console.log("error");
-    }
-  };*/
-
   return (
     <div className="crossword-grid">
-      <div className="color-picker">
-        <label for="favcolor">Select your Cursor Color:</label>
-        <input
-          type="color"
-          id="favcolor1"
-          name="favcolor"
-          value="#e08794"
-          onChange={(e) => setColor(e.target.value)}
-        ></input>
-      </div>
 
       <GridContainer size={size} gridSize={numRows}>
         {grid.map((row, rowIndex) =>
@@ -703,14 +741,16 @@ const CrosswordGrid = ({
                     }
                     maxLength={1}
                     style={{
-                      backgroundColor: cell.color
+                      backgroundColor: cell.flagged
                         ? cell.color
+                        : location[0] === rowIndex && location[1] === colIndex
+                        ? hexToRGBA(favcolor, 1)
                         : cell.highlighted
                         ? hexToRGBA(favcolor, 0.5)
                         : "white",
                     }}
                   />
-                  {(cell.color = null)}
+                  <WordNumber>{cell.number}</WordNumber>
                 </InputWrapper>
               </GridCell>
             )

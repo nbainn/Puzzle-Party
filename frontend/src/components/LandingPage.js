@@ -88,7 +88,7 @@ function LandingPage() {
     }}>
       <Card sx={{ p: 3 }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Typography component="h1" variant="h5" fontFamily="'Bubblegum Sans', cursive">
+          <Typography component="h1" variant="h5">
             Welcome to Puzzle Party
           </Typography>
           <Typography variant="body2">

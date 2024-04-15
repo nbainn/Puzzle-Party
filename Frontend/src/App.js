@@ -11,6 +11,13 @@ import RoomPage from "./components/RoomPage";
 import PublicRooms from "./components/PublicRooms";
 import ProfilePage from './components/ProfilePage';
 import LoadingScreen from './components/LoadingScreen';
+import Statistics from "./components/Statistics";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
+});
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isGuest, isLoading, isAblyReady } = useAuth();
@@ -32,6 +39,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <GoogleOAuthProvider clientId={config.CLIENT_ID}>
       <AuthProvider>
         <Router>
@@ -59,10 +67,16 @@ function App() {
                 <ProfilePage />
               </ProtectedRoute>
             } />
+            <Route path="/statistics/:userId" element={
+              <ProtectedRoute>
+                <Statistics />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </AuthProvider>
     </GoogleOAuthProvider>
+    </ThemeProvider>
   );
 }
 

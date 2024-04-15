@@ -16,10 +16,6 @@
   align-items: flex-end; /* Align items to the bottom of the flex container */
 }
 
-.button-container button {
-  margin-right: 5px; /* Adjust the margin between buttons as needed */
-}
-
 .pixelated-image {
   image-rendering: pixelated; /* Apply pixelation to the image */
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
+import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import Filter from 'bad-words';
 
@@ -15,6 +16,11 @@ const ResizeHandle = styled("div")({
     borderTopColor: "#666",
   },
   zIndex: 10,
+});
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+  },
 });
 
 const filter = new Filter();
@@ -96,7 +102,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
       alignSelf: message.userId === userId ? "flex-end" : "flex-start",
       textAlign: "left",
       padding: "10px",
-      borderRadius: "16px",
+      borderRadius: "4px",
       color: getContrastYIQ(bubbleColor),
       boxShadow: "0 2px 2px rgba(0,0,0,0.2)",
       wordBreak: "break-word",
@@ -152,20 +158,20 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
     left: 0,
     bgcolor: "#D7E8EF",
     border: "2px solid #000",
-    borderRadius: "16px",
+    borderRadius: "4px",
     overflow: "hidden",
-    fontFamily: "'Bubblegum Sans', cursive",
+    fontFamily: "inherit",
   };
 
   const chatInputStyles = {
     "& .MuiOutlinedInput-root": {
       backgroundColor: "#F9EAFF",
-      borderRadius: "16px",
+      borderRadius: "4px",
       border: "2px solid #000",
     },
     "& .MuiOutlinedInput-input": {
       padding: "10px",
-      fontFamily: "'Bubblegum Sans', cursive",
+      fontFamily: "inherit",
     },
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -181,11 +187,12 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
       borderRadius: "4px",
     },
     "& .MuiSvgIcon-root": {
-      color: "#FF00B6",
+      color: "black",
     },
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Box ref={chatBoxRef} sx={chatBoxStyles}>
       <ResizeHandle onMouseDown={handleMouseDown} />
       <List
@@ -202,7 +209,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
             <Typography
               variant="body1"
               sx={{
-                fontFamily: "Bubblegum Sans",
+                //fontFamily: "Bubblegum Sans",
               }}
             >
               {message.nickname !== nickname ? `${message.nickname}: ` : null}
@@ -230,6 +237,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
         </IconButton>
       </Box>
     </Box>
+    </ThemeProvider>
   );
 }
 
