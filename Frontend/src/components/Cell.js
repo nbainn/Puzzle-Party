@@ -136,18 +136,16 @@ const Cell = React.memo(
             onKeyDown={(event) => handleKeyPress(event, rowIndex, colIndex)}
             maxLength={1}
             style={{
-              ...(cell.players_primary.length > 0
-                ? cell.players_primary.includes(userId)
-                  ? { backgroundColor: hexToRGBA(favColor, 1) }
-                  : { backgroundColor: hexToRGBA("#15bf42", 1) }
-                : cell.players_secondary.length > 0
-                ? cell.players_secondary.includes(userId)
-                  ? { backgroundColor: hexToRGBA(favColor, 0.5) }
-                  : { backgroundColor: hexToRGBA("#15bf42", 0.5) }
-                : cell.players_primary.length == 0 &&
-                  cell.players_secondary.length == 0
-                ? { backgroundColor: "white" }
-                : {}),
+              backgroundColor:
+                cell.players_primary.length > 0
+                  ? cell.players_primary.includes(userId)
+                    ? hexToRGBA(favColor, 1)
+                    : hexToRGBA("#15bf42", 1)
+                  : cell.players_secondary.length > 0
+                  ? cell.players_secondary.includes(userId)
+                    ? hexToRGBA(favColor, 0.5)
+                    : hexToRGBA("#15bf42", 0.5)
+                  : "white",
             }}
           />
           <WordNumber>{cell.number == 0 ? "" : cell.number}</WordNumber>
