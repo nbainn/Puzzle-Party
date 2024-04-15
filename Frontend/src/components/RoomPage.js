@@ -388,6 +388,7 @@ useEffect(() => {
             setCheckWord={setCheckWord}
             checkGrid={checkGrid}
             setCheckGrid={setCheckGrid}
+            favColor={favColor}
           />
           <div className="hints-chat-container">
             <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />

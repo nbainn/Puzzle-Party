@@ -77,7 +77,10 @@ const WordNumber = styled("label")({
 
 const areEqual = (prevProps, nextProps) => {
   // Compare only the 'cell' prop for changes
-  return prevProps.cell === nextProps.cell;
+  return (
+    prevProps.cell === nextProps.cell &&
+    prevProps.favColor === nextProps.favColor
+  );
 };
 
 const Cell = React.memo(
@@ -89,6 +92,7 @@ const Cell = React.memo(
     handleKeyPress,
     handleCellClick,
     favColors,
+    favColor,
   }) => {
     //cell: {
     //value: ,
@@ -98,9 +102,9 @@ const Cell = React.memo(
     //players_primary: [],
     //players_secondary: [],
     //}
-    /*console.log("userId", userId);
+    console.log("userId", userId);
     console.log("favColors", favColors);
-    console.log(favColors[userId]);*/
+    console.log(favColors[userId]);
 
     //converts from hex to rgba
     function hexToRGBA(hex, alpha) {
@@ -132,14 +136,16 @@ const Cell = React.memo(
             onKeyDown={(event) => handleKeyPress(event, rowIndex, colIndex)}
             maxLength={1}
             style={{
-              ...(cell.players_primary.includes(userId)
-                ? { backgroundColor: hexToRGBA("#15bf42", 1) }
-                : cell.players_secondary.includes(userId)
-                ? { backgroundColor: hexToRGBA("#15bf42", 0.5) }
-                : cell.players_primary.length == 0 &&
-                  cell.players_secondary.length == 0
-                ? { backgroundColor: "white" }
-                : {}),
+              backgroundColor:
+                cell.players_primary.length > 0
+                  ? cell.players_primary.includes(userId)
+                    ? hexToRGBA(favColor, 1)
+                    : hexToRGBA("#15bf42", 1)
+                  : cell.players_secondary.length > 0
+                  ? cell.players_secondary.includes(userId)
+                    ? hexToRGBA(favColor, 0.5)
+                    : hexToRGBA("#15bf42", 0.5)
+                  : "white",
             }}
           />
           <WordNumber>{cell.number == 0 ? "" : cell.number}</WordNumber>
