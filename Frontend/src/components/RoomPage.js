@@ -116,7 +116,6 @@ function RoomPage() {
         console.log("Ably client not initialized.");
       }
     };
-
     fetchMembers();
     //console.log("after after", players);
     // Return a cleanup function if needed
@@ -124,11 +123,7 @@ function RoomPage() {
       // Perform cleanup actions here if necessary
     };
   }, [roomId, ablyClient]); 
-{/*
-  useEffect(() => {
-    console.log("Players:", players); // Log the current state of players whenever it changes
-  }, [players]);
-*/}
+
   useEffect(() => {
     const handleBeforeUnload = async function() {
         let endTime = performance.now();
@@ -163,13 +158,60 @@ function RoomPage() {
     }; 
   }, [userId, startTime]);
 
-  async function handleKick(roomCode, player) {
-    console.log("Kicking player:", player);
-    const channel = ablyClient.channels.get(`room:${roomCode}`);
-    channel.presence.leave(player);
+  useEffect(() => {
+    if (ablyClient) {
+      console.log("Ably client provided to ChatBox", ablyClient);
+
+      const onConnected = () => {
+        console.log(
+          "Ably client connected, now subscribing to channel:",
+          `room:${roomId}`
+        );
+        console.log("Nickname:", nickname);
+        const channel = ablyClient.channels.get(`room:${roomId}`);
+        const onKick = (message) => {
+          console.log("Message received:", message);
+          //setMessages((prevMessages) => [...prevMessages, message.data]);
+        };
+        channel.subscribe("kick", onKick);
+
+        return () => {
+          channel.unsubscribe("kick", onKick);
+          ablyClient.connection.off("connected", onConnected);
+        };
+      };
+
+      if (ablyClient.connection.state === "connected") {
+        onConnected();
+      } else {
+        ablyClient.connection.once("connected", onConnected);
+      }
+    }
+  }, [ablyClient, roomId]);
+
+  const handleKick = async(event, roomId, player) =>{
+    event.preventDefault();
+    if (ablyClient) {
+      const kickmes = 'You have been kicked from the room.';
+      console.log("Sending message:", kickmes);
+      const channel = ablyClient.channels.get(`room:${roomId}`);
+      try {
+        await channel.publish("kick", {
+          userId: userId,
+          text: kickmes,
+        });
+        console.log("Message sent:", kickmes);
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
+      console.log("Ably client not initialized or no message to send.");
+    }
+    //channel.presence.leave(player);
     //setPlayers(players.filter(p => p !== player));
-    await ablyClient.channels.get(`user:${player}`).publish('kick', { message: 'You have been kicked from the room.' });
-  }
+    //await ablyClient.channels.get(`user:${player}`).publish('kick', { message: 'You have been kicked from the room.' });
+  };
+
   {/*
   useEffect(() => {
     const kickMembers = async () => {
@@ -243,7 +285,7 @@ function RoomPage() {
           {players.map(player => (
             <div>
              <li key={player}>{player}</li>
-             <button onClick={() => handleKick(roomId, player)}>Kick</button>
+             <button onClick={handleKick(roomId, player)}>Kick</button>
              <button onClick={() => handleBan(roomId, player)}>Ban</button>
            </div>
           ))}
