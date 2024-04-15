@@ -157,7 +157,7 @@ function RoomPage() {
     return () => {
       // Perform cleanup actions here if necessary
     };
-  }, [roomId, ablyClient]); 
+  }, [roomId, ablyClient]);
 
   useEffect(() => {
     const handleBeforeUnload = async function () {
@@ -207,8 +207,8 @@ function RoomPage() {
         );
         const channel = ablyClient.channels.get(`room:${roomId}`);
         const onKick = (message) => {
-          let str = '' + userId;
-          if(message.data.text === str){
+          let str = "" + userId;
+          if (message.data.text === str) {
             setIsKicked(true);
           }
         };
@@ -228,7 +228,7 @@ function RoomPage() {
     }
   }, [ablyClient, roomId]);
 
-  const handleKick = async(event, roomId, player) =>{
+  const handleKick = async (event, roomId, player) => {
     event.preventDefault();
     if (ablyClient) {
       const kickmes = player;
@@ -247,19 +247,19 @@ function RoomPage() {
     }
   };
 
-useEffect(() => {
-  if (isKicked) {
-    handleExitRoom();
-    setIsKicked(false);
-  }
-}, [isKicked]);
+  useEffect(() => {
+    if (isKicked) {
+      handleExitRoom();
+      setIsKicked(false);
+    }
+  }, [isKicked]);
 
   const handleExitRoom = async () => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     //channel.unsubscribe('myEvent', myListener);
     /* remove the listener registered for all events */
     //channel.unsubscribe(myListener);
-    createPopup('You have been kicked from the room');
+    createPopup("You have been kicked from the room");
     await channel.detach();
     navigate(`/home`);
   };
@@ -321,7 +321,9 @@ useEffect(() => {
                   <div>
                     <li key={player}>
                       {player}
-                      <StyledButton onClick={(event) => handleKick(event, roomId, player)}>
+                      <StyledButton
+                        onClick={(event) => handleKick(event, roomId, player)}
+                      >
                         Kick
                       </StyledButton>
                       <StyledButton onClick={() => handleBan(roomId, player)}>
@@ -369,35 +371,10 @@ useEffect(() => {
             <ChatBox
               ablyClient={ablyClient}
               roomId={roomId}
-              puzzle={puzzle}
-              setPuzzle={setPuzzle}
-              hints={hints}
-              guesses={guesses}
-              revealGrid={revealGrid}
-              setRevealGrid={setRevealGrid}
-              revealHint={revealHint}
-              setRevealHint={setRevealHint}
-              checkWord={checkWord}
-              setCheckWord={setCheckWord}
-              checkGrid={checkGrid}
-              setCheckGrid={setCheckGrid}
-              players={players}
               userId={userId}
+              userColor={userColor}
+              nickname={nickname}
             />
-            <div className="hints-chat-container">
-              <ClueList
-                puzzle={puzzle}
-                ablyClient={ablyClient}
-                roomId={roomId}
-              />
-              <ChatBox
-                ablyClient={ablyClient}
-                roomId={roomId}
-                userId={userId}
-                userColor={userColor}
-                nickname={nickname}
-              />
-            </div>
           </div>
         </div>
       </div>
