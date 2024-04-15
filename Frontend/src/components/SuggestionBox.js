@@ -1,7 +1,29 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { TextField,  Button} from "@mui/material";
+import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
 import "./SuggestionBox.css";
 import axios from "axios";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "C&C Red Alert [INET]", 
+  },
+});
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  fontSize: "15px",
+  fontFamily: "inherit",
+  lineHeight: 1,
+  minWidth: "50px",
+  marginTop: "10px",
+});
+
 
 function SuggestionBox() {
   const [word, setWord] = useState("");
@@ -30,12 +52,14 @@ function SuggestionBox() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <div>
       <h2>Submit Suggestion</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="wordInput">Word:</label>
-          <input
+          <br></br>
+          <TextField
             id="wordInput"
             type="text"
             value={word}
@@ -45,7 +69,8 @@ function SuggestionBox() {
         </div>
         <div>
           <label htmlFor="descriptionInput">Description:</label>
-          <input
+          <br></br>
+          <TextField
             id="descriptionInput"
             type="text"
             value={description}
@@ -53,9 +78,10 @@ function SuggestionBox() {
             autocomplete="off"
           />
         </div>
-        <button type="submit">Submit Suggestion</button>
+        <StyledButton type="submit">Submit Suggestion</StyledButton>
       </form>
     </div>
+    </ThemeProvider>
   );
 }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import { styled, createTheme, ThemeProvider  } from "@mui/material/styles";
-import { Button } from "@mui/material";
+import { Button, ButtonGroup } from "@mui/material";
 import './PlayerList.css'; 
 
 const theme = createTheme({
@@ -17,10 +17,9 @@ const StyledButton = styled(Button)({
   border: "1px solid #ca8f8f",
   color: "black",
   //size of button
-  width: "50px",
-  fontSize: "10px",
+  fontSize: "12px",
   fontFamily: "inherit",
-  lineHeight: 0,
+  lineHeight: 0.5,
   minWidth: "50px",
   marginLeft: 10,
 });
@@ -190,8 +189,10 @@ function PlayerList(roomId) {
           {players.map(player => (
             <div>
              <li key={player}>{player} 
+              <ButtonGroup size="small" aria-label="Small button group">
               <StyledButton onClick={() => handleKick(roomId, player)}>Kick</StyledButton>
               <StyledButton onClick={() => handleBan(roomId, player)}>Ban</StyledButton>
+              </ButtonGroup>
              </li>
            </div>
           ))}

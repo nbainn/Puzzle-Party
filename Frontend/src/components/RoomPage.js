@@ -15,10 +15,11 @@ import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button } from "@mui/material";
+import { Button, ButtonGroup } from "@mui/material";
 import "./RoomPage.css";
 import { useNavigate } from "react-router-dom";
 import catSleep from "../assets/PartyCatSleep.gif";
+import { MuiColorInput } from "mui-color-input";
 
 const theme = createTheme({
   typography: {
@@ -55,8 +56,12 @@ function RoomPage() {
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(performance.now());
+  const [favColor, setColor] = React.useState("#e08794");
   //const [playerList, setPlayerList] = useState([]);
 
+  const handleColor = (newValue) => {
+    setColor(newValue);
+  };
   const navigate = useNavigate();
   useEffect(() => {
     if (ablyClient) {
@@ -268,6 +273,16 @@ function RoomPage() {
               setCheckWord={setCheckWord}
               setCheckGrid={setCheckGrid}
             />
+            <div className="color-picker">
+              <label htmlFor="favcolor" style={{ marginRight: "5px" }}>
+                Select your Cursor Color:
+              </label>
+              <MuiColorInput
+                format="hex"
+                value={favColor}
+                onChange={handleColor}
+              />
+            </div>
             <div>
               <h2>Player List</h2>
               <ul>
@@ -293,14 +308,15 @@ function RoomPage() {
               setTimer={setTimer}
               setHints={setHints}
               setGuesses={setGuesses}
+              roomId={roomId}
+              ablyClient={ablyClient}
             />
-            <div>
-              <ExitRoom roomId={roomId} ablyClient={ablyClient} />
-              <RoomStatus roomId={roomId} />
-            </div>
+            <div></div>
             <SuggestionBox />
           </div>
           <Grid
+            userId={userId}
+            players={players}
             ablyClient={ablyClient}
             roomId={roomId}
             puzzle={puzzle}
@@ -315,18 +331,41 @@ function RoomPage() {
             setCheckWord={setCheckWord}
             checkGrid={checkGrid}
             setCheckGrid={setCheckGrid}
-            players={players}
-            userId={userId}
           />
           <div className="hints-chat-container">
             <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />
             <ChatBox
               ablyClient={ablyClient}
               roomId={roomId}
+              puzzle={puzzle}
+              setPuzzle={setPuzzle}
+              hints={hints}
+              guesses={guesses}
+              revealGrid={revealGrid}
+              setRevealGrid={setRevealGrid}
+              revealHint={revealHint}
+              setRevealHint={setRevealHint}
+              checkWord={checkWord}
+              setCheckWord={setCheckWord}
+              checkGrid={checkGrid}
+              setCheckGrid={setCheckGrid}
+              players={players}
               userId={userId}
-              userColor={userColor}
-              nickname={nickname}
             />
+            <div className="hints-chat-container">
+              <ClueList
+                puzzle={puzzle}
+                ablyClient={ablyClient}
+                roomId={roomId}
+              />
+              <ChatBox
+                ablyClient={ablyClient}
+                roomId={roomId}
+                userId={userId}
+                userColor={userColor}
+                nickname={nickname}
+              />
+            </div>
           </div>
         </div>
       </div>

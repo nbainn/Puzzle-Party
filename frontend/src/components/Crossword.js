@@ -114,6 +114,7 @@ const CrosswordGrid = ({
   setCheckWord,
   checkGrid,
   setCheckGrid,
+  color,
 }) => {
   const [currentDirection, setCurrentDirection] = useState("across"); // 'across' or 'down'
   const [currentWordStart, setCurrentWordStart] = useState(null);
@@ -149,6 +150,11 @@ const CrosswordGrid = ({
   );
 
   let tempGrid = [];
+  useEffect(() => {
+    if (color) {
+      setColor(color);
+    }
+  }, [color]);
 
   useEffect(() => {
     if (ablyClient) {
