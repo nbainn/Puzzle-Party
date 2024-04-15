@@ -713,7 +713,7 @@ const CrosswordGrid = ({
           type="color"
           id="favcolor1"
           name="favcolor"
-          value="#e08794"
+          value={favcolor}
           onChange={(e) => setColor(e.target.value)}
         ></input>
       </div>
