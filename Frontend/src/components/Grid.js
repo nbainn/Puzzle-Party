@@ -35,17 +35,23 @@ const Grid = ({
   setCheckWord,
   checkGrid,
   setCheckGrid,
+  favColor,
 }) => {
-  let prep_grid;
+  //True when the user is receiving data from the server
+  const [receiving, setReceiving] = useState(false);
+
   //Current direction is accross or down
   const [currentDirection, setCurrentDirection] = useState("across");
 
   //Stores the user's favorite color
-  let tempFavColors = [];
-  for (let i = 0; i < players.length; i++) {
-    tempFavColors[players[i]] = "green";
-  }
-  const [favColors, setFavColors] = useState(tempFavColors);
+  const [favColors, setFavColors] = useState({ [userId]: favColor });
+
+  useEffect(() => {
+    setFavColors((prevFavoriteColors) => ({
+      ...prevFavoriteColors,
+      [userId]: favColor,
+    }));
+  }, [favColor]);
 
   //Stores the size of the grid (not rows and columns, but the size of the grid in pixels)
   const [size, setSize] = useState(300);
@@ -95,17 +101,21 @@ const Grid = ({
           "Ably client connected, now subscribing to channel:",
           `room:${roomId}`
         );
+        let thisPuzzle = puzzle;
         const channel = ablyClient.channels.get(`room:${roomId}`);
-        const onGrid = (grid) => {
-          console.log("Grid received:", grid);
-          setGrid(grid.data.grid);
-        };
-        channel.subscribe("grid", onGrid);
         const onPuzzle = (puzzle) => {
           console.log("puzzle received:", puzzle);
-          setPuzzle(grid.data.puzzle);
+          setReceiving(true);
+          setPuzzle(puzzle.data.puzzle);
+        };
+        const onGrid = (grid) => {
+          if (grid.clientId != userId) {
+            console.log("Grid received:", grid);
+            setGrid(grid.data.grid);
+          }
         };
         channel.subscribe("puzzle", onPuzzle);
+        channel.subscribe("grid", onGrid);
 
         return () => {
           channel.unsubscribe("grid", onGrid);
@@ -177,24 +187,28 @@ const Grid = ({
       }
 
       setGrid(tempGrid);
-      let tempPuzzle = puzzle;
-      console.log("Grid set to:", tempGrid);
-      const ably = async () => {
-        if (ablyClient) {
-          const channel = ablyClient.channels.get(`room:${roomId}`);
-          try {
-            await channel.publish("puzzle", {
-              puzzle: tempPuzzle,
-            });
-            console.log("puzzle sent:", tempPuzzle);
-          } catch (error) {
-            console.error("Error sending grid:", error);
+      if (!receiving) {
+        let tempPuzzle = puzzle;
+        console.log("Grid set to:", tempGrid);
+        const ably = async () => {
+          if (ablyClient) {
+            const channel = ablyClient.channels.get(`room:${roomId}`);
+            try {
+              await channel.publish("puzzle", {
+                puzzle: tempPuzzle,
+              });
+              console.log("puzzle sent:", tempPuzzle);
+            } catch (error) {
+              console.error("Error sending grid:", error);
+            }
+          } else {
+            console.log("Ably client not initialized.");
           }
-        } else {
-          console.log("Ably client not initialized.");
-        }
-      };
-      ably();
+        };
+        ably();
+      } else {
+        setReceiving(false);
+      }
     }
   }, [puzzle]);
 
@@ -358,19 +372,37 @@ const Grid = ({
       let resetGrid;
       if (heavyRefresh) {
         resetGrid = heavyRefresh.map((row) =>
-          row.map((cell) => ({
-            ...cell,
-            players_primary: [],
-            players_secondary: [],
-          }))
+          row.map((cell) => {
+            const { players_primary, players_secondary, ...rest } = cell;
+            const updatedPlayersPrimary = players_primary?.filter(
+              (id) => id !== userId
+            );
+            const updatedPlayersSecondary = players_secondary?.filter(
+              (id) => id !== userId
+            );
+            return {
+              ...rest,
+              players_primary: updatedPlayersPrimary,
+              players_secondary: updatedPlayersSecondary,
+            };
+          })
         );
       } else {
         resetGrid = grid.map((row) =>
-          row.map((cell) => ({
-            ...cell,
-            players_primary: [],
-            players_secondary: [],
-          }))
+          row.map((cell) => {
+            const { players_primary, players_secondary, ...rest } = cell;
+            const updatedPlayersPrimary = players_primary?.filter(
+              (id) => id !== userId
+            );
+            const updatedPlayersSecondary = players_secondary?.filter(
+              (id) => id !== userId
+            );
+            return {
+              ...rest,
+              players_primary: updatedPlayersPrimary,
+              players_secondary: updatedPlayersSecondary,
+            };
+          })
         );
       }
 
@@ -409,6 +441,7 @@ const Grid = ({
           i++;
         }
       }
+      setGrid(resetGrid);
       const ably = async () => {
         if (ablyClient) {
           const channel = ablyClient.channels.get(`room:${roomId}`);
@@ -610,6 +643,7 @@ const Grid = ({
               handleKeyPress={handleKeyPress}
               handleCellClick={handleCellClick}
               favColors={favColors}
+              favColor={favColor}
             />
           ))
         )}
