@@ -827,7 +827,20 @@ app.post("/change-status", async (req, res) => {
   }
 });
 
-//modify search room to also check if in banned list, if so return banned status
+app.post("/fetch-nickname", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByPk(userId);
+    if (user) {
+      res.status(200).send(user.nickname);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
 
 app.post("/search-entry", async (req, res) => {
   try {
@@ -850,9 +863,6 @@ app.post("/search-entry", async (req, res) => {
     res.status(500).send("Error finding field");
   }
 });
-
-//modify find rooms to only return rooms that you are not banned from. 
-
 
 app.get("/find-rooms", async (req, res) => {
   try {

@@ -48,6 +48,7 @@ function RoomPage() {
   // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
+  const [realPlayers, setRealPlayers] = useState([]);
   const [timer, setTimer] = useState(true);
   const [hints, setHints] = useState(true);
   const [guesses, setGuesses] = useState(true);
@@ -102,6 +103,30 @@ function RoomPage() {
         ablyClient.connection.off("connectionstate", onConnectionStateChange);
     }
   }, [ablyClient]);
+
+  useEffect(() => {
+    const fetchNicknames = async () => {
+      const realPlayersList = await Promise.all(players.map(async (player) => {
+        const integerValue = parseInt(player);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-nickname", { userId: player });
+            if (response.status === 200) {
+              console.log("Nickname for user", player, "is", response.data);
+              return response.data;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return player;
+      }));
+      setRealPlayers(realPlayersList);
+    };
+
+    fetchNicknames();
+  }, [players]);
+
   useEffect(() => {
     const fetchMembers = async () => {
       if (ablyClient) {
@@ -150,6 +175,8 @@ function RoomPage() {
       // Perform cleanup actions here if necessary
     };
   }, [roomId, ablyClient]);
+
+
 
   useEffect(() => {
     const handleBeforeUnload = async function () {
@@ -343,23 +370,23 @@ function RoomPage() {
             <div>
               <h2>Player List</h2>
               <ul>
-                {players.map((player) => (
-                  <div>
-                    <li key={player}>
-                      {player}
-                      <StyledButton
-                        onClick={(event) => handleKick(event, roomId, player)}
-                      >
-                        Kick
-                      </StyledButton>
-                      <StyledButton
-                        onClick={(event) => handleBan(event, roomId, player)}
-                      >
-                        Ban
-                      </StyledButton>
-                    </li>
-                  </div>
-                ))}
+                {players.map((player, index) => (
+                 <div key={player}>
+                  <li>
+                    {realPlayers[index]}
+                    <StyledButton
+                     onClick={(event) => handleKick(event, roomId, player)}
+                    >
+                    Kick
+                    </StyledButton>
+                    <StyledButton
+                     onClick={(event) => handleBan(event, roomId, player)}
+                    >
+                     Ban
+                    </StyledButton>
+                  </li>
+                 </div>
+                 ))}
               </ul>
             </div>
             <RoomSettings
