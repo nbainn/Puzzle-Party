@@ -7,8 +7,8 @@
 .image-container {
   margin-right: 2px;
   /* Adjust the margin as needed */
-  margin-left: 5px;
-  margin-bottom: -30px;
+  margin-left: 75px;
+  margin-bottom: -26px;
   position: relative;
   /* Ensure the z-index works */
   z-index: 9999;
