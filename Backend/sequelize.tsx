@@ -72,6 +72,10 @@ User.init({
       is: /^#(?:[0-9a-fA-F]{3}){1,2}$/i, // Regex to validate hex color codes
     }
   },
+  friends : {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: true
+  },
 }, {
   sequelize,
   modelName: 'User',
