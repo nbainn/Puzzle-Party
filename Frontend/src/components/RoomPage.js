@@ -176,8 +176,6 @@ function RoomPage() {
     };
   }, [roomId, ablyClient]);
 
-
-
   useEffect(() => {
     const handleBeforeUnload = async function () {
       let endTime = performance.now();

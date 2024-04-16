@@ -13,9 +13,10 @@ import ProfilePage from './components/ProfilePage';
 import LoadingScreen from './components/LoadingScreen';
 import Statistics from "./components/Statistics";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 

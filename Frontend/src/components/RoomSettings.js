@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./RoomSettings.css"; // You can create this CSS file to style your popup
-
+import "./RoomSettings.css";
 import { styled } from "@mui/material/styles";
 import { Button, ButtonGroup } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +13,6 @@ const StyledButton = styled(Button)({
 const StyledButtonGroup = styled(ButtonGroup)({
   color: "black",
 });
-
 
 function RoomSettings({
   timer,
