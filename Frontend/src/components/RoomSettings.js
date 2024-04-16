@@ -27,8 +27,8 @@ function RoomSettings({
   ablyClient
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // Initial time left in seconds
-
+  const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
+  const [time, setTime] = useState("00:00")
   const navigate = useNavigate();
 
   const handleExitRoom = async (event) => {
@@ -41,9 +41,24 @@ function RoomSettings({
     navigate(`/home`);
   };
   useEffect(() => {
-    if (timer && timeLeft > 0) {
+    if (timer) {
       const timerId = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
+        setTimeLeft(timeLeft + 1);
+        
+        let min = Math.floor(timeLeft / 60);
+        let sec = (timeLeft % 60);
+
+        var minStr = min.toString();
+        if (min < 10) {
+          minStr = "0" + min.toString();
+        } 
+        var secStr = sec.toString();
+        if (sec < 10) {
+          secStr = "0" + sec.toString();
+        }
+
+        setTime(`${minStr}:${secStr}`);
+        
       }, 1000);
 
       return () => {
@@ -101,7 +116,7 @@ function RoomSettings({
   return (
     <div className="settings-popup">
       
-      <label>{timer && <h2>Time left: {timeLeft} seconds</h2>}</label>
+      <label>{timer && <h2>Time spent: {time}</h2>}</label>
       <StyledButtonGroup size="small" variant="text" aria-label="Small button group">
       <StyledButton variant = "text" onClick={togglePopup} className="settings-button">
         ⚙️

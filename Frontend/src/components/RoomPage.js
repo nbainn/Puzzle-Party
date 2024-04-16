@@ -390,26 +390,6 @@ useEffect(() => {
             setCheckGrid={setCheckGrid}
             favColor={favColor}
           />
-          <div className="hints-chat-container">
-            <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />
-            <ChatBox
-              ablyClient={ablyClient}
-              roomId={roomId}
-              puzzle={puzzle}
-              setPuzzle={setPuzzle}
-              hints={hints}
-              guesses={guesses}
-              revealGrid={revealGrid}
-              setRevealGrid={setRevealGrid}
-              revealHint={revealHint}
-              setRevealHint={setRevealHint}
-              checkWord={checkWord}
-              setCheckWord={setCheckWord}
-              checkGrid={checkGrid}
-              setCheckGrid={setCheckGrid}
-              players={players}
-              userId={userId}
-            />
             <div className="hints-chat-container">
               <ClueList
                 puzzle={puzzle}
@@ -423,7 +403,6 @@ useEffect(() => {
                 userColor={userColor}
                 nickname={nickname}
               />
-            </div>
           </div>
         </div>
       </div>
