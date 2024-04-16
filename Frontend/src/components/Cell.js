@@ -102,13 +102,9 @@ const Cell = React.memo(
     //players_primary: [],
     //players_secondary: [],
     //}
-    console.log("userId", userId);
-    console.log("favColors", favColors);
-    console.log(favColors[userId]);
 
     //converts from hex to rgba
     function hexToRGBA(hex, alpha) {
-      console.log("Hex:", hex, "Alpha:", alpha);
       hex = hex.replace("#", "");
       const r = parseInt(hex.substring(0, 2), 16);
       const g = parseInt(hex.substring(2, 4), 16);
@@ -140,11 +136,11 @@ const Cell = React.memo(
                 cell.players_primary.length > 0
                   ? cell.players_primary.includes(userId)
                     ? hexToRGBA(favColor, 1)
-                    : hexToRGBA("#15bf42", 1)
+                    : hexToRGBA(favColors[cell.players_primary[0]], 1)
                   : cell.players_secondary.length > 0
                   ? cell.players_secondary.includes(userId)
                     ? hexToRGBA(favColor, 0.5)
-                    : hexToRGBA("#15bf42", 0.5)
+                    : hexToRGBA(favColors[cell.players_secondary[0]], 0.5)
                   : "white",
             }}
           />
