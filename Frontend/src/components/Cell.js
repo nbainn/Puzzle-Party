@@ -39,6 +39,7 @@ const StyledInput = styled(TextField)(({ fontsize }) => ({
   height: "100%",
   userSelect: "none", // Prevents user selection of text
   zIndex: 1,
+  padding: "0px",
   "& input": {
     fontFamily: "inherit",
     textAlign: "center",
@@ -66,9 +67,11 @@ const WordNumber = styled("label")(({ numSize }) => ({
   left: 0,
   width: "15px", // Set the width to 100 pixels
   height: "15px",
+  pointerEvents: "none",
   color: "#000000",
   zIndex: 999,
   marginLeft: "2px",
+  marginTop: "-2px",
   padding: "0px",
   fontSize: `${numSize}rem`,
 }));
@@ -123,7 +126,7 @@ const Cell = React.memo(
       >
         <InputWrapper>
           <StyledInput
-            fontsize={numRows === 15 ? 1.3 : numRows === 10 ? 1.5 : 3}
+            fontsize={numRows === 15 ? 1.3 : numRows === 10 ? 1.7 : 3.2}
             key={`${rowIndex}-${colIndex}`}
             id={`cell-${rowIndex}-${colIndex}`}
             value={cell.value}
@@ -147,7 +150,7 @@ const Cell = React.memo(
                   : "white",
             }}
           />
-          <WordNumber numSize={numRows === 15 ? 0.8 : numRows === 10 ? 1 : 1.8}>
+          <WordNumber numSize={numRows === 15 ? 0.8 : numRows === 10 ? 1.1 : 2}>
             {cell.number == 0 ? "" : cell.number}
           </WordNumber>
         </InputWrapper>
