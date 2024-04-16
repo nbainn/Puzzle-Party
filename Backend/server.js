@@ -827,6 +827,8 @@ app.post("/change-status", async (req, res) => {
   }
 });
 
+//modify search room to also check if in banned list, if so return banned status
+
 app.post("/search-entry", async (req, res) => {
   try {
     const roomCode = req.body.roomCode;
@@ -848,6 +850,9 @@ app.post("/search-entry", async (req, res) => {
     res.status(500).send("Error finding field");
   }
 });
+
+//modify find rooms to only return rooms that you are not banned from. 
+
 
 app.get("/find-rooms", async (req, res) => {
   try {
