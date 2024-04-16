@@ -4,10 +4,11 @@ import JoinRoomForm from "./JoinRoomForm";
 import "./HomePage.css";
 import axios from "axios";
 import SuggestionBox from "./SuggestionBox";
-import ProfileDropdown from './ProfileDropdown';
+import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
+import logo from "../assets/PuzzlePartyLogo.png";
 
 const theme = createTheme({
   typography: {
@@ -26,12 +27,10 @@ const StyledButton = styled(Button)({
   lineHeight: 2,
   minWidth: "50px",
   marginLeft: 10,
-  width: "300px", 
+  width: "300px",
   padding: "15px 30px",
   margin: "10px",
 });
-
-
 
 //import { loadScript, createHost} from  './peer2peer.js';
 function HomePage() {
@@ -64,24 +63,32 @@ function HomePage() {
 
   const handleStatistics = async () => {
     navigate(`/statistics/${userId}`);
-  }
+  };
 
   return (
     <ThemeProvider theme={theme}>
-    <div className="home-page">
-      {!isGuest && <ProfileDropdown />}
-      <h1 className="home-title">Welcome to Puzzle Party</h1>
-      <StyledButton onClick={handleCreateRoom} className="create-room-button">
-        Create Room
-      </StyledButton>
-      <StyledButton onClick={handleJoinList} className="create-room-button">
-        Join Public Room
-      </StyledButton>
-      <JoinRoomForm />
-      <StyledButton onClick={handleStatistics} className="create-room-button">
-        See Statistics
-      </StyledButton>
-    </div>
+      <div className="home-page">
+        <img src={logo} alt="Puzzle Party Logo" className="logo" />
+        <div className="options">
+          {!isGuest && <ProfileDropdown />}
+          <StyledButton
+            onClick={handleCreateRoom}
+            className="create-room-button"
+          >
+            Create Room
+          </StyledButton>
+          <StyledButton onClick={handleJoinList} className="create-room-button">
+            Join Public Room
+          </StyledButton>
+          <JoinRoomForm className="join-room-form" />
+          <StyledButton
+            onClick={handleStatistics}
+            className="create-room-button"
+          >
+            See Statistics
+          </StyledButton>
+        </div>
+      </div>
     </ThemeProvider>
   );
 }
