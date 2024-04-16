@@ -31,7 +31,7 @@ const InputWrapper = styled("div")({
 });
 
 // Customized input field for entering crossword characters
-const StyledInput = styled(TextField)({
+const StyledInput = styled(TextField)(({ fontsize }) => ({
   position: "absolute",
   top: 0,
   left: 0,
@@ -42,7 +42,7 @@ const StyledInput = styled(TextField)({
   "& input": {
     fontFamily: "inherit",
     textAlign: "center",
-    fontSize: "1.5rem",
+    fontSize: `${fontsize}rem`,
     padding: "0",
     "&::placeholder": {
       fontSize: "1.5rem",
@@ -58,9 +58,9 @@ const StyledInput = styled(TextField)({
   "&::selection": {
     background: "transparent", // Prevent text selection
   },
-});
+}));
 
-const WordNumber = styled("label")({
+const WordNumber = styled("label")(({ numSize }) => ({
   position: "absolute",
   top: 0,
   left: 0,
@@ -68,9 +68,10 @@ const WordNumber = styled("label")({
   height: "15px",
   color: "#000000",
   zIndex: 999,
-  marginTop: "0px",
-  marginLeft: "0px",
-});
+  marginLeft: "2px",
+  padding: "0px",
+  fontSize: `${numSize}rem`,
+}));
 
 //cells get passed data from the crossword component and decide how to render themselves\
 //cells are the smallest unit of the crossword
@@ -93,6 +94,7 @@ const Cell = React.memo(
     handleCellClick,
     favColors,
     favColor,
+    numRows,
   }) => {
     //cell: {
     //value: ,
@@ -121,6 +123,7 @@ const Cell = React.memo(
       >
         <InputWrapper>
           <StyledInput
+            fontsize={numRows === 15 ? 1.3 : numRows === 10 ? 1.5 : 3}
             key={`${rowIndex}-${colIndex}`}
             id={`cell-${rowIndex}-${colIndex}`}
             value={cell.value}
@@ -144,7 +147,9 @@ const Cell = React.memo(
                   : "white",
             }}
           />
-          <WordNumber>{cell.number == 0 ? "" : cell.number}</WordNumber>
+          <WordNumber numSize={numRows === 15 ? 0.8 : numRows === 10 ? 1 : 1.8}>
+            {cell.number == 0 ? "" : cell.number}
+          </WordNumber>
         </InputWrapper>
       </GridCell>
     );

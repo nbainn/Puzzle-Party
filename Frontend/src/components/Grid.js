@@ -184,6 +184,13 @@ const Grid = ({
 
   useEffect(() => {
     if (puzzle) {
+      setLastChange({
+        user: userId,
+        location: [[0, 0]],
+        direction: "across",
+        value: "",
+        locationV: [0, 0],
+      });
       let tempGrid = [];
       numRows = puzzle.puzzle.size.rows;
       numCols = puzzle.puzzle.size.columns;
@@ -419,22 +426,19 @@ const Grid = ({
     if (currentChange && !processingChanges) {
       processingChanges = true;
       let resetGrid;
-      resetGrid = grid.map((row) =>
-        row.map((cell) => {
-          const { players_primary, players_secondary, ...rest } = cell;
-          const updatedPlayersPrimary = players_primary?.filter(
-            (id) => id !== currentChange.user
-          );
-          const updatedPlayersSecondary = players_secondary?.filter(
-            (id) => id !== currentChange.user
-          );
-          return {
-            ...rest,
-            players_primary: updatedPlayersPrimary,
-            players_secondary: updatedPlayersSecondary,
-          };
-        })
-      );
+      resetGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
+      for (let i = 0; i < lastChange.location.length; i++) {
+        resetGrid[lastChange.location[i][0]][
+          lastChange.location[i][1]
+        ].players_primary = resetGrid[lastChange.location[i][0]][
+          lastChange.location[i][1]
+        ].players_primary.filter((id) => id !== lastChange.user);
+        resetGrid[lastChange.location[i][0]][
+          lastChange.location[i][1]
+        ].players_secondary = resetGrid[lastChange.location[i][0]][
+          lastChange.location[i][1]
+        ].players_secondary.filter((id) => id !== lastChange.user);
+      }
       //If location has only primary (one argument), then we must fill in the gaps
       if (currentChange.location.length === 1) {
         if (currentChange.direction === "keep") {
@@ -857,6 +861,7 @@ const Grid = ({
               handleCellClick={handleCellClick}
               favColors={favColors}
               favColor={favColor}
+              numRows={numRows}
             />
           ))
         )}
