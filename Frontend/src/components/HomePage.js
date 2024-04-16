@@ -72,7 +72,7 @@ function HomePage() {
     // First GIF has finished loading, switch to the second GIF
     const timeoutId = setTimeout(() => {
       setShowSecondGif(true);
-    }, 8060);
+    }, 8320);
   };
 
   return (
