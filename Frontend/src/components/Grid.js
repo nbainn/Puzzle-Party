@@ -59,11 +59,13 @@ const Grid = ({
   };
 
   const [lastChange, setLastChange] = useState({
-    user: userId,
-    location: [[0, 0]],
-    direction: "across",
-    value: "",
-    locationV: [0, 0],
+    [userId]: {
+      user: userId,
+      location: [[0, 0]],
+      direction: "across",
+      value: "",
+      locationV: [0, 0],
+    },
   });
 
   //True when the user is receiving data from the server
@@ -184,13 +186,18 @@ const Grid = ({
 
   useEffect(() => {
     if (puzzle) {
-      setLastChange({
-        user: userId,
-        location: [[0, 0]],
-        direction: "across",
-        value: "",
-        locationV: [0, 0],
-      });
+      for (let i = 0; i < players.length; i++) {
+        setLastChange((prevChanges) => ({
+          ...prevChanges,
+          [players[i]]: {
+            user: players[i],
+            location: [[0, 0]],
+            direction: "across",
+            value: "",
+            locationV: [0, 0],
+          },
+        }));
+      }
       let tempGrid = [];
       numRows = puzzle.puzzle.size.rows;
       numCols = puzzle.puzzle.size.columns;
@@ -427,24 +434,30 @@ const Grid = ({
       processingChanges = true;
       let resetGrid;
       resetGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
-      for (let i = 0; i < lastChange.location.length; i++) {
-        resetGrid[lastChange.location[i][0]][
-          lastChange.location[i][1]
-        ].players_primary = resetGrid[lastChange.location[i][0]][
-          lastChange.location[i][1]
-        ].players_primary.filter((id) => id !== lastChange.user);
-        resetGrid[lastChange.location[i][0]][
-          lastChange.location[i][1]
-        ].players_secondary = resetGrid[lastChange.location[i][0]][
-          lastChange.location[i][1]
-        ].players_secondary.filter((id) => id !== lastChange.user);
+      for (let i = 0; i < lastChange[currentChange.user].location.length; i++) {
+        resetGrid[lastChange[currentChange.user].location[i][0]][
+          lastChange[currentChange.user].location[i][1]
+        ].players_primary = resetGrid[
+          lastChange[currentChange.user].location[i][0]
+        ][lastChange[currentChange.user].location[i][1]].players_primary.filter(
+          (id) => id !== lastChange[currentChange.user].user
+        );
+        resetGrid[lastChange[currentChange.user].location[i][0]][
+          lastChange[currentChange.user].location[i][1]
+        ].players_secondary = resetGrid[
+          lastChange[currentChange.user].location[i][0]
+        ][
+          lastChange[currentChange.user].location[i][1]
+        ].players_secondary.filter(
+          (id) => id !== lastChange[currentChange.user].user
+        );
       }
       //If location has only primary (one argument), then we must fill in the gaps
       if (currentChange.location.length === 1) {
         if (currentChange.direction === "keep") {
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
         } else if (currentChange.direction === "switch") {
-          lastChange.direction === "across"
+          lastChange[currentChange.user].direction === "across"
             ? (currentChange.direction = "down")
             : (currentChange.direction = "across");
         } else if (currentChange.direction === "continue") {
@@ -459,23 +472,23 @@ const Grid = ({
             currentChange.location[0][0],
             currentChange.location[0][1]
           );
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][0] =
             currentChange.direction === "down" &&
-            lastChange.location[0][0] < numRows - 1 &&
-            puzzle.puzzle.grid[lastChange.location[0][0] + 1][
-              lastChange.location[0][1]
-            ] != " "
-              ? lastChange.location[0][0] + 1
-              : lastChange.location[0][0];
+            lastChange[currentChange.user].location[0][0] < numRows - 1 &&
+            puzzle.puzzle.grid[
+              lastChange[currentChange.user].location[0][0] + 1
+            ][lastChange[currentChange.user].location[0][1]] != " "
+              ? lastChange[currentChange.user].location[0][0] + 1
+              : lastChange[currentChange.user].location[0][0];
           currentChange.location[0][1] =
             currentChange.direction === "across" &&
-            lastChange.location[0][1] < numCols - 1 &&
-            puzzle.puzzle.grid[lastChange.location[0][0]][
-              lastChange.location[0][1] + 1
+            lastChange[currentChange.user].location[0][1] < numCols - 1 &&
+            puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
+              lastChange[currentChange.user].location[0][1] + 1
             ] != " "
-              ? lastChange.location[0][1] + 1
-              : lastChange.location[0][1];
+              ? lastChange[currentChange.user].location[0][1] + 1
+              : lastChange[currentChange.user].location[0][1];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
@@ -486,79 +499,79 @@ const Grid = ({
           resetGrid[currentChange.location[0][0]][
             currentChange.location[0][1]
           ].value = currentChange.value;
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][0] =
             currentChange.direction === "down" &&
-            lastChange.location[0][0] > 0 &&
-            puzzle.puzzle.grid[lastChange.location[0][0] - 1][
-              lastChange.location[0][1]
-            ] != " "
-              ? lastChange.location[0][0] - 1
-              : lastChange.location[0][0];
+            lastChange[currentChange.user].location[0][0] > 0 &&
+            puzzle.puzzle.grid[
+              lastChange[currentChange.user].location[0][0] - 1
+            ][lastChange[currentChange.user].location[0][1]] != " "
+              ? lastChange[currentChange.user].location[0][0] - 1
+              : lastChange[currentChange.user].location[0][0];
           currentChange.location[0][1] =
             currentChange.direction === "across" &&
-            lastChange.location[0][1] > 0 &&
-            puzzle.puzzle.grid[lastChange.location[0][0]][
-              lastChange.location[0][1] - 1
+            lastChange[currentChange.user].location[0][1] > 0 &&
+            puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
+              lastChange[currentChange.user].location[0][1] - 1
             ] != " "
-              ? lastChange.location[0][1] - 1
-              : lastChange.location[0][1];
+              ? lastChange[currentChange.user].location[0][1] - 1
+              : lastChange[currentChange.user].location[0][1];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
             )
             .focus();
         } else if (currentChange.direction === "rightt") {
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][1] =
-            lastChange.location[0][1] < numCols - 1 &&
-            puzzle.puzzle.grid[lastChange.location[0][0]][
-              lastChange.location[0][1] + 1
+            lastChange[currentChange.user].location[0][1] < numCols - 1 &&
+            puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
+              lastChange[currentChange.user].location[0][1] + 1
             ] != " "
-              ? lastChange.location[0][1] + 1
-              : lastChange.location[0][1];
+              ? lastChange[currentChange.user].location[0][1] + 1
+              : lastChange[currentChange.user].location[0][1];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
             )
             .focus();
         } else if (currentChange.direction === "leftt") {
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][1] =
-            lastChange.location[0][1] > 0 &&
-            puzzle.puzzle.grid[lastChange.location[0][0]][
-              lastChange.location[0][1] - 1
+            lastChange[currentChange.user].location[0][1] > 0 &&
+            puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
+              lastChange[currentChange.user].location[0][1] - 1
             ] != " "
-              ? lastChange.location[0][1] - 1
-              : lastChange.location[0][1];
+              ? lastChange[currentChange.user].location[0][1] - 1
+              : lastChange[currentChange.user].location[0][1];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
             )
             .focus();
         } else if (currentChange.direction === "upp") {
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][0] =
-            lastChange.location[0][0] > 0 &&
-            puzzle.puzzle.grid[lastChange.location[0][0] - 1][
-              lastChange.location[0][1]
-            ] != " "
-              ? lastChange.location[0][0] - 1
-              : lastChange.location[0][0];
+            lastChange[currentChange.user].location[0][0] > 0 &&
+            puzzle.puzzle.grid[
+              lastChange[currentChange.user].location[0][0] - 1
+            ][lastChange[currentChange.user].location[0][1]] != " "
+              ? lastChange[currentChange.user].location[0][0] - 1
+              : lastChange[currentChange.user].location[0][0];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
             )
             .focus();
         } else if (currentChange.direction === "downn") {
-          currentChange.direction = lastChange.direction;
+          currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][0] =
-            lastChange.location[0][0] < numRows - 1 &&
-            puzzle.puzzle.grid[lastChange.location[0][0] + 1][
-              lastChange.location[0][1]
-            ] != " "
-              ? lastChange.location[0][0] + 1
-              : lastChange.location[0][0];
+            lastChange[currentChange.user].location[0][0] < numRows - 1 &&
+            puzzle.puzzle.grid[
+              lastChange[currentChange.user].location[0][0] + 1
+            ][lastChange[currentChange.user].location[0][1]] != " "
+              ? lastChange[currentChange.user].location[0][0] + 1
+              : lastChange[currentChange.user].location[0][0];
           document
             .getElementById(
               `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
@@ -636,8 +649,11 @@ const Grid = ({
           currentChange.locationV[1]
         ].value = currentChange.value;
       }
+      setLastChange((prev) => ({
+        ...prev,
+        [currentChange.user]: currentChange,
+      }));
       if (currentChange.user === userId) {
-        setLastChange(currentChange);
         const ably = async () => {
           if (ablyClient) {
             const channel = ablyClient.channels.get(`room:${roomId}`);
