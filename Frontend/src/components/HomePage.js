@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinRoomForm from "./JoinRoomForm";
 import "./HomePage.css";
@@ -8,7 +8,8 @@ import ProfileDropdown from "./ProfileDropdown";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
-import logo from "../assets/PuzzlePartyLogo.png";
+import CatLogo1 from "../assets/CatLogo1.gif";
+import CatLogo2 from "../assets/CatLogo2.gif";
 
 const theme = createTheme({
   typography: {
@@ -65,10 +66,28 @@ function HomePage() {
     navigate(`/statistics/${userId}`);
   };
 
+  const [showSecondGif, setShowSecondGif] = useState(false);
+
+  const handleFirstGifLoad = () => {
+    // First GIF has finished loading, switch to the second GIF
+    const timeoutId = setTimeout(() => {
+      setShowSecondGif(true);
+    }, 8060);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <div className="home-page">
-        <img src={logo} alt="Puzzle Party Logo" className="logo" />
+        {showSecondGif ? (
+          <img src={CatLogo2} alt="Second GIF" className="home-image" />
+        ) : (
+          <img
+            src={CatLogo1}
+            alt="First GIF"
+            className="home-image"
+            onLoad={handleFirstGifLoad}
+          />
+        )}
         <div className="options">
           {!isGuest && <ProfileDropdown />}
           <StyledButton

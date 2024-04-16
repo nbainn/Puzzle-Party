@@ -45,6 +45,10 @@
   .options, .logo {
     padding: 20px;
   }
+
+  .home-image {
+    image-rendering: pixelated;
+  }
   
   /* Add responsiveness for smaller screens */
   @media (max-width: 768px) {
