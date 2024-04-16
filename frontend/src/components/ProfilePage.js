@@ -1,39 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { HexColorPicker } from 'react-colorful';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import axios from "axios";
 import LoadingScreen from './LoadingScreen';
-
-/**
- * ProfilePage Component
- * 
- * This component is used to display the user's profile information.
- * It fetches and shows the user's email, nickname, and color preference.
- * 
- * Accessing this page needs to be integrated into the navigation flow of the application.
- * We need to provide a link or button in HomePage.js or RoomPage.js that navigates to 
- * this page when clicked. We'd have to set up routing for it as well, linking to it 
- * whenever an icon or profile picture is clicked
- * 
- * TODO:
- * - Add a navigation button/link in HomePage.js and RoomPage.js to access the profile.
- * - Implement the functionality to update the user's nickname and userColor.
- */
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function ProfilePage() {
-  const { logout, userToken } = useAuth();
+  const { logout, userToken, userColor, nickname, updateAuthContext } = useAuth();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState({ nickname, userColor });
   const [isLoading, setIsLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [localNickname, setLocalNickname] = useState(nickname);
+  const [localUserColor, setLocalUserColor] = useState(userColor);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchUserData = async () => {
       try {
         const response = await axios.get('/user/profile', {
           headers: { Authorization: `Bearer ${userToken}` }
         });
         setUserData(response.data);
+        setLocalNickname(response.data.nickname);
+        setLocalUserColor(response.data.userColor);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -43,37 +36,106 @@ function ProfilePage() {
     fetchUserData();
   }, [userToken]);
 
-  const handleLogout = () => {
+  if (isLoading) {
+    return <LoadingScreen message="Loading profile..." />;
+  }
+
+  const handleEditClick = () => {
+    setEditing(true);
+  };
+
+  const handleSaveClick = async () => {
+    setIsLoading(true);
+    setEditing(false);
+    setUnsavedChanges(false);
+  
+    try {
+      const response = await axios.post('/updateProfile', {
+        nickname: localNickname,
+        userColor: localUserColor
+      }, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      });
+  
+      if (response.status === 200) {
+        setUserData({
+          ...userData,
+          nickname: localNickname,
+          userColor: localUserColor
+        });
+        updateAuthContext(localNickname, localUserColor);
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+    setIsLoading(false);
+  };
+
+  const handleNicknameChange = (event) => {
+    setUnsavedChanges(true);
+    setLocalNickname(event.target.value);
+  };
+
+  const handleBackHome = () => {
+    if (unsavedChanges) {
+      const confirmLeave = window.confirm("You have unsaved changes. Do you want to leave without saving?");
+      if (confirmLeave) {
+        navigate('/home');
+      }
+    } else {
+      navigate('/home');
+    }
+  };
+
+  const handleLogoutClick = () => {
     logout();
     navigate('/');
   };
 
-  if (isLoading) {
-    return <LoadingScreen message="Loading user data..." />;
-  }
+  const renderEditView = () => (
+    <>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        Nickname:
+        <input type="text" value={localNickname} onChange={handleNicknameChange} />
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        Favorite Color:
+        <HexColorPicker color={localUserColor} onChange={setLocalUserColor} />
+      </Typography>
+      <Button variant="contained" color="primary" onClick={handleSaveClick}>
+        Save Changes
+      </Button>
+    </>
+  );
+
+  const renderDefaultView = () => (
+    <>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        Nickname: {nickname}
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        Email: {userData.email}
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        Favorite Color:
+        <Box component="span" sx={{ backgroundColor: userColor, width: '15px', height: '15px', display: 'inline-block', marginLeft: '5px' }}></Box>
+      </Typography>
+      <Button variant="contained" color="primary" onClick={handleEditClick}>
+        Edit Profile
+      </Button>
+    </>
+  );
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4 }}>
+      <Button startIcon={<ArrowBackIcon />} onClick={handleBackHome} sx={{ alignSelf: 'flex-start' }}>
+        BACK TO HOME
+      </Button>
       <Typography variant="h4" sx={{ marginBottom: 2 }}>
         Your Profile
       </Typography>
-      {userData ? (
-        <>
-          <Typography variant="body1" sx={{ marginBottom: 2 }}>
-            Name: {userData.nickname || userData.email.split('@')[0]} {/* Show nickname or derive from email */}
-          </Typography>
-          <Typography variant="body1" sx={{ marginBottom: 2 }}>
-            Email: {userData.email}
-          </Typography>
-          <Typography variant="body1" sx={{ marginBottom: 2, color: userData.userColor }}>
-            Favorite Color: <Box component="span" sx={{ backgroundColor: userData.userColor, width: '15px', height: '15px', display: 'inline-block', marginLeft: '5px' }}></Box> {/* Display color box */}
-          </Typography>
-          {/* Add options for changing email and password at some point maybe */}
-        </>
-      ) : (
-        <Typography>User data not found.</Typography>
-      )}
-      <Button variant="contained" color="primary" onClick={handleLogout}>
+      {editing ? renderEditView() : renderDefaultView()}
+      <Button variant="contained" color="secondary" onClick={handleLogoutClick} sx={{ marginTop: 2 }}>
         Logout
       </Button>
     </Box>

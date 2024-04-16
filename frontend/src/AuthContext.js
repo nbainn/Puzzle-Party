@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await axios.get('/logout'); // Make an API call to logout
+    await axios.get('/logout');
     setIsAuthenticated(false);
     setIsGuest(false);
     setUserId(null);
@@ -158,9 +158,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateAuthContext = (nickname, userColor) => {
+    setNickname(nickname);
+    setUserColor(userColor);
+  };
+
   // Expose the states and functions through context
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout, isLoading, isAblyReady }}>
+    <AuthContext.Provider value={{ isAuthenticated, isGuest, userId, nickname, userColor, ablyClient, login, guestLogin, logout, isLoading, isAblyReady, updateAuthContext }}>
       {children}
     </AuthContext.Provider>
   );

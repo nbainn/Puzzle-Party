@@ -321,18 +321,20 @@ app.get("/user/profile", authenticateToken, async (req, res) => {
 
 // Update profile endpoint
 app.post("/updateProfile", authenticateToken, async (req, res) => {
+  const { nickname, userColor } = req.body;
   try {
-    const { nickname, userColor } = req.body;
     const user = await User.findByPk(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    user.nickname = nickname || user.nickname;
-    user.userColor = userColor || user.userColor;
-    await user.save();
-
-    res.json({ message: "Profile updated successfully" });
+    if (user) {
+      user.nickname = nickname || user.nickname;
+      user.userColor = userColor || user.userColor;
+      await user.save();
+      res.json({ message: "Profile updated successfully" });
+    } else {
+      res.status(404).send("User not found");
+    }
   } catch (error) {
-    res.status(500).json({ message: "Error updating profile", error });
+    console.error("Failed to update user profile", error);
+    res.status(500).send("Failed to update user profile");
   }
 });
 

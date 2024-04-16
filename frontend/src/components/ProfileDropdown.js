@@ -60,7 +60,7 @@ function ProfileDropdown() {
           color: textColor, 
           cursor: 'pointer',
           fontWeight: 'bold',
-          //fontSize: '1.5rem'
+          fontSize: '1.5rem'
         }} 
         onClick={handleClick}>
         {initial}
