@@ -264,6 +264,15 @@ app.post("/googleLogin", async (req, res) => {
         expiresIn: "1h",
       });
 
+      // Set the cookie with the token
+      const cookieOptions = {
+        httpOnly: true,
+        expires: new Date(Date.now() + 3600000), // 1 hour
+        sameSite: 'strict',
+        //secure: true,
+      };
+      res.cookie('token', token, cookieOptions);
+
       // Set the cookie with the new token
       res.cookie('token', newToken, cookieOptions);
 
