@@ -78,6 +78,11 @@ function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <div className="home-page">
+        {!isGuest && (
+          <div className="profile-dropdown">
+            <ProfileDropdown />
+          </div>
+        )}
         {showSecondGif ? (
           <img src={CatLogo2} alt="Second GIF" className="home-image" />
         ) : (
@@ -89,7 +94,6 @@ function HomePage() {
           />
         )}
         <div className="options">
-          {!isGuest && <ProfileDropdown />}
           <StyledButton
             onClick={handleCreateRoom}
             className="create-room-button"

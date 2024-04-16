@@ -343,7 +343,11 @@ function RoomPage() {
   return (
     <ThemeProvider theme={theme}>
       <div className="room-page">
-        {!isGuest && <ProfileDropdown />}
+        {!isGuest && (
+          <div className="profile-dropdown">
+            <ProfileDropdown />
+          </div>
+        )}
         <div className="settings"></div>
         <div className="room-header">
           <h2>Room: {roomId}</h2>
