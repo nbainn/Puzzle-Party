@@ -7,6 +7,7 @@ import e from 'cors';
 import axios from 'axios';
 import { styled, createTheme, ThemeProvider  } from '@mui/material/styles';
 import { Button, TextField } from '@mui/material';
+import { useAuth } from "../hooks/useAuth";
 
 const theme = createTheme({
   typography: {
@@ -34,6 +35,7 @@ const StyledButton = styled(Button)({
 function JoinRoomForm() {
   const [roomCode, setRoomCode] = useState('');
   const navigate = useNavigate();
+  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const handleSubmit = async (event) => {
     
     event.preventDefault();
@@ -43,9 +45,18 @@ function JoinRoomForm() {
       if (response.status === 200) {
         console.log('Found room:', response.data);
         //check if they are banned
-        console.log('Found banned:', response.data.banned);
-        console.log('Found banned:', response.banned);
-        navigate(`/room/${roomCode}`);
+        //console.log('Found banned:', response.data.banned_players);
+        //console.log('Got rooms:', response.data);
+        let str = '' + userId;
+        if (!response.data.banned_players) {
+          navigate(`/room/${roomCode}`);
+        }
+        else if (response.data.banned_players.includes(str)) {
+          //console.log(response.data.banned_players.includes(str));
+          createPopup('You are banned from this room. Please enter a different room.');
+        } else {
+          navigate(`/room/${roomCode}`);
+        }
       } else if (response.status === 404){
         console.log('Room not found:', response.data);
         createPopup('Room not found. Please enter an existing room.');

@@ -909,8 +909,9 @@ app.get("/get-global-statistics", async(req, res) => {
 
 app.post("/add-ban", async (req, res) => {
   try {
-    const roomCode = req.body.roomCode;
+    const roomCode = req.body.roomId;
     const player = req.body.player;
+    console.log(roomCode, "and player", player);
     if (!roomCode || !player) {
       throw new Error("Room code or player is missing in the request body");
     }
