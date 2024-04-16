@@ -23,7 +23,7 @@ const StyledButton = styled(Button)({
   border: "1px solid #ca8f8f",
   color: "black",
   //size of button
-  fontSize: "1.5rem",
+  fontSize: "2rem",
   fontFamily: "inherit",
   lineHeight: 2,
   minWidth: "50px",
