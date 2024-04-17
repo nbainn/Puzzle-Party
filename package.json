@@ -30,6 +30,7 @@
     "react-router-dom": "^6.22.1",
     "react-scripts": "^5.0.1",
     "sequelize": "^6.37.1",
+    "timeme.js": "^2.1.0",
     "url": "^0.11.3",
     "web-vitals": "^2.1.4"
   },

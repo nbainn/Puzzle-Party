@@ -36,6 +36,7 @@ function SuggestionBox() {
         const response = await axios.post("/suggestion", { word, description });
         if (response.status === 200) {
           console.log("suggestion sent!");
+          alert("Suggestion sent!")
         } else if (response.status === 404) {
           console.log("Error", response.data);
         } else {

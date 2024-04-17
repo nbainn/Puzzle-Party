@@ -379,6 +379,9 @@ const CrosswordGrid = ({
           console.log(numCorrect, numLetters);
           if (numCorrect === numLetters) {
             alert("Congratulations! You have completed the puzzle!");
+            if (typeof userId === "string") {
+              return;
+            }
             try {
               const response = await axios.post("/addWin", { userId: userId });
               if (response.status === 200) {

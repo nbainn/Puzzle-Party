@@ -453,11 +453,55 @@ app.post('/addTime', async (req, res) => {
   await addUserTime(userId, time);
   res.status(200).send("Time added successfully");
 });
+
 app.post('/addWin', async (req, res) => { 
   const userId = req.body.userId;
-  await addUserWins(userId);
+  try {
+    let stat = await Statistics.findOne(
+    {where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 1,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
+  stat.gamesWon = stat.gamesWon + 1;
+  stat.save();
   res.status(200).send("Win added successfully");
+} catch (error) { 
+  res.status(404).send("Error adding win" + error);
+}
 });
+app.post('/addPlay', async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    let stat = await Statistics.findOne({
+    where: {
+      userId: userId
+    }
+  });
+  if (!stat) {
+    stat = await Statistics.create({
+      userId: userId,
+      gamesPlayed: 0,
+      gamesWon: 0,
+      timePlayed: 0,
+    });
+  }
+  console.log("STATS ADDING PLAYFKNALSDFNA:OISFJ:IOAF")
+  stat.gamesPlayed += 1;
+  await stat.save();
+  res.status(200).send("Play added successfully");
+} catch (error) {
+  res.status(404).send("Error adding play" + error);
+}
+});
+
 
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
@@ -697,8 +741,7 @@ async function buildPuzzle(seed, size) {
   return puzzle;
 }
 
-// Assuming time is in milliseconds; these adjustments were made just so the server runs properly, specific adjustments may need to be made
-async function addUserTime(userId, timeInMillis) {
+async function addUserTime(userId, time) {
   let stat = await Statistics.findOne({
     where: {
       userId: userId
@@ -715,9 +758,8 @@ async function addUserTime(userId, timeInMillis) {
   }
 
   // Convert milliseconds to seconds and round off to the nearest whole number
-  const timeInSeconds = Math.round(timeInMillis / 1000);
   
-  stat.timePlayed += timeInSeconds;
+  stat.timePlayed += time / 1000;
   await stat.save();
 }
 
@@ -730,11 +772,11 @@ async function getUserStatistics(userId) {
   if (!stat) {
     return null;
   } 
-  return { timePlayed: stat.timePlayed, gamesPlayed: stat.gamesPlayed, gamesWon: stat.gamesWon };
+  return { timePlayed: Math.round(stat.timePlayed), gamesPlayed: stat.gamesPlayed, gamesWon: stat.gamesWon };
 }
 
 async function getGlobalStatistics() { 
-  let totalTime = await Statistics.sum("timePlayed");
+  let totalTime = Math.round(await Statistics.sum("timePlayed"));
   let totalGames = await Statistics.sum("gamesPlayed");
   let totalWins = await Statistics.sum("gamesWon");
   return { timePlayed: totalTime, gamesPlayed: totalGames, gamesWon: totalWins, gamesLost: totalGames - totalWins};

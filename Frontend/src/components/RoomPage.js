@@ -20,12 +20,17 @@ import "./RoomPage.css";
 import { useNavigate } from "react-router-dom";
 import catSleep from "../assets/PartyCatSleep.gif";
 import { MuiColorInput } from "mui-color-input";
+import TimeMe from "timeme.js";
 
 const theme = createTheme({
   typography: {
     fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
   },
 });
+TimeMe.initialize({
+	    currentPageName: "room", // current page
+	    idleTimeoutInSeconds: 30 // seconds
+    });
 
 const StyledButton = styled(Button)({
   //background color of button
@@ -56,7 +61,7 @@ function RoomPage() {
   const [revealHint, setRevealHint] = useState(false);
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
-  const [startTime, setStartTime] = useState(performance.now());
+  const [startTime, setStartTime] = useState(new Date());
   const [favColor, setColor] = React.useState("#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
@@ -177,15 +182,19 @@ function RoomPage() {
   }, [roomId, ablyClient]);
 
   useEffect(() => {
-    const handleBeforeUnload = async function () {
-      let endTime = performance.now();
-      let timeSpent = endTime - startTime;
+      const focus = function() {
+      setStartTime(new Date());
+      };
+      const handleBeforeUnload = async function () {
+      if (userId && typeof userId === 'string') {
+          return;
+      } 
+      let endTime = new Date();
+      let timeSpent = endTime.getTime() - startTime.getTime();
       console.log("Time spent on page:", timeSpent, "seconds");
 
       try {
-        if (Number.isInteger(userId) === false) {
-          return;
-        }
+        
         const response = await axios.post("/addTime", {
           userId: userId,
           time: timeSpent,
@@ -206,6 +215,7 @@ function RoomPage() {
 
     handleBeforeUnload();
 
+    window.addEventListener("focus", focus);
     window.addEventListener("unload", handleBeforeUnload);
 
     return () => {
@@ -349,7 +359,7 @@ function RoomPage() {
         <div className="settings"></div>
         <div className="room-header">
           <h2>Room: {roomId}</h2>
-          <GeneratePuzzleForm setPuzzle={setPuzzle} />
+          <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
         </div>
         <div className="game-container">
           <div className="players-list">

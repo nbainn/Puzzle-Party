@@ -393,20 +393,22 @@ const Grid = ({
           console.log(numCorrect, numLetters);
           if (numCorrect === numLetters) {
             alert("Congratulations! You have completed the puzzle!");
-            try {
-              const response = await axios.post("/addWin", {
-                userId: userId,
-              });
-              if (response.status === 200) {
-                console.log("win stat added!");
-              } else if (response.status === 404) {
-                console.log("Error", response.data);
-              } else {
-                console.error("Unexpected response status:", response.status);
+            if (typeof userId !== "string") {
+              try {
+                const response = await axios.post("/addWin", {
+                  userId: userId,
+                });
+                if (response.status === 200) {
+                  console.log("win stat added!");
+                } else if (response.status === 404) {
+                  console.log("Error", response.data);
+                } else {
+                  console.error("Unexpected response status:", response.status);
+                }
+              } catch (error) {
+                console.error("Error contacting server", error);
+                console.log("error");
               }
-            } catch (error) {
-              console.error("Error contacting server", error);
-              console.log("error");
             }
           }
           setGrid(resetGrid);

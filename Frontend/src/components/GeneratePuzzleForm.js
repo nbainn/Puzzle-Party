@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./generatePuzzleForm.css";
 import {
@@ -50,7 +50,7 @@ const StyledMenuItem = styled(MenuItem)({
   fontFamily: "C&C Red Alert [INET]",
 });
 
-function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
+function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
   const [seed, setSeed] = useState("");
   const [size, setSize] = useState("medium");
 
@@ -81,6 +81,34 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown }) {
       }
     }
   };
+   useEffect(() => {
+     try {
+        const handleNewPuzzle = async () => {
+            try {
+              const response = await axios.post("/addPlay", {
+                userId: userId,
+              });
+              if (response.status === 200) {
+                console.log("game played added!");
+              } else if (response.status === 404) {
+                console.log("User", userId, "not found");
+                console.log("Error", response.data);
+              } else {
+                console.error("Unexpected response status:", response.status);
+              }
+            } catch (error) {
+              console.error("Error contacting server", error);
+              console.log("error");
+            }
+        };
+        if (typeof userId !== "string") {
+          handleNewPuzzle();
+        }
+      } catch (error) {
+        console.error("Error contacting server", error);
+        console.log("error");
+      }
+  }, [seed, size, userId]);
 
   const generateRandomNumber = () => {
     // Generate a random number between 0 and 9999999999
