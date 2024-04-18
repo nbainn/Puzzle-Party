@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { TextField, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
@@ -128,7 +128,6 @@ const Cell = React.memo(
           <StyledInput
             fontsize={numRows === 15 ? 1.3 : numRows === 10 ? 1.7 : 3.2}
             key={`${rowIndex}-${colIndex}`}
-            id={`cell-${rowIndex}-${colIndex}`}
             value={cell.value}
             onClick={() => {
               //setLocation(rowIndex, colIndex);
@@ -148,6 +147,7 @@ const Cell = React.memo(
                     ? hexToRGBA(favColor, 0.5)
                     : hexToRGBA(favColors[cell.players_secondary[0]], 0.5)
                   : "white",
+              caretColor: "transparent",
             }}
           />
           <WordNumber numSize={numRows === 15 ? 0.8 : numRows === 10 ? 1.1 : 2}>
