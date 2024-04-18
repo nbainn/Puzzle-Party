@@ -917,6 +917,26 @@ app.post("/search-entry", async (req, res) => {
   }
 });
 
+app.post("/search-friend", async (req, res) => {
+  try {
+    const friendName = req.body.friendName;
+    if (!friendName) {
+      throw new Error("Room code is missing in the request body");
+    }
+    let foundFriend = await User.findOne({
+      where: { nickname: friendName },
+    });
+    if (foundFriend) {
+      res.status(200).send(null);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
 app.get("/find-rooms", async (req, res) => {
   try {
     const limit = req.query.limit;

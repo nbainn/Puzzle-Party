@@ -6,6 +6,7 @@ import { Button, Typography, Box } from '@mui/material';
 import axios from "axios";
 import LoadingScreen from './LoadingScreen';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FriendSearch from "./FriendSearch";
 
 function ProfilePage() {
   const { logout, userId, userToken, userColor, nickname, updateAuthContext } = useAuth();
@@ -33,7 +34,7 @@ function ProfilePage() {
         console.error('Error fetching user data:', error);
       }
       try {
-        console.log(userId);
+        //console.log(userId);
         const response = await axios.post('/user-friends', { userId });
         if (response.status === 200) {
           if (response.data.friends) {
@@ -55,7 +56,7 @@ function ProfilePage() {
 
   useEffect(() => {
     if (friends) {
-      console.log(friends);
+      //console.log(friends);
     }
   }, [friends]);
 
@@ -67,7 +68,7 @@ function ProfilePage() {
           try {
             const response = await axios.post("/fetch-nickname", { userId: friend });
             if (response.status === 200) {
-              console.log("Nickname for user", friend, "is", response.data);
+              //console.log("Nickname for user", friend, "is", response.data);
               return response.data;
             }
           } catch (error) {
@@ -198,6 +199,7 @@ function ProfilePage() {
         ))}
      </ul>
      )}
+     <FriendSearch/>
    </div>
   );
 }
