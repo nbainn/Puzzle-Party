@@ -8,9 +8,11 @@ import LoadingScreen from './LoadingScreen';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function ProfilePage() {
-  const { logout, userToken, userColor, nickname, updateAuthContext } = useAuth();
+  const { logout, userId, userToken, userColor, nickname, updateAuthContext } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState({ nickname, userColor });
+  const [friends, setFriends] = useState([]);
+  const [realPlayers, setRealPlayers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -30,11 +32,55 @@ function ProfilePage() {
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
+      try {
+        console.log(userId);
+        const response = await axios.post('/user-friends', { userId });
+        if (response.status === 200) {
+          if (response.data.friends) {
+            setFriends(response.data.friends);
+          }
+        //setLocalNickname(response.data.nickname);
+        //setLocalUserColor(response.data.userColor);
+        } else {
+          console.log("Error fetching friends data:", response);
+        }
+      } catch (error) {
+        console.error('Error fetching friend data:', error);
+      }
       setIsLoading(false);
     };
 
     fetchUserData();
   }, [userToken]);
+
+  useEffect(() => {
+    if (friends) {
+      console.log(friends);
+    }
+  }, [friends]);
+
+  useEffect(() => {
+    const fetchNicknames = async () => {
+      const realPlayersList = await Promise.all(friends.map(async (friend) => {
+        const integerValue = parseInt(friend);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-nickname", { userId: friend });
+            if (response.status === 200) {
+              console.log("Nickname for user", friend, "is", response.data);
+              return response.data;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return friend;
+      }));
+      setRealPlayers(realPlayersList);
+    };
+
+    fetchNicknames();
+  }, [friends]);
 
   if (isLoading) {
     return <LoadingScreen message="Loading profile..." />;
@@ -127,6 +173,7 @@ function ProfilePage() {
   );
 
   return (
+    <div>
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4 }}>
       <Button startIcon={<ArrowBackIcon />} onClick={handleBackHome} sx={{ alignSelf: 'flex-start' }}>
         BACK TO HOME
@@ -139,6 +186,19 @@ function ProfilePage() {
         Logout
       </Button>
     </Box>
+     <h2>Friends:</h2>
+     {friends.length > 0 && (
+     <ul>
+     {friends.map((friend, index) => (
+        <div key={friend}>
+        <li>
+        {realPlayers[index]}
+         </li>
+        </div>
+        ))}
+     </ul>
+     )}
+   </div>
   );
 }
 

@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
-const { Room, Word, Puzzle, Statistics } = sq.models;
+const { Room, Word, Puzzle, Statistics} = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
 // Ably API Key
@@ -930,6 +930,31 @@ app.get("/find-rooms", async (req, res) => {
     if (rooms) {
       console.log(rooms);
       res.status(200).send(rooms);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/user-friends", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    console.log(req.body);
+    console.log(userId);
+    if (!userId) {
+      throw new Error("User id missing");
+    }
+    let foundFriends = await User.findOne({
+      where: { id: userId},
+      attributes: ["friends"],
+    });
+    if (foundFriends) {
+      console.log(foundFriends.friends);
+      console.log(foundFriends);
+      res.status(200).send(foundFriends);
     } else {
       res.status(404).send(null);
     }
