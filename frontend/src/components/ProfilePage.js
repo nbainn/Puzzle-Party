@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Box } from '@mui/material';
-import axios from "axios";
+import { Button, Typography, Box, Card, CardContent, Container, TextField } from '@mui/material';
+import axios from 'axios';
 import LoadingScreen from './LoadingScreen';
+import HomeIcon from '@mui/icons-material/Home';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function ProfilePage() {
@@ -93,52 +94,103 @@ function ProfilePage() {
   };
 
   const renderEditView = () => (
-    <>
-      <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        Nickname:
-        <input type="text" value={localNickname} onChange={handleNicknameChange} />
-      </Typography>
-      <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        Favorite Color:
-        <HexColorPicker color={localUserColor} onChange={setLocalUserColor} />
-      </Typography>
-      <Button variant="contained" color="primary" onClick={handleSaveClick}>
-        Save Changes
-      </Button>
-    </>
+    <Card>
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+          sx={{ position: 'absolute', top: 16, left: 16 }}
+        >
+          Back
+        </Button>
+        <Typography variant="h4" sx={{ fontSize: '2rem', marginBottom: 2 }}>
+          Your Profile
+        </Typography>
+        <Typography variant="body1" sx={{ marginTop: 1 }}>
+          Nickname:
+        </Typography>
+        <TextField
+          fullWidth
+          value={localNickname}
+          onChange={handleNicknameChange}
+          margin="normal"
+          variant="outlined"
+          sx={{ fontSize: '1.5rem' }}
+        />
+        <Typography variant="body1" sx={{ marginTop: 1, marginBottom: 1 }}>
+          Favorite Color:
+        </Typography>
+        <Box sx={{ marginY: 2 }}>
+          <HexColorPicker color={localUserColor} onChange={setLocalUserColor} />
+        </Box>
+        <Button variant="contained" color="primary" onClick={handleSaveClick}>
+          Save Changes
+        </Button>
+        <Button
+          startIcon={<HomeIcon />}
+          onClick={handleBackHome}
+          sx={{ position: 'absolute', top: 16, right: 16 }}
+        >
+          Home
+        </Button>
+      </CardContent>
+    </Card>
   );
 
   const renderDefaultView = () => (
-    <>
-      <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        Nickname: {nickname}
-      </Typography>
-      <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        Email: {userData.email}
-      </Typography>
-      <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        Favorite Color:
-        <Box component="span" sx={{ backgroundColor: userColor, width: '15px', height: '15px', display: 'inline-block', marginLeft: '5px' }}></Box>
-      </Typography>
-      <Button variant="contained" color="primary" onClick={handleEditClick}>
-        Edit Profile
-      </Button>
-    </>
+    <Card>
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+          sx={{ position: 'absolute', top: 16, left: 16 }}
+        >
+          Back
+        </Button>
+        <Typography variant="h4" sx={{ fontSize: '2rem', marginBottom: 2 }}>
+          Your Profile
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: 2 }}>
+          Nickname: {nickname}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: 2 }}>
+          Email: {userData.email}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: 2 }}>
+          Favorite Color:
+          <Box component="span" sx={{ backgroundColor: userColor, width: '15px', height: '15px', display: 'inline-block', marginLeft: '5px' }}></Box>
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleEditClick} sx={{ marginBottom: 2 }}>
+            Edit Profile
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleLogoutClick}>
+            Logout
+          </Button>
+        </Box>
+        <Button
+          startIcon={<HomeIcon />}
+          onClick={handleBackHome}
+          sx={{ position: 'absolute', top: 16, right: 16 }}
+        >
+          Home
+        </Button>
+      </CardContent>
+    </Card>
   );
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={handleBackHome} sx={{ alignSelf: 'flex-start' }}>
-        BACK TO HOME
-      </Button>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        Your Profile
-      </Typography>
+    <Container component="main" maxWidth="xs" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'auto',
+      textAlign: 'center'
+    }}>
       {editing ? renderEditView() : renderDefaultView()}
-      <Button variant="contained" color="secondary" onClick={handleLogoutClick} sx={{ marginTop: 2 }}>
-        Logout
-      </Button>
-    </Box>
+    </Container>
   );
 }
 
