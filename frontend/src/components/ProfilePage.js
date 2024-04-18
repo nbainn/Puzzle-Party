@@ -199,7 +199,9 @@ function ProfilePage() {
         ))}
      </ul>
      )}
-     <FriendSearch/>
+     <FriendSearch
+      friends={realPlayers}
+     />
    </div>
   );
 }

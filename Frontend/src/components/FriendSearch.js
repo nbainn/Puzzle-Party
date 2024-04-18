@@ -30,31 +30,33 @@ const StyledButton = styled(Button)({
   marginLeft: "5px",
 });
 
-function FriendSearch() {
+function FriendSearch( friends ) {
   const [friendName, setFriendName] = useState("");
   const navigate = useNavigate();
   const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // TODO: Add validation for roomCode before redirecting\
-    try {
-      const response = await axios.post("/search-friend", { friendName });
-      if (response.status === 200) {
-        console.log("Found friend:", response.data);
-        //check if they are a part of the list of friends you have, if so say:
-        //"alreay a friend"
-        //actually modify request column of database to show request
-        createPopup("Friend request sent!");
-      } else if (response.status === 404) {
-        console.log("Friend not found:", response.data);
-        createPopup("Friend not found. Please enter an existing nickname.");
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error finding room:", error);
-      console.log("error");
-      createPopup("Friend not found. Please enter an existing Friend.");
+    if (friends.friends.includes(friendName)) {
+        createPopup("Already a friend!");
+    } else {
+        try {
+            const response = await axios.post("/search-friend", { friendName });
+        if (response.status === 200) {
+            console.log("Found friend:", response.data);
+            //actually modify request column of database to show request
+            //maybe create a pending acceptance column? consider declining? maybe save for last
+            createPopup("Friend request sent!");
+        } else if (response.status === 404) {
+            console.log("Friend not found:", response.data);
+            createPopup("Friend not found. Please enter an existing nickname.");
+        } else {
+            console.error("Unexpected response status:", response.status);
+        }
+        } catch (error) {
+        console.error("Error finding room:", error);
+        console.log("error");
+        createPopup("Friend not found. Please enter an existing Friend.");
+        }
     }
   };
 
