@@ -10,6 +10,7 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import Grid from "./Grid";
+import LoadingScreen from './LoadingScreen';
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
@@ -48,9 +49,9 @@ const StyledButton = styled(Button)({
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
+  const navigate = useNavigate();
+  const { ablyClient, userId, userColor, userToken, nickname, isGuest, setNickname, setUserColor } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
@@ -62,15 +63,37 @@ function RoomPage() {
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
-  const [favColor, setColor] = React.useState("#e08794");
+  const [favColor, setColor] = useState(userColor || "#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   //const [playerList, setPlayerList] = useState([]);
+
+  // Fetch user data whenever the RoomPage component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile', {
+          headers: { Authorization: `Bearer ${userToken}` }
+        });
+        if (response.data) {
+          setNickname(response.data.nickname);
+          setUserColor(response.data.userColor);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleColor = (newValue) => {
     setColor(newValue);
   };
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (ablyClient) {
       // Log the current connection state
@@ -293,6 +316,10 @@ function RoomPage() {
       setIsBanned(false);
     }
   }, [isBanned]);
+
+  if (isLoading) {
+    return <LoadingScreen message="Loading Room..." />;
+  }
 
   const handleExitRoom = async () => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
