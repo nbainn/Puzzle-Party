@@ -166,10 +166,6 @@ const Grid = ({
   }, [ablyClient, roomId]);
 
   useEffect(() => {
-    setChannel(ablyClient.channels.get(`room:${roomId}`));
-  }, [ablyClient, roomId]);
-
-  useEffect(() => {
     if (puzzle) {
       for (let i = 0; i < players.length; i++) {
         setLastChange((prevChanges) => ({
