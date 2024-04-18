@@ -137,16 +137,17 @@ const Cell = React.memo(
             onKeyDown={(event) => handleKeyPress(event, rowIndex, colIndex)}
             maxLength={1}
             style={{
-              backgroundColor:
-                cell.players_primary.length > 0
-                  ? cell.players_primary.includes(userId)
-                    ? hexToRGBA(favColor, 1)
-                    : hexToRGBA(favColors[cell.players_primary[0]], 1)
-                  : cell.players_secondary.length > 0
-                  ? cell.players_secondary.includes(userId)
-                    ? hexToRGBA(favColor, 0.5)
-                    : hexToRGBA(favColors[cell.players_secondary[0]], 0.5)
-                  : "white",
+              backgroundColor: cell.flagged
+                ? "#ffd76b"
+                : cell.players_primary.length > 0
+                ? cell.players_primary.includes(userId)
+                  ? hexToRGBA(favColor, 1)
+                  : hexToRGBA(favColors[cell.players_primary[0]], 1)
+                : cell.players_secondary.length > 0
+                ? cell.players_secondary.includes(userId)
+                  ? hexToRGBA(favColor, 0.5)
+                  : hexToRGBA(favColors[cell.players_secondary[0]], 0.5)
+                : "white",
               caretColor: "transparent",
             }}
           />
