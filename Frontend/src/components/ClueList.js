@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import "./ClueList.css";
 import { styled } from "@mui/material/styles";
 
@@ -20,6 +21,19 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
 
   });
 
+  const Label = styled("div")({
+    position: "absolute",
+    top: "-5px",
+    left: "-5px",
+    backgroundColor: "#7e9eee",
+    color: "white",
+    padding: "4px",
+    borderRadius: "4px",
+    zIndex: "9999",
+    marginTop: "5px",
+    marginLeft: "5px",
+
+  });
   useEffect(() => {
     if (ablyClient) {
       console.log("Ably client provided to ClueList", ablyClient);
@@ -107,7 +121,9 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
   return (
     <div className="clue-list-container">
       <div className="clue-section">
-        <h3 className="clue-header">Across</h3>
+        <h3 className="clue-header">
+          Across
+        </h3>
         <ul className="clue-list">
           {acrossClues.map((clue, index) => (
             <li
@@ -122,10 +138,18 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
         </ul>
       </div>
       <div className="clue-section">
-        <h3 className="clue-header">Down</h3>
+        <h3 className="clue-header">
+          Down</h3>
         <ul className="clue-list">
           {downClues.map((clue, index) => (
-            <li key={index}>{clue}</li>
+            <li
+              key={index}
+              onClick={() => {
+                setCurrentClue(clue);
+              }}
+            >
+              {clue}
+            </li>
           ))}
         </ul>
       </div>
