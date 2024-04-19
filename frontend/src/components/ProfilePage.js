@@ -7,33 +7,11 @@ import axios from 'axios';
 import LoadingScreen from './LoadingScreen';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import FriendSearch from "./FriendSearch";
-import { styled } from "@mui/material/styles";
-
-const StyledButton = styled(Button)({
-  //background color of button
-  backgroundColor: "#ffcaca",
-  border: "1px solid #ca8f8f",
-  color: "black",
-  //size of button
-  width: "50px",
-  fontSize: "10px",
-  fontFamily: "inherit",
-  lineHeight: 0,
-  minWidth: "50px",
-  marginLeft: 10,
-});
 
 function ProfilePage() {
-  const { logout, userId, userToken, userColor, nickname, updateAuthContext } = useAuth();
+  const { logout, userToken, userColor, nickname, updateAuthContext } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState({ nickname, userColor });
-  const [friends, setFriends] = useState([]);
-  const [realPlayers, setRealPlayers] = useState([]);
-  const [requested, setRequested] = useState([]);
-  const [realRequested, setRealRequested] = useState([]);
-  const [pending, setPending] = useState([]);
-  const [realPending, setRealPending] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -50,15 +28,6 @@ function ProfilePage() {
         setUserData(response.data);
         setLocalNickname(response.data.nickname);
         setLocalUserColor(response.data.userColor);
-        if (response.data.friends) {
-          setFriends(response.data.friends); 
-        }// Update requested list
-        if (response.data.requests) {
-        setRequested(response.data.requests); // Update requested list
-        }
-        if (response.data.pending) {
-        setPending(response.data.pending); // Update pending list
-        }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -67,82 +36,6 @@ function ProfilePage() {
 
     fetchUserData();
   }, [userToken]);
-
-  useEffect(() => {
-    if (friends) {
-      //console.log(friends);
-    }
-  }, [friends]);
-
-  useEffect(() => {
-    const fetchNicknames = async () => {
-      const realPlayersList = await Promise.all(friends.map(async (friend) => {
-        const integerValue = parseInt(friend);
-        if (!isNaN(integerValue)) {
-          try {
-            const response = await axios.post("/fetch-nickname", { userId: friend });
-            if (response.status === 200) {
-              //console.log("Nickname for user", friend, "is", response.data);
-              return response.data;
-            }
-          } catch (error) {
-            console.error("Error fetching nickname for user:", error);
-          }
-        }
-        return friend;
-      }));
-      setRealPlayers(realPlayersList);
-    };
-
-    fetchNicknames();
-  }, [friends]);
-
-  useEffect(() => {
-    const fetchPending = async () => {
-      const realPlayersList = await Promise.all(pending.map(async (pend) => {
-        const integerValue = parseInt(pend);
-        if (!isNaN(integerValue)) {
-          try {
-            const response = await axios.post("/fetch-nickname", { userId: pend });
-            if (response.status === 200) {
-              //console.log("Nickname for user", friend, "is", response.data);
-              return response.data;
-            }
-          } catch (error) {
-            console.error("Error fetching nickname for user:", error);
-          }
-        }
-        return pend;
-      }));
-      setRealPending(realPlayersList);
-    };
-
-    fetchPending();
-  }, [pending]);
-
-
-  useEffect(() => {
-    const fetchRequests = async () => {
-      const realPlayersList = await Promise.all(requested.map(async (request) => {
-        const integerValue = parseInt(request);
-        if (!isNaN(integerValue)) {
-          try {
-            const response = await axios.post("/fetch-nickname", { userId: request });
-            if (response.status === 200) {
-              //console.log("Nickname for user", friend, "is", response.data);
-              return response.data;
-            }
-          } catch (error) {
-            console.error("Error fetching nickname for user:", error);
-          }
-        }
-        return request;
-      }));
-      setRealRequested(realPlayersList);
-    };
-
-    fetchRequests();
-  }, [requested]);
 
   if (isLoading) {
     return <LoadingScreen message="Loading profile..." />;
@@ -200,38 +93,13 @@ function ProfilePage() {
     navigate('/');
   };
 
-  const handleAccept = async (request) => {
-    try {
-      const response = await axios.post("/accept-friend", { userId: userId, friendId: request});
-      if (response.status === 200) {
-        //console.log("Nickname for user", friend, "is", response.data);
-        return response.data;
-      }
-    } catch (error) {
-      console.error("Error fetching nickname for user:", error);
-    }
-    console.log(request);
-  };
-  const handleDecline = (request) => {
-    console.log(request);
-  };
-
   const renderEditView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
+      <CardContent sx={{ textAlign: 'center' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            color: 'black',
-            backgroundColor: '#FFF8E2',
-            '&:hover': {
-              backgroundColor: 'grey.200',
-            },
-          }}
+          sx={{ position: 'absolute', top: 16, left: 16 }}
         >
           Back
         </Button>
@@ -261,16 +129,7 @@ function ProfilePage() {
         <Button
           startIcon={<HomeIcon />}
           onClick={handleBackHome}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            color: 'black',
-            backgroundColor: '#FFF8E2',
-            '&:hover': {
-              backgroundColor: 'grey.200',
-            },
-          }}
+          sx={{ position: 'absolute', top: 16, right: 16 }}
         >
           Home
         </Button>
@@ -280,20 +139,11 @@ function ProfilePage() {
 
   const renderDefaultView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
+      <CardContent sx={{ textAlign: 'center' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            color: 'black',
-            backgroundColor: '#FFF8E2',
-            '&:hover': {
-              backgroundColor: 'grey.200',
-            },
-          }}
+          sx={{ position: 'absolute', top: 16, left: 16 }}
         >
           Back
         </Button>
@@ -321,16 +171,7 @@ function ProfilePage() {
         <Button
           startIcon={<HomeIcon />}
           onClick={handleBackHome}
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            color: 'black',
-            backgroundColor: '#FFF8E2',
-            '&:hover': {
-              backgroundColor: 'grey.200',
-            },
-          }}
+          sx={{ position: 'absolute', top: 16, right: 16 }}
         >
           Home
         </Button>
@@ -339,90 +180,17 @@ function ProfilePage() {
   );
 
   return (
-    <div>
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={handleBackHome} sx={{ alignSelf: 'flex-start' }}>
-        BACK TO HOME
-      </Button>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        Your Profile
-      </Typography>
-      {editing ? renderEditView() : renderDefaultView()}
-      <Button variant="contained" color="secondary" onClick={handleLogoutClick} sx={{ marginTop: 2 }}>
-        Logout
-      </Button>
-    </Box>
-     <h2>Friends:</h2>
-     {friends.length > 0 ? (
-     <ul>
-     {friends.map((friend, index) => (
-        <div key={friend}>
-        <li>
-        {realPlayers[index]}
-         </li>
-        </div>
-        ))}
-     </ul>
-     ) : (
-      <p>No friends</p>
-     )}
-     {/* Existing profile rendering code */}
-    <h2>Pending Requests:</h2>
-    {pending.length > 0 ? (
-      <ul>
-        {pending.map((pending, index) => (
-          <li key={index}>{realPending[index]}</li>
-          ))}
-      </ul>
-    ) : (
-      <p>No pending requests</p>
-    )}
-
-    <h2>Friend Requests:</h2>
-    {requested.length > 0 ? (
-      <ul>
-        {requested.map((request, index) => (
-          <li key={index}>{realRequested[index]}
-          <StyledButton
-          onClick={(event) => handleAccept(request)}
-                    >
-           Accept          
-          </StyledButton>
-          <StyledButton
-          onClick={(event) => handleDecline(request)}
-                    >
-           Delete         
-          </StyledButton>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p>No friend requests</p>
-    )}
-     <FriendSearch
-      friends={realPlayers}
-      pending={realPending}
-      requested={realRequested}
-      //onPendingUpdate={handlePendingUpdate} // Pass a function to handle pending list updates
-      //onRequestUpdate={handleRequestUpdate} // Pass a function to handle request list updates
-     />
-     <Container
-      component="main"
-      maxWidth={false}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffad9d',
-        padding: 0,
-        margin: 0,
-      }}
-    >
+    <Container component="main" maxWidth="xs" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'auto',
+      textAlign: 'center'
+    }}>
       {editing ? renderEditView() : renderDefaultView()}
     </Container>
-   </div>
   );
 }
 

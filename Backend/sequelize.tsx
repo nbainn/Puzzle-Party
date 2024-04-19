@@ -72,25 +72,8 @@ User.init({
       is: /^#(?:[0-9a-fA-F]{3}){1,2}$/i, // Regex to validate hex color codes
     }
   },
-  pending : {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: true
-  },
-  requests : {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: true
-  },
   friends : {
     type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: true
-  },
-  isActive : {
-    type: DataTypes.BOOLEAN,
-    default: false,
-    allowNull: false
-  },
-  room_code : {
-    type: DataTypes.STRING,
     allowNull: true
   },
 }, {
@@ -98,13 +81,9 @@ User.init({
   modelName: 'User',
   hooks: {
     beforeValidate: (user) => {
-      if (user.changed('email')) {
-        if (!user.email) {
-          throw new Error('Email is required for setting a nickname');
-        }
-        if (!user.nickname) {
-          user.nickname = user.email.split('@')[0];
-        }
+      // Set nickname if it's null
+      if (!user.nickname) {
+        user.nickname = user.email.split('@')[0];
       }
     },
     beforeCreate: async (user) => {
