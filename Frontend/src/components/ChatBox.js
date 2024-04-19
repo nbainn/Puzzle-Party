@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
 import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
+import CommentIcon from '@mui/icons-material/Comment';
 import Filter from 'bad-words';
+import './ChatBox.css'
 
 const ResizeHandle = styled("div")({
   position: "absolute",
@@ -31,6 +33,9 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
   const messagesEndRef = useRef(null);
   const defaultColor = "#aaff69";
   const chatBoxRef = useRef(null);
+
+  const [showChatBox, setShowChatBox] = useState(false); // State variable to track visibility of chatbox
+
   //const [players, setPlayers] = useState([]); // State variable to store unique nicknames
   
   useEffect(() => {
@@ -191,7 +196,12 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
   };
 
   return (
+    <div className = "shit">
     <ThemeProvider theme={theme}>
+    <IconButton variant="outlined" onClick={() => setShowChatBox(!showChatBox)}>
+      <CommentIcon />
+    </IconButton>
+    {showChatBox && (
     <Box ref={chatBoxRef} sx={chatBoxStyles}>
       <ResizeHandle onMouseDown={handleMouseDown} />
       <List
@@ -236,8 +246,11 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
         </IconButton>
       </Box>
     </Box>
+    )}
     </ThemeProvider>
+    </div>
   );
+
 }
 
 export default ChatBox;
