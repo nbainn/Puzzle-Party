@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
 import "./ClueList.css";
+import { styled } from "@mui/material/styles";
 function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
   const [downClues, setDown] = useState(["No Down Clues!"]);
   const [acrossClues, setAcross] = useState(["No Across Clues!"]);
@@ -105,9 +105,7 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
   return (
     <div className="clue-list-container">
       <div className="clue-section">
-        <h3 className="clue-header">
-          Across
-        </h3>
+        <h3 className="clue-header">Across</h3>
         <ul className="clue-list">
           {acrossClues.map((clue, index) => (
             <li
@@ -122,18 +120,10 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
         </ul>
       </div>
       <div className="clue-section">
-        <h3 className="clue-header">
-          Down</h3>
+        <h3 className="clue-header">Down</h3>
         <ul className="clue-list">
           {downClues.map((clue, index) => (
-            <li
-              key={index}
-              onClick={() => {
-                setCurrentClue(clue);
-              }}
-            >
-              {clue}
-            </li>
+            <li key={index}>{clue}</li>
           ))}
         </ul>
       </div>
