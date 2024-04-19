@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import Filter from 'bad-words';
 import CommentIcon from '@mui/icons-material/Comment';
+import axios from 'axios';
 
 const ResizeHandle = styled("div")({
   position: "absolute",
@@ -19,13 +20,13 @@ const ResizeHandle = styled("div")({
 });
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 
 const filter = new Filter();
 
-function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
+function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, roomId, userColor, nickname, ablyClient, userId }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatHeight, setChatHeight] = useState(300);
@@ -65,6 +66,27 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
       }
     }
   }, [ablyClient, roomId]);
+
+  useEffect(() => {
+    // Function to fetch user data
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile', {
+          headers: { Authorization: `Bearer ${userToken}` }
+        });
+        if (response.data) {
+          // Update the auth context with the latest data
+          setNickname(response.data.nickname);
+          setUserColor(response.data.userColor);
+          updateAuthContext(response.data.nickname, response.data.userColor);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [userToken, setNickname, setUserColor, updateAuthContext]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
