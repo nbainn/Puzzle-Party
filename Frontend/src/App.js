@@ -41,42 +41,42 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <ThemeProvider theme={theme}>
-    <GoogleOAuthProvider clientId={config.CLIENT_ID}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            {/* Conditionally rendered routes using ProtectedRoute */}
-            <Route path="/home" element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/room/:roomId" element={
-              <ProtectedRoute>
-                <RoomPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/rooms" element={
-              <ProtectedRoute>
-                <PublicRooms />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/statistics/:userId" element={
-              <ProtectedRoute>
-                <Statistics />
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </GoogleOAuthProvider>
+      <GoogleOAuthProvider clientId={config.CLIENT_ID}>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              {/* Conditionally rendered routes using ProtectedRoute */}
+              <Route path="/home" element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/room/:roomId" element={
+                <ProtectedRoute>
+                  <RoomPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/rooms" element={
+                <ProtectedRoute>
+                  <PublicRooms />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/statistics/:userId" element={
+                <ProtectedRoute>
+                  <Statistics />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </ThemeProvider>
   );
 }

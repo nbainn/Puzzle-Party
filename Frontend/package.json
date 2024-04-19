@@ -25,6 +25,9 @@
     ]
   },
   "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(mui-color-input)/)"
+    ],
     "moduleNameMapper": {
       "^axios$": "axios/dist/node/axios.cjs"
     }
