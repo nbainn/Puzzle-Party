@@ -246,7 +246,7 @@ function RoomPage() {
             //console.log(member.clientId, "entered the room");
             //console.log("USER ID: ", userId);
             if (!players.includes(member.clientId)) {
-              //setIsActive(true);
+              setIsActive(true);
               setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
             }
             //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
@@ -256,7 +256,7 @@ function RoomPage() {
           await channel.presence.subscribe("leave", (member) => {
             //console.log(member.clientId, "left the room");
             //if (players.includes(member.clientId)) {
-            //setIsActive(false);
+            //console.log("A player left");
             setPlayers((prevPlayers) =>
               prevPlayers.filter((player) => player !== member.clientId)
             );
@@ -398,8 +398,9 @@ function RoomPage() {
     }
   }, [isBanned]);
 
-  useEffect(async () => {
-    /*if (isActive) {
+  useEffect(() => {
+    const active = async () => {
+    if (isActive) {
       try {
         const response = await axios.post('/user-active', { userId });
         if (response.status === 200) {
@@ -421,8 +422,10 @@ function RoomPage() {
         } catch (error) {
           console.error("Error fetching nickname for user:", error);
         }
-    } */
+    } 
+    };
     console.log(isActive);
+    active();
   }, [isActive]);
 
   if (isLoading) {
@@ -493,6 +496,7 @@ function RoomPage() {
         )}
         <div className="settings">
           <RoomSettings
+            setIsActive = {setIsActive}
             userId={userId}
             timer={timer}
             hints={hints}

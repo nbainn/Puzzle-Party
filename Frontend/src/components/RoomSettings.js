@@ -24,7 +24,8 @@ function RoomSettings({
   setHints,
   setGuesses,
   roomId, 
-  ablyClient
+  ablyClient,
+  setIsActive,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenInvite, setIsOpenInvite] = useState(false);
@@ -38,6 +39,7 @@ function RoomSettings({
     const channel = ablyClient.channels.get(`room:${roomId}`);
     event.preventDefault();
     await channel.detach();
+    setIsActive(false);
     navigate(`/home`);
   };
 
