@@ -66,12 +66,9 @@ function RoomPage() {
   const [favColor, setColor] = useState(userColor || "#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
-<<<<<<< Updated upstream
   const [isLoading, setIsLoading] = useState(true);
-=======
   const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
   const [time, setTime] = useState("00:00")
->>>>>>> Stashed changes
   //const [playerList, setPlayerList] = useState([]);
 
   // Fetch user data whenever the RoomPage component mounts
