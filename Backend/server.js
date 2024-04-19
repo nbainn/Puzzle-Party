@@ -908,6 +908,41 @@ app.post("/fetch-nickname", async (req, res) => {
   }
 });
 
+app.post("/fetch-friend-room", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    let user = await User.findOne({
+      where: { id: userId },
+    });
+    if (user) {
+      console.log("user", user);
+      console.log("user_status", user.isActive);
+      if (user.isActive) {
+        console.log("Im here");
+        let roomCode = user.room_code
+        let room = await Room.findOne({
+          where: { room_code: roomCode },
+        });
+        console.log("room", room);
+        let status = room.public_status;
+        if (status) {
+          console.log("Im here");
+          res.status(200).send(room.room_code);
+        } else {
+          res.status(404).send(null);
+        }
+      } else {
+        res.status(404).send(null);
+      }
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
 app.post("/user-active", async (req, res) => {
   try {
     const userId = req.body.userId;

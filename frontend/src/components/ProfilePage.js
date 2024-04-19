@@ -30,6 +30,7 @@ function ProfilePage() {
   const [userData, setUserData] = useState({ nickname, userColor });
   const [friends, setFriends] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
+  const [friendRooms, setFriendRooms] = useState([]);
   const [requested, setRequested] = useState([]);
   const [realRequested, setRealRequested] = useState([]);
   const [pending, setPending] = useState([]);
@@ -69,10 +70,10 @@ function ProfilePage() {
   }, [userToken]);
 
   useEffect(() => {
-    if (friends) {
+    if (friendRooms) {
       //console.log(friends);
     }
-  }, [friends]);
+  }, [friendRooms]);
 
   useEffect(() => {
     const fetchNicknames = async () => {
@@ -90,6 +91,23 @@ function ProfilePage() {
         }
         return friend;
       }));
+      const room_list = await Promise.all(friends.map(async (friend) => {
+        const integerValue = parseInt(friend);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-friend-room", { userId: friend });
+            if (response.status === 200) {
+              return response.data;
+            } else {
+              return null;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return null;
+      }));
+      setFriendRooms(room_list);
       setRealPlayers(realPlayersList);
     };
 
@@ -193,6 +211,12 @@ function ProfilePage() {
       navigate('/home');
     }
   };
+
+  const renderJoinButton = (roomNumber) => {
+    navigate(`/room/${roomNumber}`);
+  };
+
+  
 
   const handleLogoutClick = () => {
     logout();
@@ -378,6 +402,13 @@ function ProfilePage() {
         <div key={friend}>
         <li>
         {realPlayers[index]}
+        {friendRooms[index] && (
+        <StyledButton
+          onClick={(event) => renderJoinButton (friendRooms[index])}
+                    >
+           Join     
+          </StyledButton>
+         )}
          </li>
         </div>
         ))}
