@@ -347,7 +347,19 @@ function ProfilePage() {
         </Typography>
         <Typography variant="body1" sx={{ marginBottom: 2 }}>
           Favorite Color:
-          <Box component="span" sx={{ backgroundColor: userColor, width: '15px', height: '15px', display: 'inline-block', marginLeft: '5px' }}></Box>
+          <Box
+            component="span"
+            sx={{
+              backgroundColor: userColor,
+              width: '15px',
+              height: '15px',
+              display: 'inline-block',
+              marginLeft: '5px',
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 0 0 1px white',
+            }}
+          />
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 2 }}>
           <Button variant="contained" color="primary" onClick={handleEditClick} sx={{ marginBottom: 2 }}>
