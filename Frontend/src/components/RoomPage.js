@@ -14,6 +14,7 @@ import LoadingScreen from "./LoadingScreen";
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
 import CurrentCLueBox from "./CurrentClueBox";
+import Invite from "./Invite";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
@@ -488,6 +489,7 @@ function RoomPage() {
 
   return (
     <ThemeProvider theme={theme}>
+      <Invite />
       <div className="room-page">
         {!isGuest && (
           <div className="profile-dropdown">
