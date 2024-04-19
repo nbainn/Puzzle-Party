@@ -8,6 +8,7 @@ import axios from "axios";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button, TextField } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
+import { isAbsolute } from "path-browserify";
 
 const theme = createTheme({
   typography: {
@@ -28,6 +29,21 @@ const StyledButton = styled(Button)({
   width: "120px",
   padding: "15px 10px",
   marginLeft: "5px",
+});
+
+const popupContainer = styled("div")({
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  padding: "15px",
+  zIndex: "999999",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
 });
 
 const Invite = ({}) => {

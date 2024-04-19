@@ -256,7 +256,7 @@ function RoomPage() {
           await channel.presence.subscribe("leave", (member) => {
             //console.log(member.clientId, "left the room");
             //if (players.includes(member.clientId)) {
-            //console.log("A player left");
+            setIsActive(false);
             setPlayers((prevPlayers) =>
               prevPlayers.filter((player) => player !== member.clientId)
             );
@@ -400,29 +400,29 @@ function RoomPage() {
 
   useEffect(() => {
     const active = async () => {
-    if (isActive) {
-      try {
-        const response = await axios.post('/user-active', { userId, roomId });
-        if (response.status === 200) {
-          //all good
-        } else {
-          console.error("Unexpected response status:", response.status);
-        }
-        } catch (error) {
-        console.error("Error fetching nickname for user:", error);
-        }
-    } else {
+      if (isActive) {
         try {
-        const response = await axios.post('/user-inactive', { userId });
-        if (response.status === 200) {
-          //all good 
-        } else {
-          console.error("Unexpected response status:", response.status);
-        }
+          const response = await axios.post("/user-active", { userId, roomId });
+          if (response.status === 200) {
+            //all good
+          } else {
+            console.error("Unexpected response status:", response.status);
+          }
         } catch (error) {
           console.error("Error fetching nickname for user:", error);
         }
-    } 
+      } else {
+        try {
+          const response = await axios.post("/user-inactive", { userId });
+          if (response.status === 200) {
+            //all good
+          } else {
+            console.error("Unexpected response status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error fetching nickname for user:", error);
+        }
+      }
     };
     console.log(isActive);
     active();
@@ -496,7 +496,7 @@ function RoomPage() {
         )}
         <div className="settings">
           <RoomSettings
-            setIsActive = {setIsActive}
+            setIsActive={setIsActive}
             userId={userId}
             timer={timer}
             hints={hints}
