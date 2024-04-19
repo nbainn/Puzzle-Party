@@ -205,15 +205,31 @@ function ProfilePage() {
       const response = await axios.post("/accept-friend", { userId: userId, friendId: request});
       if (response.status === 200) {
         //console.log("Nickname for user", friend, "is", response.data);
+        createPopup("You are now friends! Please refresh the page to see changes.");
         return response.data;
       }
     } catch (error) {
       console.error("Error fetching nickname for user:", error);
     }
-    console.log(request);
+    //console.log(request);
   };
-  const handleDecline = (request) => {
+  const createPopup = (message) => {
+    // Implement popup logic here
+    alert(message);
+  };
+
+  const handleDecline = async (request) => {
     console.log(request);
+    try {
+      const response = await axios.post("/delete-friend", { userId: userId, friendId: request});
+      if (response.status === 200) {
+        //console.log("Nickname for user", friend, "is", response.data);
+        createPopup("You have declined the request! Please refresh the page to see changes.");
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error fetching nickname for user:", error);
+    }
   };
 
   const renderEditView = () => (
