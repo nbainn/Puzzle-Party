@@ -12,9 +12,8 @@ const CurrentClueBox = ({ currentClue }) => {
     border: "2px solid #000",
     marginTop: "5px",
     marginLeft: "5px",
-
   });
-    const Label = styled("div")({
+  const Label = styled("div")({
     position: "absolute",
     top: "-5px",
     left: "-5px",
@@ -25,11 +24,14 @@ const CurrentClueBox = ({ currentClue }) => {
     zIndex: "9999",
     marginTop: "5px",
     marginLeft: "5px",
-      });
+  });
 
-  return <ClueBox>
-    <Label>Current Clue</Label>
-    {currentClue}helllelelelelelelele</ClueBox>;
+  return (
+    <ClueBox>
+      <Label>Current Clue</Label>
+      {currentClue}
+    </ClueBox>
+  );
 };
 
 export default CurrentClueBox;

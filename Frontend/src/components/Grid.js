@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import Cell from "./Cell";
 import "./Crossword.css";
-import './Grid.css'
+import "./Grid.css";
 
 // Styling for the grid container using Material UI
 // Uses CSS grid layout to organize cells, with flexibility to accommodate different grid sizes
@@ -37,6 +37,11 @@ const Grid = ({
   checkGrid,
   setCheckGrid,
   favColor,
+  acrossClues,
+  downClues,
+  setCurrentClue,
+  queuedChange,
+  setQueuedChange,
 }) => {
   //User always stores the userId of the player who made the change
   //Location[0] stores the primary location of the cursor (needs to be updated if direction stores "continue")
@@ -109,6 +114,19 @@ const Grid = ({
       })
     )
   );
+
+  useEffect(() => {
+    if (queuedChange) {
+      console.log("Queued change:", queuedChange);
+      queueChange(
+        queuedChange.user,
+        queuedChange.location,
+        queuedChange.direction,
+        queuedChange.value
+      );
+      setQueuedChange(null);
+    }
+  }, [queuedChange]);
 
   useEffect(() => {
     if (ablyClient) {
@@ -617,6 +635,21 @@ const Grid = ({
           lastChange[currentChange.user].location[0][1]
         ].value = currentChange.value;
       }
+      setCurrentClue(() => {
+        if (currentChange.direction === "across") {
+          let clueNumber =
+            puzzle.puzzle.clueGrids.across[currentChange.location[0][0]][
+              currentChange.location[0][1]
+            ];
+          return acrossClues[clueNumber];
+        } else if (currentChange.direction === "down") {
+          let clueNumber =
+            puzzle.puzzle.clueGrids.down[currentChange.location[0][0]][
+              currentChange.location[0][1]
+            ];
+          return downClues[clueNumber];
+        }
+      });
       setLastChange((prev) => ({
         ...prev,
         [currentChange.user]: currentChange,

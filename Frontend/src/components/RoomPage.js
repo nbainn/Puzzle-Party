@@ -81,6 +81,37 @@ function RoomPage() {
   const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
   const [time, setTime] = useState("00:00");
   const [currentClue, setCurrentClue] = useState("");
+  const [acrossClues, setAcrossClues] = useState(null);
+  const [downClues, setDownClues] = useState(null);
+  const [queuedChange, setQueuedChange] = useState(null);
+
+  useEffect(() => {
+    if (puzzle) {
+      let acrossCluess = {};
+      let downCluess = {};
+      for (let i = 0; i < puzzle.puzzle.clues.across.length; i++) {
+        acrossCluess[puzzle.puzzle.clues.across[i].number] =
+          puzzle.puzzle.clues.across[i].number +
+          " ACROSS: " +
+          puzzle.puzzle.clues.across[i].clue;
+      }
+      for (let i = 0; i < puzzle.puzzle.clues.down.length; i++) {
+        downCluess[puzzle.puzzle.clues.down[i].number] =
+          puzzle.puzzle.clues.down[i].number +
+          " DOWN: " +
+          puzzle.puzzle.clues.down[i].clue;
+        console.log(
+          "DOWN CLUE:" + downCluess[puzzle.puzzle.clues.down[i].number]
+        );
+      }
+      console.log(
+        "clue grids",
+        puzzle.puzzle.clueGrids.across + "\n" + puzzle.puzzle.clueGrids.down
+      );
+      setAcrossClues(acrossCluess);
+      setDownClues(downCluess);
+    }
+  }, [puzzle]);
   //const [playerList, setPlayerList] = useState([]);
 
   // Fetch user data whenever the RoomPage component mounts
@@ -544,6 +575,11 @@ function RoomPage() {
               checkGrid={checkGrid}
               setCheckGrid={setCheckGrid}
               favColor={favColor}
+              acrossClues={acrossClues}
+              downClues={downClues}
+              setCurrentClue={setCurrentClue}
+              queuedChange={queuedChange}
+              setQueuedChange={setQueuedChange}
             />
           </div>
           <div className="hints-chat-container">
@@ -553,6 +589,10 @@ function RoomPage() {
               ablyClient={ablyClient}
               roomId={roomId}
               setCurrentClue={setCurrentClue}
+              acrossCluess={acrossClues}
+              downCluess={downClues}
+              userId={userId}
+              setQueuedChange={setQueuedChange}
             />
             <ChatBox
               ablyClient={ablyClient}

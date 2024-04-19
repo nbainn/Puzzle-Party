@@ -137,6 +137,7 @@ const Cell = React.memo(
             onKeyDown={(event) => handleKeyPress(event, rowIndex, colIndex)}
             maxLength={1}
             style={{
+              cursor: "pointer",
               backgroundColor: cell.flagged
                 ? "#ffd76b"
                 : cell.players_primary.length > 0

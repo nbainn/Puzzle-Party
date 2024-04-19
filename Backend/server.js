@@ -11,7 +11,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const axios = require("axios");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const fs = require("fs");
 //import wu from "./wordUpdater";
 //const ColorThief = require('color-thief-node');
@@ -21,7 +21,7 @@ const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
 const { user } = require("pg/lib/defaults.js");
-const { Room, Word, Puzzle, Statistics} = sq.models;
+const { Room, Word, Puzzle, Statistics } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
 // Ably API Key
@@ -76,7 +76,7 @@ app.post("/signup", async (req, res) => {
       hashedPassword: password, // Pass the plain password; hashing is handled by the model in sequelize
       nickname,
       userColor,
-      isActive : false,
+      isActive: false,
     });
 
     // Generate a token
@@ -88,17 +88,17 @@ app.post("/signup", async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       expires: new Date(Date.now() + 3600000), // 1 hour
-      sameSite: 'strict',
+      sameSite: "strict",
       //secure: true,
     };
-    res.cookie('token', token, cookieOptions);
+    res.cookie("token", token, cookieOptions);
 
     // Send response
-    res.status(201).json({ 
-      userId: newUser.id, 
-      email: newUser.email, 
-      nickname: newUser.nickname, 
-      userColor: newUser.userColor
+    res.status(201).json({
+      userId: newUser.id,
+      email: newUser.email,
+      nickname: newUser.nickname,
+      userColor: newUser.userColor,
     });
   } catch (error) {
     res.status(500).json({ message: "Error creating new user", error });
@@ -131,17 +131,17 @@ app.post("/login", async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       expires: new Date(Date.now() + 3600000), // 1 hour
-      sameSite: 'strict',
+      sameSite: "strict",
       //secure: true,
     };
-    res.cookie('token', token, cookieOptions);
+    res.cookie("token", token, cookieOptions);
 
     // Send response
-    res.json({ 
-      userId: user.id, 
-      email: user.email, 
-      nickname: user.nickname, 
-      userColor: user.userColor 
+    res.json({
+      userId: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      userColor: user.userColor,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error during login", error });
@@ -238,10 +238,10 @@ app.post("/googleLogin", async (req, res) => {
       const cookieOptions = {
         httpOnly: true,
         expires: new Date(Date.now() + 3600000), // 1 hour
-        sameSite: 'strict',
+        sameSite: "strict",
         //secure: true,
       };
-      res.cookie('token', token, cookieOptions);
+      res.cookie("token", token, cookieOptions);
 
       // Send response
       res.json({
@@ -271,13 +271,13 @@ app.post("/googleLogin", async (req, res) => {
       const cookieOptions = {
         httpOnly: true,
         expires: new Date(Date.now() + 3600000), // 1 hour
-        sameSite: 'strict',
+        sameSite: "strict",
         //secure: true,
       };
-      res.cookie('token', token, cookieOptions);
+      res.cookie("token", token, cookieOptions);
 
       // Set the cookie with the new token
-      res.cookie('token', newToken, cookieOptions);
+      res.cookie("token", newToken, cookieOptions);
 
       // Send response
       res.status(201).json({
@@ -289,17 +289,19 @@ app.post("/googleLogin", async (req, res) => {
     }
   } catch (error) {
     console.error("Error during Google Login:", error);
-    res.status(500).json({ message: "Server error during Google login", error });
+    res
+      .status(500)
+      .json({ message: "Server error during Google login", error });
   }
 });
 
 // Middleware to authenticate and decode Token
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: 'No token provided' });
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
   jwt.verify(token, jwtSecret, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Token is invalid' });
+    if (err) return res.status(403).json({ message: "Token is invalid" });
     req.user = user;
     next();
   });
@@ -311,7 +313,7 @@ app.get("/user/profile", authenticateToken, async (req, res) => {
     const user = await User.findByPk(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ 
+    res.json({
       id: user.id,
       email: user.email,
       nickname: user.nickname,
@@ -345,7 +347,7 @@ app.post("/updateProfile", authenticateToken, async (req, res) => {
 });
 
 // Verify Token Endpoint
-app.get('/verifyToken', (req, res) => {
+app.get("/verifyToken", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
     // No token provided
@@ -363,9 +365,9 @@ app.get('/verifyToken', (req, res) => {
 });
 
 // Logout Endpoint
-app.get('/logout', (req, res) => {
-  res.clearCookie('token');
-  res.status(200).json({ message: 'Logged out successfully' });
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 // ***ABLY TOKEN ENDPOINT****************************************************
@@ -451,8 +453,7 @@ app.post("/puzzle", async (req, res) => {
   res.json({ puzzle });
 });
 // STATS ENDPOINT
-app.post('/addTime', async (req, res) => {
-
+app.post("/addTime", async (req, res) => {
   const userId = req.body.userId;
   const time = req.body.time;
 
@@ -460,54 +461,53 @@ app.post('/addTime', async (req, res) => {
   res.status(200).send("Time added successfully");
 });
 
-app.post('/addWin', async (req, res) => { 
-  const userId = req.body.userId;
-  try {
-    let stat = await Statistics.findOne(
-    {where: {
-      userId: userId
-    }
-  });
-  if (!stat) {
-    stat = await Statistics.create({
-      userId: userId,
-      gamesPlayed: 1,
-      gamesWon: 0,
-      timePlayed: 0,
-    });
-  }
-  stat.gamesWon = stat.gamesWon + 1;
-  stat.save();
-  res.status(200).send("Win added successfully");
-} catch (error) { 
-  res.status(404).send("Error adding win" + error);
-}
-});
-app.post('/addPlay', async (req, res) => {
+app.post("/addWin", async (req, res) => {
   const userId = req.body.userId;
   try {
     let stat = await Statistics.findOne({
-    where: {
-      userId: userId
-    }
-  });
-  if (!stat) {
-    stat = await Statistics.create({
-      userId: userId,
-      gamesPlayed: 0,
-      gamesWon: 0,
-      timePlayed: 0,
+      where: {
+        userId: userId,
+      },
     });
+    if (!stat) {
+      stat = await Statistics.create({
+        userId: userId,
+        gamesPlayed: 1,
+        gamesWon: 0,
+        timePlayed: 0,
+      });
+    }
+    stat.gamesWon = stat.gamesWon + 1;
+    stat.save();
+    res.status(200).send("Win added successfully");
+  } catch (error) {
+    res.status(404).send("Error adding win" + error);
   }
-  console.log("STATS ADDING PLAYFKNALSDFNA:OISFJ:IOAF")
-  stat.gamesPlayed += 1;
-  await stat.save();
-  res.status(200).send("Play added successfully");
-} catch (error) {
-  res.status(404).send("Error adding play" + error);
-}
 });
-
+app.post("/addPlay", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    let stat = await Statistics.findOne({
+      where: {
+        userId: userId,
+      },
+    });
+    if (!stat) {
+      stat = await Statistics.create({
+        userId: userId,
+        gamesPlayed: 0,
+        gamesWon: 0,
+        timePlayed: 0,
+      });
+    }
+    console.log("STATS ADDING PLAYFKNALSDFNA:OISFJ:IOAF");
+    stat.gamesPlayed += 1;
+    await stat.save();
+    res.status(200).send("Play added successfully");
+  } catch (error) {
+    res.status(404).send("Error adding play" + error);
+  }
+});
 
 function createPuzzleObject(rows, columns) {
   return (puzzle = {
@@ -520,6 +520,10 @@ function createPuzzleObject(rows, columns) {
       down: [],
     },
     grid: Array.from({ length: rows }, () => Array(columns).fill(" ")),
+    clueGrids: {
+      across: Array.from({ length: rows }, () => Array(columns).fill(0)),
+      down: Array.from({ length: rows }, () => Array(columns).fill(0)),
+    },
   });
 }
 
@@ -549,16 +553,12 @@ async function addClueToPuzzle(puzzle, clue) {
   for (let i = 0; i < answer.length; i++) {
     if (direction === "across") {
       puzzle.grid[row][column + i] = answer[i];
+      puzzle.clueGrids.across[row][column + i] = clue.number;
     } else {
       puzzle.grid[row + i][column] = answer[i];
+      puzzle.clueGrids.down[row + i][column] = clue.number;
     }
   }
-}
-
-// Sorts the clues in the puzzle object by number so that they can be displayed easily
-function sortClues(puzzle) {
-  puzzle.clues.across.sort((a, b) => a.number - b.number);
-  puzzle.clues.down.sort((a, b) => a.number - b.number);
 }
 
 // Function for querying words from the database
@@ -742,18 +742,16 @@ async function buildPuzzle(seed, size) {
     }
   }
 
-  sortClues(puzzle);
-
   return puzzle;
 }
 
 async function addUserTime(userId, time) {
   let stat = await Statistics.findOne({
     where: {
-      userId: userId
-    }
+      userId: userId,
+    },
   });
-  
+
   if (!stat) {
     stat = await Statistics.create({
       userId: userId,
@@ -764,7 +762,7 @@ async function addUserTime(userId, time) {
   }
 
   // Convert milliseconds to seconds and round off to the nearest whole number
-  
+
   stat.timePlayed += time / 1000;
   await stat.save();
 }
@@ -772,27 +770,36 @@ async function addUserTime(userId, time) {
 async function getUserStatistics(userId) {
   let stat = await Statistics.findOne({
     where: {
-      userId: userId
-    }
+      userId: userId,
+    },
   });
   if (!stat) {
     return null;
-  } 
-  return { timePlayed: Math.round(stat.timePlayed), gamesPlayed: stat.gamesPlayed, gamesWon: stat.gamesWon };
+  }
+  return {
+    timePlayed: Math.round(stat.timePlayed),
+    gamesPlayed: stat.gamesPlayed,
+    gamesWon: stat.gamesWon,
+  };
 }
 
-async function getGlobalStatistics() { 
+async function getGlobalStatistics() {
   let totalTime = Math.round(await Statistics.sum("timePlayed"));
   let totalGames = await Statistics.sum("gamesPlayed");
   let totalWins = await Statistics.sum("gamesWon");
-  return { timePlayed: totalTime, gamesPlayed: totalGames, gamesWon: totalWins, gamesLost: totalGames - totalWins};
+  return {
+    timePlayed: totalTime,
+    gamesPlayed: totalGames,
+    gamesWon: totalWins,
+    gamesLost: totalGames - totalWins,
+  };
 }
 
 async function addUserWins(userId) {
-  let stat = await Statistics.findOne(
-    {where: {
-      userId: userId
-    }
+  let stat = await Statistics.findOne({
+    where: {
+      userId: userId,
+    },
   });
   if (!stat) {
     stat = await Statistics.create({
@@ -955,7 +962,7 @@ app.post("/search-friend", async (req, res) => {
   try {
     const friendName = req.body.friendName;
     const userId = req.body.userId;
-    console.log(userId  + "is the user id"  + friendName + "is the friend name");
+    console.log(userId + "is the user id" + friendName + "is the friend name");
     if (!friendName) {
       throw new Error("username is missing in the request body");
     }
@@ -971,28 +978,28 @@ app.post("/search-friend", async (req, res) => {
       //console.log("REq\n\n", request_list);
       console.log("fren id:", foundFriend.id);
       let friend_id = foundFriend.id;
-      
+
       await User.update(
         { requests: request_list },
-        { where: { id: friend_id} }
+        { where: { id: friend_id } }
       );
       try {
-      let me = await User.findOne({
-        where: { id: userId },
-      });
-      let pending_list = me.pending || []; // Initialize to empty array if null
-      pending_list.push(foundFriend.id); // Add the player to the banned list
-      try {
-      await User.update(
-        { pending: pending_list },
-        { where: { id: userId } }
-      );
-      } catch (error) {
-      console.error("Error in updating pending", error);
-      //res.status(500).send("Error in updating pending");
-      }
-      console.log("pen", pending_list);
-      res.status(200).send(pending_list);
+        let me = await User.findOne({
+          where: { id: userId },
+        });
+        let pending_list = me.pending || []; // Initialize to empty array if null
+        pending_list.push(foundFriend.id); // Add the player to the banned list
+        try {
+          await User.update(
+            { pending: pending_list },
+            { where: { id: userId } }
+          );
+        } catch (error) {
+          console.error("Error in updating pending", error);
+          //res.status(500).send("Error in updating pending");
+        }
+        console.log("pen", pending_list);
+        res.status(200).send(pending_list);
       } catch (error) {
         console.error("Error in finding me", error);
         //res.status(500).send("Error in finding me");
@@ -1011,7 +1018,7 @@ app.post("/accept-friend", async (req, res) => {
   try {
     const userId = req.body.userId;
     const friendId = req.body.friendId;
-    console.log(userId  + " is the user id"  + friendId);
+    console.log(userId + " is the user id" + friendId);
     if (!friendId || !userId) {
       throw new Error("missing request body");
     }
@@ -1023,14 +1030,13 @@ app.post("/accept-friend", async (req, res) => {
     }
     let request_list = user1.requests || []; // Initialize to empty array if null
     console.log("before", request_list);
-    request_list = request_list.filter(item => item !== friendId);
+    request_list = request_list.filter((item) => item !== friendId);
     console.log("after", request_list);
     let friends_list = user1.friends || [];
     friends_list.push(friendId);
     console.log("friends_list", friends_list, "request_list", request_list);
     await User.update(
-      { requests: request_list ,
-        friends: friends_list },
+      { requests: request_list, friends: friends_list },
       { where: { id: userId } }
     );
     const friend_room = await User.findOne({ where: { id: friendId } });
@@ -1040,14 +1046,18 @@ app.post("/accept-friend", async (req, res) => {
     let pending_list = friend_room.pending || []; // Initialize to empty array if null
     console.log("before", pending_list);
     user1_id = "" + userId;
-    pending_list = pending_list.filter(item => item !== user1_id);
+    pending_list = pending_list.filter((item) => item !== user1_id);
     console.log("after", pending_list);
     let friend_friends_list = friend_room.friends || [];
     friend_friends_list.push(userId);
-    console.log("friend_friends_list", friend_friends_list, "pen_list", pending_list);
+    console.log(
+      "friend_friends_list",
+      friend_friends_list,
+      "pen_list",
+      pending_list
+    );
     await User.update(
-      { pending: pending_list ,
-        friends: friend_friends_list},
+      { pending: pending_list, friends: friend_friends_list },
       { where: { id: friendId } }
     );
     res.status(200).send(null);
@@ -1069,22 +1079,16 @@ app.post("/delete-friend", async (req, res) => {
       throw new Error("Room not found");
     }
     let request_list = user1.requests || []; // Initialize to empty array if null
-    request_list = request_list.filter(item => item !== friendId);
-    await User.update(
-      { requests: request_list},
-      { where: { id: userId } }
-    );
+    request_list = request_list.filter((item) => item !== friendId);
+    await User.update({ requests: request_list }, { where: { id: userId } });
     const friend_room = await User.findOne({ where: { id: friendId } });
     if (!friend_room) {
       throw new Error("Room not found");
     }
     let pending_list = friend_room.pending || []; // Initialize to empty array if null
     user1_id = "" + userId;
-    pending_list = pending_list.filter(item => item !== user1_id);
-    await User.update(
-      { pending: pending_list },
-      { where: { id: friendId } }
-    );
+    pending_list = pending_list.filter((item) => item !== user1_id);
+    await User.update({ pending: pending_list }, { where: { id: friendId } });
     res.status(200).send(null);
   } catch (error) {
     console.error("Error finding field:", error);
@@ -1123,7 +1127,7 @@ app.post("/user-friends", async (req, res) => {
       throw new Error("User id missing");
     }
     let foundFriends = await User.findOne({
-      where: { id: userId},
+      where: { id: userId },
       attributes: ["friends"],
     });
     if (foundFriends) {
@@ -1139,24 +1143,23 @@ app.post("/user-friends", async (req, res) => {
   }
 });
 
-app.get("/get-statistics", async(req, res) => {
+app.get("/get-statistics", async (req, res) => {
   try {
     const userId = req.query.userId;
-    console.log("stats userid:", userId)
+    console.log("stats userid:", userId);
     const stats = await getUserStatistics(userId);
     if (stats) {
       res.status(200).send(stats);
     } else {
       res.status(404).send(null);
     }
-
   } catch (error) {
     console.error("Error finding field:", error);
     res.status(500).send("Error finding field");
   }
 });
 
-app.get("/get-global-statistics", async(req, res) => {
+app.get("/get-global-statistics", async (req, res) => {
   try {
     const stats = await getGlobalStatistics();
     if (stats) {
@@ -1197,6 +1200,6 @@ app.post("/add-ban", async (req, res) => {
 });
 
 // Catch-all route to serve React app for any other route not handled by API
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../Frontend/build", "index.html"));
 });
