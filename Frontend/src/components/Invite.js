@@ -31,19 +31,15 @@ const StyledButton = styled(Button)({
   marginLeft: "5px",
 });
 
-const popupContainer = styled("div")({
+const PopupContainer = styled("div")({
   position: "absolute",
-  top: "50%",
+  top: "0",
   left: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translateX(-50%)",
   backgroundColor: "#ffcaca",
   border: "1px solid #ca8f8f",
   padding: "15px",
   zIndex: "999999",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
 });
 
 const Invite = ({}) => {
@@ -101,7 +97,9 @@ const Invite = ({}) => {
   // a popup with a label and two buttons: "accept" and "decline"
   // this is found below
   return (
-    <div style={{ visibility: message === "" ? "hidden" : "visible" }}>
+    <PopupContainer
+      style={{ visibility: message === "" ? "hidden" : "visible" }}
+    >
       <label>{message}</label>
       <StyledButton
         onClick={() => {
@@ -118,7 +116,7 @@ const Invite = ({}) => {
       >
         decline
       </StyledButton>
-    </div>
+    </PopupContainer>
   );
 };
 
