@@ -3,7 +3,6 @@ import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "
 import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import Filter from 'bad-words';
-import CommentIcon from '@mui/icons-material/Comment';
 
 const ResizeHandle = styled("div")({
   position: "absolute",
