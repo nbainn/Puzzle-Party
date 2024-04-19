@@ -30,22 +30,32 @@ const StyledButton = styled(Button)({
   marginLeft: "5px",
 });
 
-function FriendSearch( friends ) {
+function FriendSearch( object) {
+  //friends.friends
+  //friends.pending
+  //friends.requested
   const [friendName, setFriendName] = useState("");
   const navigate = useNavigate();
   const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (friends.friends.includes(friendName)) {
+    //console.log(friends, "friends and pend ", pending, "and requested: " , requested);
+    if (object.friends.includes(friendName)) {
         createPopup("Already a friend!");
+    } else if (object.pending.includes(friendName)) {
+        createPopup("Friend request already sent!");
+    } else if (object.requested.includes(friendName)) {
+      createPopup("Accept friend request!");
     } else {
         try {
-            const response = await axios.post("/search-friend", { friendName });
+            const response = await axios.post("/search-friend", { friendName, userId });
         if (response.status === 200) {
             console.log("Found friend:", response.data);
             //actually modify request column of database to show request
             //maybe create a pending acceptance column? consider declining? maybe save for last
+            //add pk to my pending column and to their reqests column
             createPopup("Friend request sent!");
+            //send pending and request list to profile page, for each change have a use state and render.
         } else if (response.status === 404) {
             console.log("Friend not found:", response.data);
             createPopup("Friend not found. Please enter an existing nickname.");

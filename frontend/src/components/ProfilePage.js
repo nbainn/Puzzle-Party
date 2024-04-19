@@ -14,6 +14,10 @@ function ProfilePage() {
   const [userData, setUserData] = useState({ nickname, userColor });
   const [friends, setFriends] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
+  const [requested, setRequested] = useState([]);
+  const [realRequested, setRealRequested] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [realPending, setRealPending] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -30,23 +34,17 @@ function ProfilePage() {
         setUserData(response.data);
         setLocalNickname(response.data.nickname);
         setLocalUserColor(response.data.userColor);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-      try {
-        //console.log(userId);
-        const response = await axios.post('/user-friends', { userId });
-        if (response.status === 200) {
-          if (response.data.friends) {
-            setFriends(response.data.friends);
-          }
-        //setLocalNickname(response.data.nickname);
-        //setLocalUserColor(response.data.userColor);
-        } else {
-          console.log("Error fetching friends data:", response);
+        if (response.data.friends) {
+          setFriends(response.data.friends); 
+        }// Update requested list
+        if (response.data.requests) {
+        setRequested(response.data.requests); // Update requested list
+        }
+        if (response.data.pending) {
+        setPending(response.data.pending); // Update pending list
         }
       } catch (error) {
-        console.error('Error fetching friend data:', error);
+        console.error('Error fetching user data:', error);
       }
       setIsLoading(false);
     };
@@ -82,6 +80,53 @@ function ProfilePage() {
 
     fetchNicknames();
   }, [friends]);
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      const realPlayersList = await Promise.all(pending.map(async (pend) => {
+        const integerValue = parseInt(pend);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-nickname", { userId: pend });
+            if (response.status === 200) {
+              //console.log("Nickname for user", friend, "is", response.data);
+              return response.data;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return pend;
+      }));
+      setRealPending(realPlayersList);
+    };
+
+    fetchPending();
+  }, [pending]);
+
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const realPlayersList = await Promise.all(requested.map(async (request) => {
+        const integerValue = parseInt(request);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-nickname", { userId: request });
+            if (response.status === 200) {
+              //console.log("Nickname for user", friend, "is", response.data);
+              return response.data;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return request;
+      }));
+      setRealRequested(realPlayersList);
+    };
+
+    fetchRequests();
+  }, [requested]);
 
   if (isLoading) {
     return <LoadingScreen message="Loading profile..." />;
@@ -188,7 +233,7 @@ function ProfilePage() {
       </Button>
     </Box>
      <h2>Friends:</h2>
-     {friends.length > 0 && (
+     {friends.length > 0 ? (
      <ul>
      {friends.map((friend, index) => (
         <div key={friend}>
@@ -198,9 +243,37 @@ function ProfilePage() {
         </div>
         ))}
      </ul>
+     ) : (
+      <p>No friends</p>
      )}
+     {/* Existing profile rendering code */}
+    <h2>Pending Requests:</h2>
+    {pending.length > 0 ? (
+      <ul>
+        {pending.map((pending, index) => (
+          <li key={index}>{realPending[index]}</li>
+        ))}
+      </ul>
+    ) : (
+      <p>No pending requests</p>
+    )}
+
+    <h2>Friend Requests:</h2>
+    {requested.length > 0 ? (
+      <ul>
+        {requested.map((request, index) => (
+          <li key={index}>{realRequested[index]}</li>
+        ))}
+      </ul>
+    ) : (
+      <p>No friend requests</p>
+    )}
      <FriendSearch
       friends={realPlayers}
+      pending={realPending}
+      requested={realRequested}
+      //onPendingUpdate={handlePendingUpdate} // Pass a function to handle pending list updates
+      //onRequestUpdate={handleRequestUpdate} // Pass a function to handle request list updates
      />
    </div>
   );
