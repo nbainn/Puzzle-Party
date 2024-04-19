@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Container, Card, CardContent, Typography, TextField, Button, Link as MuiLink, Snackbar, styled } from '@mui/material';
+import { Container, Card, CardContent, Typography, TextField, Button, Link as MuiLink, Snackbar, styled, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(3),
+  backgroundColor: '#FFF8E2'
 }));
 
 const Title = styled(Typography)({
@@ -77,119 +78,129 @@ function SignupPage() {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '4px',
-      overflow: 'auto'
-    }}>
-      <StyledCard elevation={3}>
-        <CardContent>
-          <Title variant="h4" align="center">Sign Up</Title>
-          <form onSubmit={handleSignUp}>
-            <StyledTextField
-              label="Email Address"
-              variant="outlined"
-              fullWidth
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={emailError !== ''}
-              helperText={emailError}
-            />
-            <StyledTextField
-              label="Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <StyledTextField
-              label="Nickname (optional)"
-              variant="outlined"
-              fullWidth
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-            />
-            <StyledTextField
-              label="Favorite Color"
-              variant="outlined"
-              fullWidth
-              value={userColor}
-              onChange={(e) => handleColorChange(e.target.value)}
-              error={invalidColorError !== ''}
-              helperText={invalidColorError}
-              type="color"
-            />
-            <SubmitButton
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              disabled={loading}
-            >
-              Create Account
-            </SubmitButton>
-          </form>
-          <Typography align="center">
-            Already have an account?{' '}
-            <MuiLink
-              component="button"
-              variant="body2"
-              onClick={() => navigate('/')}
-              underline="hover"
-            >
-              Login
-            </MuiLink>
-          </Typography>
-          {networkError && (
-            <Snackbar
-              open={Boolean(networkError)}
-              autoHideDuration={6000}
-              onClose={() => setNetworkError('')}
-              message={networkError}
-            />
-          )}
-          {serverError && (
-            <Snackbar
-              open={Boolean(serverError)}
-              autoHideDuration={6000}
-              onClose={() => setServerError('')}
-              message={serverError}
-            />
-          )}
-          {genericError && (
-            <Snackbar
-              open={Boolean(genericError)}
-              autoHideDuration={6000}
-              onClose={() => setGenericError('')}
-              message={genericError}
-            />
-          )}
-          {emailError && (
-            <Snackbar
-              open={Boolean(emailError)}
-              autoHideDuration={6000}
-              onClose={() => setEmailError('')}
-              message={emailError}
-            />
-          )}
-          {invalidColorError && (
-            <Snackbar
-              open={Boolean(invalidColorError)}
-              autoHideDuration={6000}
-              onClose={() => setInvalidColorError('')}
-              message={invalidColorError}
-            />
-          )}
-        </CardContent>
-      </StyledCard>
-    </Container>
+    <Box
+      sx={{
+        backgroundColor: '#ffad9d',
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Container component="main" maxWidth="xs" sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '4px',
+        overflow: 'auto',
+      }}>
+        <StyledCard elevation={3}>
+          <CardContent>
+            <Title variant="h4" align="center">Sign Up</Title>
+            <form onSubmit={handleSignUp}>
+              <StyledTextField
+                label="Email Address"
+                variant="outlined"
+                fullWidth
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={emailError !== ''}
+                helperText={emailError}
+              />
+              <StyledTextField
+                label="Password"
+                variant="outlined"
+                type="password"
+                fullWidth
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <StyledTextField
+                label="Nickname (optional)"
+                variant="outlined"
+                fullWidth
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+              <StyledTextField
+                label="Favorite Color"
+                variant="outlined"
+                fullWidth
+                value={userColor}
+                onChange={(e) => handleColorChange(e.target.value)}
+                error={invalidColorError !== ''}
+                helperText={invalidColorError}
+                type="color"
+              />
+              <SubmitButton
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={loading}
+              >
+                Create Account
+              </SubmitButton>
+            </form>
+            <Typography align="center">
+              Already have an account?{' '}
+              <MuiLink
+                component="button"
+                variant="body2"
+                onClick={() => navigate('/')}
+                underline="hover"
+              >
+                Login
+              </MuiLink>
+            </Typography>
+            {networkError && (
+              <Snackbar
+                open={Boolean(networkError)}
+                autoHideDuration={6000}
+                onClose={() => setNetworkError('')}
+                message={networkError}
+              />
+            )}
+            {serverError && (
+              <Snackbar
+                open={Boolean(serverError)}
+                autoHideDuration={6000}
+                onClose={() => setServerError('')}
+                message={serverError}
+              />
+            )}
+            {genericError && (
+              <Snackbar
+                open={Boolean(genericError)}
+                autoHideDuration={6000}
+                onClose={() => setGenericError('')}
+                message={genericError}
+              />
+            )}
+            {emailError && (
+              <Snackbar
+                open={Boolean(emailError)}
+                autoHideDuration={6000}
+                onClose={() => setEmailError('')}
+                message={emailError}
+              />
+            )}
+            {invalidColorError && (
+              <Snackbar
+                open={Boolean(invalidColorError)}
+                autoHideDuration={6000}
+                onClose={() => setInvalidColorError('')}
+                message={invalidColorError}
+              />
+            )}
+          </CardContent>
+        </StyledCard>
+      </Container>
+    </Box>
   );
 }
 
