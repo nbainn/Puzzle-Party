@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import CommentIcon from '@mui/icons-material/Comment';
 import Filter from 'bad-words';
-import './ChatBox.css'
+import CommentIcon from '@mui/icons-material/Comment';
 
 const ResizeHandle = styled("div")({
   position: "absolute",
@@ -33,9 +33,7 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
   const messagesEndRef = useRef(null);
   const defaultColor = "#aaff69";
   const chatBoxRef = useRef(null);
-
-  const [showChatBox, setShowChatBox] = useState(false); // State variable to track visibility of chatbox
-
+  const [showChatBox, setShowChatBox] = useState(false);
   //const [players, setPlayers] = useState([]); // State variable to store unique nicknames
   
   useEffect(() => {

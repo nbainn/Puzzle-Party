@@ -25,8 +25,7 @@ const CurrentClueBox = ({ currentClue }) => {
     zIndex: "9999",
     marginTop: "5px",
     marginLeft: "5px",
-
-  });
+      });
 
   return <ClueBox>
     <Label>Current Clue</Label>
