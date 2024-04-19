@@ -7,6 +7,21 @@ import axios from "axios";
 import LoadingScreen from './LoadingScreen';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FriendSearch from "./FriendSearch";
+import { styled } from "@mui/material/styles";
+
+const StyledButton = styled(Button)({
+  //background color of button
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  color: "black",
+  //size of button
+  width: "50px",
+  fontSize: "10px",
+  fontFamily: "inherit",
+  lineHeight: 0,
+  minWidth: "50px",
+  marginLeft: 10,
+});
 
 function ProfilePage() {
   const { logout, userId, userToken, userColor, nickname, updateAuthContext } = useAuth();
@@ -184,6 +199,22 @@ function ProfilePage() {
     navigate('/');
   };
 
+  const handleAccept = async (request) => {
+    try {
+      const response = await axios.post("/accept-friend", { userId: userId, friendId: request});
+      if (response.status === 200) {
+        //console.log("Nickname for user", friend, "is", response.data);
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error fetching nickname for user:", error);
+    }
+    console.log(request);
+  };
+  const handleDecline = (request) => {
+    console.log(request);
+  };
+
   const renderEditView = () => (
     <>
       <Typography variant="body1" sx={{ marginBottom: 2 }}>
@@ -252,7 +283,7 @@ function ProfilePage() {
       <ul>
         {pending.map((pending, index) => (
           <li key={index}>{realPending[index]}</li>
-        ))}
+          ))}
       </ul>
     ) : (
       <p>No pending requests</p>
@@ -262,7 +293,18 @@ function ProfilePage() {
     {requested.length > 0 ? (
       <ul>
         {requested.map((request, index) => (
-          <li key={index}>{realRequested[index]}</li>
+          <li key={index}>{realRequested[index]}
+          <StyledButton
+          onClick={(event) => handleAccept(request)}
+                    >
+           Accept          
+          </StyledButton>
+          <StyledButton
+          onClick={(event) => handleDecline(request)}
+                    >
+           Delete         
+          </StyledButton>
+          </li>
         ))}
       </ul>
     ) : (

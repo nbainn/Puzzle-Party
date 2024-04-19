@@ -84,6 +84,15 @@ User.init({
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true
   },
+  isActive : {
+    type: DataTypes.BOOLEAN,
+    default: false,
+    allowNull: false
+  },
+  room_code : {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 }, {
   sequelize,
   modelName: 'User',
