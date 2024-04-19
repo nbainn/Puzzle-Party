@@ -10,8 +10,10 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import Grid from "./Grid";
+import LoadingScreen from "./LoadingScreen";
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
+import CurrentCLueBox from "./CurrentClueBox";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
@@ -24,13 +26,13 @@ import TimeMe from "timeme.js";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 TimeMe.initialize({
-	    currentPageName: "room", // current page
-	    idleTimeoutInSeconds: 30 // seconds
-    });
+  currentPageName: "room", // current page
+  idleTimeoutInSeconds: 30, // seconds
+});
 
 const StyledButton = styled(Button)({
   //background color of button
@@ -48,9 +50,18 @@ const StyledButton = styled(Button)({
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
+  const navigate = useNavigate();
+  const {
+    ablyClient,
+    userId,
+    userColor,
+    userToken,
+    nickname,
+    isGuest,
+    setNickname,
+    setUserColor,
+  } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
@@ -62,15 +73,45 @@ function RoomPage() {
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
-  const [favColor, setColor] = React.useState("#e08794");
+  const [favColor, setColor] = useState(userColor || "#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
+  const [time, setTime] = useState("00:00");
+  const [currentClue, setCurrentClue] = useState("");
   //const [playerList, setPlayerList] = useState([]);
+
+  // Fetch user data whenever the RoomPage component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("/user/profile", {
+          headers: { Authorization: `Bearer ${userToken}` },
+        });
+        if (response.data) {
+          setNickname(response.data.nickname);
+          setUserColor(response.data.userColor);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userToken, setNickname, setUserColor]);
+
+  // Effect to update favColor whenever userColor changes
+  useEffect(() => {
+    setColor(userColor);
+  }, [userColor]);
 
   const handleColor = (newValue) => {
     setColor(newValue);
   };
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (ablyClient) {
       // Log the current connection state
@@ -111,26 +152,56 @@ function RoomPage() {
 
   useEffect(() => {
     const fetchNicknames = async () => {
-      const realPlayersList = await Promise.all(players.map(async (player) => {
-        const integerValue = parseInt(player);
-        if (!isNaN(integerValue)) {
-          try {
-            const response = await axios.post("/fetch-nickname", { userId: player });
-            if (response.status === 200) {
-              console.log("Nickname for user", player, "is", response.data);
-              return response.data;
+      const realPlayersList = await Promise.all(
+        players.map(async (player) => {
+          const integerValue = parseInt(player);
+          if (!isNaN(integerValue)) {
+            try {
+              const response = await axios.post("/fetch-nickname", {
+                userId: player,
+              });
+              if (response.status === 200) {
+                console.log("Nickname for user", player, "is", response.data);
+                return response.data;
+              }
+            } catch (error) {
+              console.error("Error fetching nickname for user:", error);
             }
-          } catch (error) {
-            console.error("Error fetching nickname for user:", error);
           }
-        }
-        return player;
-      }));
+          return player;
+        })
+      );
       setRealPlayers(realPlayersList);
     };
 
     fetchNicknames();
   }, [players]);
+
+  useEffect(() => {
+    if (timer) {
+      const timerId = setTimeout(() => {
+        setTimeLeft(timeLeft + 1);
+
+        let min = Math.floor(timeLeft / 60);
+        let sec = timeLeft % 60;
+
+        var minStr = min.toString();
+        if (min < 10) {
+          minStr = "0" + min.toString();
+        }
+        var secStr = sec.toString();
+        if (sec < 10) {
+          secStr = "0" + sec.toString();
+        }
+
+        setTime(`${minStr}:${secStr}`);
+      }, 1000);
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }
+  }, [timer, timeLeft]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -182,19 +253,18 @@ function RoomPage() {
   }, [roomId, ablyClient]);
 
   useEffect(() => {
-      const focus = function() {
+    const focus = function () {
       setStartTime(new Date());
-      };
-      const handleBeforeUnload = async function () {
-      if (userId && typeof userId === 'string') {
-          return;
-      } 
+    };
+    const handleBeforeUnload = async function () {
+      if (userId && typeof userId === "string") {
+        return;
+      }
       let endTime = new Date();
       let timeSpent = endTime.getTime() - startTime.getTime();
       console.log("Time spent on page:", timeSpent, "seconds");
 
       try {
-        
         const response = await axios.post("/addTime", {
           userId: userId,
           time: timeSpent,
@@ -294,6 +364,10 @@ function RoomPage() {
     }
   }, [isBanned]);
 
+  if (isLoading) {
+    return <LoadingScreen message="Loading Room..." />;
+  }
+
   const handleExitRoom = async () => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     createPopup("You have been kicked from the room");
@@ -356,22 +430,31 @@ function RoomPage() {
             <ProfileDropdown />
           </div>
         )}
-        <div className="settings"></div>
-        <div className="room-header">
-          <h2>Room: {roomId}</h2>
-          <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
+        <div className="settings">
+          <RoomSettings
+            timer={timer}
+            hints={hints}
+            guesses={guesses}
+            setTimer={setTimer}
+            setHints={setHints}
+            setGuesses={setGuesses}
+            roomId={roomId}
+            ablyClient={ablyClient}
+          />
         </div>
+        <div className="room-header" sx={{ marginBottom: "-15px" }}>
+          <h2>Room: {roomId}</h2>
+        </div>
+
         <div className="game-container">
           <div className="players-list">
-            <Cheating
-              setRevealGrid={setRevealGrid}
-              setRevealHint={setRevealHint}
-              setCheckWord={setCheckWord}
-              setCheckGrid={setCheckGrid}
-            />
+            <label>{timer && <h3>Time spent: {time}</h3>}</label>
+            <hr></hr>
+            <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
+            <hr></hr>
             <div className="color-picker">
               <label htmlFor="favcolor" style={{ marginRight: "5px" }}>
-                Select your Cursor Color:
+                <h3>Select your Cursor Color:</h3>
               </label>
               <MuiColorInput
                 format="hex"
@@ -379,62 +462,66 @@ function RoomPage() {
                 onChange={handleColor}
               />
             </div>
+            <Cheating
+              setRevealGrid={setRevealGrid}
+              setRevealHint={setRevealHint}
+              setCheckWord={setCheckWord}
+              setCheckGrid={setCheckGrid}
+            />
             <div>
               <h2>Player List</h2>
               <ul>
                 {players.map((player, index) => (
-                 <div key={player}>
-                  <li>
-                    {realPlayers[index]}
-                    <StyledButton
-                     onClick={(event) => handleKick(event, roomId, player)}
-                    >
-                    Kick
-                    </StyledButton>
-                    <StyledButton
-                     onClick={(event) => handleBan(event, roomId, player)}
-                    >
-                     Ban
-                    </StyledButton>
-                  </li>
-                 </div>
-                 ))}
+                  <div key={player}>
+                    <li>
+                      {realPlayers[index]}
+                      <StyledButton
+                        onClick={(event) => handleKick(event, roomId, player)}
+                      >
+                        Kick
+                      </StyledButton>
+                      <StyledButton
+                        onClick={(event) => handleBan(event, roomId, player)}
+                      >
+                        Ban
+                      </StyledButton>
+                    </li>
+                  </div>
+                ))}
               </ul>
             </div>
-            <RoomSettings
-              timer={timer}
-              hints={hints}
-              guesses={guesses}
-              setTimer={setTimer}
-              setHints={setHints}
-              setGuesses={setGuesses}
-              roomId={roomId}
-              ablyClient={ablyClient}
-            />
-            <div></div>
+            <hr></hr>
             <SuggestionBox />
           </div>
-          <Grid
-            userId={userId}
-            players={players}
-            ablyClient={ablyClient}
-            roomId={roomId}
-            puzzle={puzzle}
-            setPuzzle={setPuzzle}
-            hints={hints}
-            guesses={guesses}
-            revealGrid={revealGrid}
-            setRevealGrid={setRevealGrid}
-            revealHint={revealHint}
-            setRevealHint={setRevealHint}
-            checkWord={checkWord}
-            setCheckWord={setCheckWord}
-            checkGrid={checkGrid}
-            setCheckGrid={setCheckGrid}
-            favColor={favColor}
-          />
+          <div className="centerPage">
+            <CurrentCLueBox currentClue={currentClue} />
+            <Grid
+              userId={userId}
+              players={players}
+              ablyClient={ablyClient}
+              roomId={roomId}
+              puzzle={puzzle}
+              setPuzzle={setPuzzle}
+              hints={hints}
+              guesses={guesses}
+              revealGrid={revealGrid}
+              setRevealGrid={setRevealGrid}
+              revealHint={revealHint}
+              setRevealHint={setRevealHint}
+              checkWord={checkWord}
+              setCheckWord={setCheckWord}
+              checkGrid={checkGrid}
+              setCheckGrid={setCheckGrid}
+              favColor={favColor}
+            />
+          </div>
           <div className="hints-chat-container">
-            <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />
+            <ClueList
+              puzzle={puzzle}
+              ablyClient={ablyClient}
+              roomId={roomId}
+              setCurrentClue={setCurrentClue}
+            />
             <ChatBox
               ablyClient={ablyClient}
               roomId={roomId}

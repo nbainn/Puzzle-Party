@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import Cell from "./Cell";
 import "./Crossword.css";
+import './Grid.css'
 
 // Styling for the grid container using Material UI
 // Uses CSS grid layout to organize cells, with flexibility to accommodate different grid sizes
@@ -15,7 +16,7 @@ const GridContainer = styled(Box)(({ size, gridSize }) => ({
   padding: "10px",
   maxWidth: "100%",
   margin: "auto",
-  width: `${size}px`, // Dynamic width based on screen size
+  width: "100%", // Dynamic width based on screen size
 }));
 
 const Grid = ({
@@ -48,9 +49,9 @@ const Grid = ({
   let changeLog = [];
   const [currentChange, setCurrentChange] = useState(null);
   // Function to add an entry to the changelog
-  const queueChange = async (user, location, direction, value, locationV) => {
+  const queueChange = async (user, location, direction, value) => {
     // Create a new entry object containing the location and value
-    const newEntry = { user, location, direction, value, locationV };
+    const newEntry = { user, location, direction, value };
     // Update the changelog by appending the new entry
     changeLog.push(newEntry);
     if (currentChange === null) {
@@ -64,15 +65,11 @@ const Grid = ({
       location: [[0, 0]],
       direction: "across",
       value: "",
-      locationV: [0, 0],
     },
   });
 
   //True when the user is receiving data from the server
   const [receiving, setReceiving] = useState(false);
-
-  //Current direction is accross or down
-  const [currentDirection, setCurrentDirection] = useState("across");
 
   //Stores the user's favorite color
   const [favColors, setFavColors] = useState({ [userId]: favColor });
@@ -86,16 +83,6 @@ const Grid = ({
 
   //Stores the size of the grid (not rows and columns, but the size of the grid in pixels)
   const [size, setSize] = useState(300);
-
-  //Represents the location of the cell that is currently selected in (rows, columns) format
-  const [location, setLocation] = useState([0, 0]);
-
-  //Used to refresh the grid
-  const [refresh, setRefresh] = useState(null);
-  const [heavyRefresh, setHeavyRefresh] = useState(null);
-
-  //Ably channel
-  const [channel, setChannel] = useState(null);
 
   //Stores the number of letters in the puzzle, used to determine when the puzzle is completed
   const [numLetters, setNumLetters] = useState(0);
@@ -156,8 +143,7 @@ const Grid = ({
               change.data.change.user,
               change.data.change.location,
               change.data.change.direction,
-              change.data.change.value,
-              change.data.change.locationV
+              change.data.change.value
             );
           }
         };
@@ -181,10 +167,6 @@ const Grid = ({
   }, [ablyClient, roomId]);
 
   useEffect(() => {
-    setChannel(ablyClient.channels.get(`room:${roomId}`));
-  }, [ablyClient, roomId]);
-
-  useEffect(() => {
     if (puzzle) {
       for (let i = 0; i < players.length; i++) {
         setLastChange((prevChanges) => ({
@@ -194,7 +176,6 @@ const Grid = ({
             location: [[0, 0]],
             direction: "across",
             value: "",
-            locationV: [0, 0],
           },
         }));
       }
@@ -312,14 +293,13 @@ const Grid = ({
 
   useEffect(() => {
     if (hints) {
-      console.log(location);
       if (revealHint) {
         const resetGrid = grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
             if (
               !cell.hidden &&
-              rowIndex === location[0] &&
-              colIndex === location[1]
+              rowIndex === lastChange[userId].location[0][0] &&
+              colIndex === lastChange[userId].location[0][1]
             ) {
               console.log("HINT", puzzle.puzzle.grid[rowIndex][colIndex]);
               return {
@@ -341,15 +321,21 @@ const Grid = ({
   useEffect(() => {
     if (guesses) {
       if (checkWord) {
+        console.log("CHECKinggggg");
         const resetGrid = grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
             if (
               !cell.hidden &&
               cell.value !== "" &&
-              (cell.players_primary[userId] ||
-                cell.players_secondary[userId]) &&
+              (cell.players_primary.includes(userId) ||
+                cell.players_secondary.includes(userId)) &&
               cell.value !== puzzle.puzzle.grid[rowIndex][colIndex]
             ) {
+              console.log(
+                "GUESSssssssss",
+                cell.value,
+                puzzle.puzzle.grid[rowIndex][colIndex]
+              );
               return { ...cell, /*color: "#ffda4d"*/ flagged: true };
             } else {
               return { ...cell };
@@ -433,6 +419,7 @@ const Grid = ({
       setCurrentChange(changeLog.shift());
     }
     if (currentChange && !processingChanges) {
+      console.log("Processing change:", currentChange);
       processingChanges = true;
       let resetGrid;
       resetGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
@@ -459,14 +446,18 @@ const Grid = ({
         if (currentChange.direction === "keep") {
           currentChange.direction = lastChange[currentChange.user].direction;
         } else if (currentChange.direction === "switch") {
+          currentChange.location[0][0] =
+            lastChange[currentChange.user].location[0][0];
+          currentChange.location[0][1] =
+            lastChange[currentChange.user].location[0][1];
           lastChange[currentChange.user].direction === "across"
             ? (currentChange.direction = "down")
             : (currentChange.direction = "across");
         } else if (currentChange.direction === "continue") {
           //finding the next cell in the direction
-          resetGrid[currentChange.location[0][0]][
-            currentChange.location[0][1]
-          ].value = currentChange.value;
+          /*resetGrid[lastChange[currentChange.user].location[0][0]][
+            lastChange.location[0][1]
+          ].value = currentChange.value;*/
           console.log(
             "changed value ",
             currentChange.value,
@@ -491,16 +482,8 @@ const Grid = ({
             ] != " "
               ? lastChange[currentChange.user].location[0][1] + 1
               : lastChange[currentChange.user].location[0][1];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         } else if (currentChange.direction === "backtrack") {
           //finding the previous cell in the direction
-          resetGrid[currentChange.location[0][0]][
-            currentChange.location[0][1]
-          ].value = currentChange.value;
           currentChange.direction = lastChange[currentChange.user].direction;
           currentChange.location[0][0] =
             currentChange.direction === "down" &&
@@ -518,13 +501,10 @@ const Grid = ({
             ] != " "
               ? lastChange[currentChange.user].location[0][1] - 1
               : lastChange[currentChange.user].location[0][1];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         } else if (currentChange.direction === "rightt") {
           currentChange.direction = lastChange[currentChange.user].direction;
+          currentChange.location[0][0] =
+            lastChange[currentChange.user].location[0][0];
           currentChange.location[0][1] =
             lastChange[currentChange.user].location[0][1] < numCols - 1 &&
             puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
@@ -532,13 +512,10 @@ const Grid = ({
             ] != " "
               ? lastChange[currentChange.user].location[0][1] + 1
               : lastChange[currentChange.user].location[0][1];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         } else if (currentChange.direction === "leftt") {
           currentChange.direction = lastChange[currentChange.user].direction;
+          currentChange.location[0][0] =
+            lastChange[currentChange.user].location[0][0];
           currentChange.location[0][1] =
             lastChange[currentChange.user].location[0][1] > 0 &&
             puzzle.puzzle.grid[lastChange[currentChange.user].location[0][0]][
@@ -546,13 +523,10 @@ const Grid = ({
             ] != " "
               ? lastChange[currentChange.user].location[0][1] - 1
               : lastChange[currentChange.user].location[0][1];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         } else if (currentChange.direction === "upp") {
           currentChange.direction = lastChange[currentChange.user].direction;
+          currentChange.location[0][1] =
+            lastChange[currentChange.user].location[0][1];
           currentChange.location[0][0] =
             lastChange[currentChange.user].location[0][0] > 0 &&
             puzzle.puzzle.grid[
@@ -560,13 +534,10 @@ const Grid = ({
             ][lastChange[currentChange.user].location[0][1]] != " "
               ? lastChange[currentChange.user].location[0][0] - 1
               : lastChange[currentChange.user].location[0][0];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         } else if (currentChange.direction === "downn") {
           currentChange.direction = lastChange[currentChange.user].direction;
+          currentChange.location[0][1] =
+            lastChange[currentChange.user].location[0][1];
           currentChange.location[0][0] =
             lastChange[currentChange.user].location[0][0] < numRows - 1 &&
             puzzle.puzzle.grid[
@@ -574,11 +545,6 @@ const Grid = ({
             ][lastChange[currentChange.user].location[0][1]] != " "
               ? lastChange[currentChange.user].location[0][0] + 1
               : lastChange[currentChange.user].location[0][0];
-          document
-            .getElementById(
-              `cell-${currentChange.location[0][0]}-${currentChange.location[0][1]}`
-            )
-            .focus();
         }
 
         let rowIndex = currentChange.location[0][0];
@@ -646,9 +612,9 @@ const Grid = ({
           resetGrid[i][j].players_secondary.push(currentChange.user);
         }
       }
-      if (currentChange.locationV != null) {
-        resetGrid[currentChange.locationV[0]][
-          currentChange.locationV[1]
+      if (currentChange.value != null) {
+        resetGrid[lastChange[currentChange.user].location[0][0]][
+          lastChange[currentChange.user].location[0][1]
         ].value = currentChange.value;
       }
       setLastChange((prev) => ({
@@ -673,8 +639,6 @@ const Grid = ({
         };
         ably();
       }
-      setRefresh(null);
-      setHeavyRefresh(null);
       setGrid(resetGrid);
       processingChanges = false;
       setCurrentChange(null);
@@ -689,7 +653,7 @@ const Grid = ({
       console.log("SPACEBAR PRESSED");
       //setCurrentDirection(currentDirection === "across" ? "down" : "across");
       //setLocation([rowIndex, colIndex]);
-      queueChange(userId, [[rowIndex, colIndex]], "switch", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "switch", null);
       //location[0] = rowIndex;
       //location[1] = colIndex;
       event.preventDefault();
@@ -724,10 +688,7 @@ const Grid = ({
       //updatedGrid[rowIndex][colIndex].flagged = false;
       //setGrid(updatedGrid);
       //setHeavyRefresh(updatedGrid);
-      queueChange(userId, [[rowIndex, colIndex]], "continue", tempValue, [
-        rowIndex,
-        colIndex,
-      ]);
+      queueChange(userId, [[rowIndex, colIndex]], "continue", tempValue);
       console.log("UPDATED GRID");
       /*if (ablyClient) {
         const channel = ablyClient.channels.get(`room:${roomId}`);
@@ -753,7 +714,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "upp", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "upp", null);
     } else if (event.keyCode === 40) {
       // Arrow Down pressed
       /*rowIndex =
@@ -766,7 +727,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "downn", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "downn", null);
     } else if (event.keyCode === 37) {
       // Arrow Left pressed
       /*colIndex =
@@ -778,7 +739,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "leftt", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "leftt", null);
     } else if (event.keyCode === 39) {
       // Arrow Right pressed
       /*colIndex =
@@ -791,7 +752,7 @@ const Grid = ({
       //location[1] = colIndex;
       //document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       //setRefresh(1);
-      queueChange(userId, [[rowIndex, colIndex]], "rightt", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "rightt", null);
     } else if (event.keyCode !== 8 && event.keyCode !== 46) {
       event.preventDefault();
     } else {
@@ -815,14 +776,10 @@ const Grid = ({
         puzzle.puzzle.grid[rowIndex][colIndex - 1] != " "
           ? colIndex - 1
           : colIndex;*/
-      queueChange(userId, [[rowIndex, colIndex]], "backtrack", "", [
-        rowIndex,
-        colIndex,
-      ]);
+      queueChange(userId, [[rowIndex, colIndex]], "backtrack", "");
       //setLocation([rowIndex, colIndex]);
       //location[0] = rowIndex;
       //location[1] = colIndex;
-      document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       //setHeavyRefresh(updatedGrid);
       event.preventDefault();
     }
@@ -835,16 +792,18 @@ const Grid = ({
   //};
   //}, [currentDirection]);
   const handleCellClick = (rowIndex, colIndex) => {
-    if (location[0] === rowIndex && location[1] === colIndex) {
+    if (
+      lastChange[userId].location[0][0] === rowIndex &&
+      lastChange[userId].location[0][1] === colIndex
+    ) {
       //setCurrentDirection(currentDirection === "across" ? "down" : "across");
       //setRefresh(1);
-      queueChange(userId, [[rowIndex, colIndex]], "switch", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "switch", null);
     } else {
-      setLocation([rowIndex, colIndex]);
       //location[0] = rowIndex;
       //location[1] = colIndex;
       //setRefresh(1);
-      queueChange(userId, [[rowIndex, colIndex]], "keep", null, null);
+      queueChange(userId, [[rowIndex, colIndex]], "keep", null);
     }
   };
 

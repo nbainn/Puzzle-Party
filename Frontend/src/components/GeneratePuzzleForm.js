@@ -8,6 +8,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  ButtonGroup
 } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 //import {fetchHost} from '../sequelize.tsx';
@@ -32,7 +33,10 @@ const StyledButton = styled(Button)({
   lineHeight: 1,
   marginLeft: 10,
   fontFamily: "inherit",
-  marginTop: 5,
+});
+
+const StyledGroup = styled(ButtonGroup)({
+  marginTop: "-5px",
 });
 
 const StyledSelect = styled(Select)({
@@ -42,7 +46,7 @@ const StyledSelect = styled(Select)({
   fontSize: "100%",
   lineHeight: 1,
   marginLeft: 10,
-  height: 40,
+  height: 55,
   fontFamily: "C&C Red Alert [INET]",
 });
 
@@ -109,6 +113,7 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
         console.log("error");
       }
   }, [seed, size, userId]);
+  
 
   const generateRandomNumber = () => {
     // Generate a random number between 0 and 9999999999
@@ -132,8 +137,6 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
             max="9999999999"
             className="generate-puzzle-input"
           />
-          <br></br>
-          <label htmlFor="sizeDropdown">&nbsp;&nbsp;Select Size:</label>
           <StyledSelect
             id="sizeDropdown"
             value={size}
@@ -144,22 +147,25 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
             <StyledMenuItem value={"medium"}>Medium</StyledMenuItem>
             <StyledMenuItem value={"large"}>Large</StyledMenuItem>
           </StyledSelect>
-          <br></br>
-          <StyledButton onClick={generateRandomNumber}>Randomize</StyledButton>
-          <StyledButton type="submit" className="generate-puzzle-button">
-            Generate Puzzle
-          </StyledButton>
+
+          <ButtonGroup
+          sx={{ display: "flex", justifyContent: "center", marginTop: "5px", marginLeft: "-5px"}}>
+            <StyledButton onClick={generateRandomNumber}>Randomize</StyledButton>
+            <StyledButton type="submit" className="generate-puzzle-button">
+              Generate
+            </StyledButton>
+          </ButtonGroup>
         </form>
-        <div className="image-container">
+       
+      </div>
+    </ThemeProvider>
+  );
+}
+/*  <div className="image-container">
           <img
             src={catSleep}
             alt="Your Animated GIF"
             className="pixelated-image"
           />
-        </div>
-      </div>
-    </ThemeProvider>
-  );
-}
-
+        </div> */
 export default GeneratePuzzleForm;

@@ -54,57 +54,37 @@ const Statistics = () => {
     }, []);
     
     return (
-        <div className = "statistics">
-            <h1>User Statistics</h1>
-            
-            <Box>
-            <Grid container spacing={2}>
-            {stats ? (
-                <div>
-                    <Grid item xs={20}>
-                        <Item>Games Played: {stats.gamesPlayed}</Item>
-                    </Grid>
-                    
-                    <Grid item xs={20}>
-                        <Item>Games Won: {stats.gamesWon}</Item>
-                    </Grid>
 
-                    <Grid item xs={20}>
-                        <Item>Games Lost: {stats.gamesPlayed - stats.gamesWon}</Item>
-                    </Grid>
-
-                    <Grid item xs={20}>
-                        <Item>Time Played: {stats.timePlayed} seconds </Item>
-                    </Grid>
-                </div>
-            ) : (
-                <Grid item xs={20}>
-                    <Item>No user stats yet!</Item>
-                </Grid>
-            )}      
-
-            {globalStats ? (
-                <div>
-                    <Grid item xs={20}>
-                    <Item>Global Games Played: {globalStats.gamesPlayed} </Item>
-                    </Grid>
-                    <Grid item xs={20}>
-                    <Item>Global Games Won: {globalStats.gamesWon}</Item>
-                    </Grid>
-
-                    <Grid item xs={20}>
-                    <Item>Global Games Lost: {globalStats.gamesPlayed - globalStats.gamesWon}</Item>
-                    </Grid>
-                    <Grid item xs={20}>
-                    <Item>Global Time Played: {globalStats.timePlayed} seconds </Item>
-                    </Grid>
-                </div>
+        <div>
+            <div className = "statistics-header"><h1>User Statistics</h1></div>
+            <div className = "statistics">
+                <div className="stats-sub">
+                {stats ? (
+                    <div>
+                            <p>Games Played: {stats.gamesPlayed}</p>
+                            <p>Games Won: {stats.gamesWon}</p>
+                            <p>Games Lost: {stats.gamesPlayed - stats.gamesWon}</p>
+                            <p>Time Played: {stats.timePlayed} seconds </p>
+                    </div>
                 ) : (
-                    <p>No global stats yet!</p>
-                )}
-                
-                </Grid>
-            </Box>
+                        <p>No user stats yet!</p>
+                )}     
+                </div> 
+
+                <div className="stats-sub">
+
+                {globalStats ? (
+                    <div>
+                        <p>Global Games Played: {globalStats.gamesPlayed} </p>
+                        <p>Global Games Won: {globalStats.gamesWon}</p>
+                        <p>Global Games Lost: {globalStats.gamesPlayed - globalStats.gamesWon}</p>
+                        <p>Global Time Played: {globalStats.timePlayed} seconds </p>
+                    </div>
+                    ) : (
+                        <p>No global stats yet!</p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

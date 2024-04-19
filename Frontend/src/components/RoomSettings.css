@@ -1,0 +1,21 @@
+.settings-popup {
+
+    position: absolute;
+    text-align: left;
+    margin-left: 5px;
+    margin-top: 20px;
+}
+.h14 {
+    font-size: 2.5rem;
+    font-weight: 650;
+    margin-bottom: 10px;
+}
+
+.popup-content {
+    background-color: antiquewhite;
+    border: 1px solid black;
+    padding: 5px;
+    position:absolute;
+    z-index: 9999;
+    border-radius: 4px;
+}

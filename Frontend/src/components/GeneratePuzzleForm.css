@@ -1,8 +1,3 @@
-.genereate-puzzle-form {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
 
 .image-container {
   margin-right: 2px;
@@ -14,6 +9,5 @@
   z-index: 9999;
   /* Set a very high z-index value for the image */
   display: flex;
-  margin-top: -90px;
   width:fit-content;
 }
