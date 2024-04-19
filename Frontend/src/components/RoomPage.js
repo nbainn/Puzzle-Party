@@ -494,7 +494,6 @@ function RoomPage() {
             <SuggestionBox />
           </div>
           <div className="centerPage">
-            <CurrentCLueBox currentClue={currentClue} />
             <Grid
               userId={userId}
               players={players}
@@ -516,6 +515,7 @@ function RoomPage() {
             />
           </div>
           <div className="hints-chat-container">
+            <CurrentCLueBox currentClue={currentClue} />
             <ClueList
               puzzle={puzzle}
               ablyClient={ablyClient}
