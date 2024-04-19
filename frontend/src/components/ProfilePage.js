@@ -340,19 +340,23 @@ function ProfilePage() {
 
   return (
     <div>
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={handleBackHome} sx={{ alignSelf: 'flex-start' }}>
-        BACK TO HOME
-      </Button>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        Your Profile
-      </Typography>
+     <Container
+      component="main"
+      maxWidth={false}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffad9d',
+        padding: 0,
+        margin: 0,
+      }}
+    >
       {editing ? renderEditView() : renderDefaultView()}
-      <Button variant="contained" color="secondary" onClick={handleLogoutClick} sx={{ marginTop: 2 }}>
-        Logout
-      </Button>
-    </Box>
-     <h2>Friends:</h2>
+    </Container>
+    <h2>Friends:</h2>
      {friends.length > 0 ? (
      <ul>
      {friends.map((friend, index) => (
@@ -406,22 +410,6 @@ function ProfilePage() {
       //onPendingUpdate={handlePendingUpdate} // Pass a function to handle pending list updates
       //onRequestUpdate={handleRequestUpdate} // Pass a function to handle request list updates
      />
-     <Container
-      component="main"
-      maxWidth={false}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffad9d',
-        padding: 0,
-        margin: 0,
-      }}
-    >
-      {editing ? renderEditView() : renderDefaultView()}
-    </Container>
    </div>
   );
 }
