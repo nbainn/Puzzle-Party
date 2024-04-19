@@ -25,7 +25,7 @@ import TimeMe from "timeme.js";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 TimeMe.initialize({
@@ -88,7 +88,12 @@ function RoomPage() {
     };
 
     fetchUserData();
-  }, []);
+  }, [userToken, setNickname, setUserColor]);
+
+  // Effect to update favColor whenever userColor changes
+  useEffect(() => {
+    setColor(userColor);
+  }, [userColor]);
 
   const handleColor = (newValue) => {
     setColor(newValue);
