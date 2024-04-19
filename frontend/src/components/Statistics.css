@@ -1,3 +1,30 @@
 .statistics {
-    margin-left: 30px
+    display: flex;
+    /* Use flexbox layout */
+    justify-content: space-evenly;
+    /* Evenly distribute space between the children */
+    margin-left: 10px;
+    width: 90%;
+    margin-left: 3rem;
+}
+
+.statistics-header {
+    margin-left: 3rem;
+
+}
+
+.stats-sub {
+    background-color: #ffd1f7;
+    border: 1px solid #eac5bc;
+    border-radius: 4px;
+    flex: 1;
+    /* Distribute remaining space evenly among the children */
+    width: 40%;
+    /* Set the width to 50% to make both divs have the same width */
+    box-sizing: border-box;
+    /* Include padding and border in the width calculation */
+    padding: 10px;
+    /* Optional: Add padding for visual spacing */
+    padding-left: 20px;
+    margin: 5px;
 }
