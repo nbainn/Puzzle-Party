@@ -114,7 +114,6 @@ function RoomSettings({
   return (
     <div className="settings-popup">
       
-      <label>{timer && <h2>Time spent: {time}</h2>}</label>
       <StyledButtonGroup size="small" variant="text" aria-label="Small button group">
       <StyledButton variant = "text" onClick={togglePopup} className="settings-button">
         ⚙️
@@ -130,12 +129,6 @@ function RoomSettings({
         <div className="popup-content">
           <h2>Settings</h2>
           <label>
-            <input
-              type="checkbox"
-              checked={timer}
-              onChange={handleTimerChange}
-            />
-            Enable Timer
             <input
               type="checkbox"
               checked={hints}

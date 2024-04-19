@@ -10,6 +10,7 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import Grid from "./Grid";
+import LoadingScreen from './LoadingScreen';
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
 import CurrentCLueBox from "./CurrentClueBox";
@@ -25,7 +26,7 @@ import TimeMe from "timeme.js";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 TimeMe.initialize({
@@ -49,9 +50,9 @@ const StyledButton = styled(Button)({
 
 function RoomPage() {
   const { roomId } = useParams();
-  const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
+  const navigate = useNavigate();
+  const { ablyClient, userId, userColor, userToken, nickname, isGuest, setNickname, setUserColor } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
-  // State to store the puzzle object
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
@@ -63,15 +64,47 @@ function RoomPage() {
   const [checkWord, setCheckWord] = useState(false);
   const [checkGrid, setCheckGrid] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
-  const [favColor, setColor] = React.useState("#e08794");
+  const [favColor, setColor] = useState(userColor || "#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
-  const [currentClue, setCurrentClue] = useState("");
+<<<<<<< Updated upstream
+  const [isLoading, setIsLoading] = useState(true);
+=======
+  const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
+  const [time, setTime] = useState("00:00")
+>>>>>>> Stashed changes
+  //const [playerList, setPlayerList] = useState([]);
+
+  // Fetch user data whenever the RoomPage component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile', {
+          headers: { Authorization: `Bearer ${userToken}` }
+        });
+        if (response.data) {
+          setNickname(response.data.nickname);
+          setUserColor(response.data.userColor);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userToken, setNickname, setUserColor]);
+
+  // Effect to update favColor whenever userColor changes
+  useEffect(() => {
+    setColor(userColor);
+  }, [userColor]);
 
   const handleColor = (newValue) => {
     setColor(newValue);
   };
-  const navigate = useNavigate();
+
   useEffect(() => {
     if (ablyClient) {
       // Log the current connection state
@@ -136,6 +169,33 @@ function RoomPage() {
 
     fetchNicknames();
   }, [players]);
+
+    useEffect(() => {
+    if (timer) {
+      const timerId = setTimeout(() => {
+        setTimeLeft(timeLeft + 1);
+        
+        let min = Math.floor(timeLeft / 60);
+        let sec = (timeLeft % 60);
+
+        var minStr = min.toString();
+        if (min < 10) {
+          minStr = "0" + min.toString();
+        } 
+        var secStr = sec.toString();
+        if (sec < 10) {
+          secStr = "0" + sec.toString();
+        }
+
+        setTime(`${minStr}:${secStr}`);
+        
+      }, 1000);
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }
+  }, [timer, timeLeft]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -298,6 +358,10 @@ function RoomPage() {
     }
   }, [isBanned]);
 
+  if (isLoading) {
+    return <LoadingScreen message="Loading Room..." />;
+  }
+
   const handleExitRoom = async () => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     createPopup("You have been kicked from the room");
@@ -360,22 +424,30 @@ function RoomPage() {
             <ProfileDropdown />
           </div>
         )}
-        <div className="settings"></div>
-        <div className="room-header">
+        <div className="settings">        
+        <RoomSettings
+          timer={timer}
+          hints={hints}
+          guesses={guesses}
+          setTimer={setTimer}
+          setHints={setHints}
+          setGuesses={setGuesses}
+          roomId={roomId}
+          ablyClient={ablyClient}
+        /></div>
+        <div className="room-header" sx = {{marginBottom: "-15px"}}>
           <h2>Room: {roomId}</h2>
-          <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
         </div>
+
         <div className="game-container">
           <div className="players-list">
-            <Cheating
-              setRevealGrid={setRevealGrid}
-              setRevealHint={setRevealHint}
-              setCheckWord={setCheckWord}
-              setCheckGrid={setCheckGrid}
-            />
+                  <label>{timer && <h3>Time spent: {time}</h3>}</label>
+                  <hr></hr>
+            <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
+            <hr></hr>
             <div className="color-picker">
               <label htmlFor="favcolor" style={{ marginRight: "5px" }}>
-                Select your Cursor Color:
+                <h3>Select your Cursor Color:</h3>
               </label>
               <MuiColorInput
                 format="hex"
@@ -383,6 +455,12 @@ function RoomPage() {
                 onChange={handleColor}
               />
             </div>
+            <Cheating
+              setRevealGrid={setRevealGrid}
+              setRevealHint={setRevealHint}
+              setCheckWord={setCheckWord}
+              setCheckGrid={setCheckGrid}
+            />
             <div>
               <h2>Player List</h2>
               <ul>
@@ -405,17 +483,7 @@ function RoomPage() {
                 ))}
               </ul>
             </div>
-            <RoomSettings
-              timer={timer}
-              hints={hints}
-              guesses={guesses}
-              setTimer={setTimer}
-              setHints={setHints}
-              setGuesses={setGuesses}
-              roomId={roomId}
-              ablyClient={ablyClient}
-            />
-            <div></div>
+            <hr></hr>
             <SuggestionBox />
           </div>
           <div className="centerPage">

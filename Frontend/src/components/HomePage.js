@@ -13,7 +13,7 @@ import CatLogo2 from "../assets/CatLogo2.gif";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "C&C Red Alert [INET]", // Use the browser's default font family
+    fontFamily: "C&C Red Alert [INET]",
   },
 });
 
@@ -36,9 +36,9 @@ const StyledButton = styled(Button)({
 //import { loadScript, createHost} from  './peer2peer.js';
 function HomePage() {
   const navigate = useNavigate();
-  const { isGuest } = useAuth();
+  const { isGuest, userId } = useAuth();
   //const [peer, setPeer] = useState(null);
-  const { userId } = useAuth();
+
   const handleCreateRoom = async () => {
     //console.log('supposed to get hostid')
     //const hostId = createHost();

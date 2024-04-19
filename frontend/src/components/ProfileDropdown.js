@@ -1,15 +1,38 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, Menu, MenuItem, ListItemIcon, Typography } from '@mui/material';
 import Logout from '@mui/icons-material/Logout';
 import Settings from '@mui/icons-material/Settings';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ProfileDropdown() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const { userColor, nickname, logout } = useAuth();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const { userToken, logout, setUserColor, setNickname } = useAuth();
+  const [nickname, setLocalNickname] = useState('');
+  const [userColor, setUserColorLocal] = useState('');
   const navigate = useNavigate();
+
+  const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile', {
+          headers: { Authorization: `Bearer ${userToken}` }
+        });
+        if (response.data) {
+          setLocalNickname(response.data.nickname);
+          setUserColorLocal(response.data.userColor);
+          setNickname(response.data.nickname);
+          setUserColor(response.data.userColor);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+    fetchUserData();
+  }, [userToken, setNickname, setUserColor]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
