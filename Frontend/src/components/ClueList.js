@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ClueList.css";
 import { styled } from "@mui/material/styles";
-
 function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
   const [downClues, setDown] = useState(["No Down Clues!"]);
   const [acrossClues, setAcross] = useState(["No Across Clues!"]);
@@ -19,7 +18,6 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
     marginLeft: "5px",
 
   });
-
   useEffect(() => {
     if (ablyClient) {
       console.log("Ably client provided to ClueList", ablyClient);
