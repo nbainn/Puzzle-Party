@@ -3,7 +3,6 @@ import "./RoomSettings.css";
 import { styled } from "@mui/material/styles";
 import { Button, ButtonGroup } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Invite from "./Invite";
 import axios from "axios";
 
 const StyledButton = styled(Button)({
@@ -177,7 +176,6 @@ function RoomSettings({
 
   return (
     <div className="settings-popup">
-      <Invite />
       <StyledButtonGroup
         size="small"
         variant="text"

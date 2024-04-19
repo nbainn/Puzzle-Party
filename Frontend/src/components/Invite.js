@@ -8,6 +8,7 @@ import axios from "axios";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button, TextField } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
+import { isAbsolute } from "path-browserify";
 
 const theme = createTheme({
   typography: {
@@ -28,6 +29,17 @@ const StyledButton = styled(Button)({
   width: "120px",
   padding: "15px 10px",
   marginLeft: "5px",
+});
+
+const PopupContainer = styled("div")({
+  position: "absolute",
+  top: "0",
+  left: "50%",
+  transform: "translateX(-50%)",
+  backgroundColor: "#ffcaca",
+  border: "1px solid #ca8f8f",
+  padding: "15px",
+  zIndex: "999999",
 });
 
 const Invite = ({}) => {
@@ -85,7 +97,9 @@ const Invite = ({}) => {
   // a popup with a label and two buttons: "accept" and "decline"
   // this is found below
   return (
-    <div style={{ visibility: message === "" ? "hidden" : "visible" }}>
+    <PopupContainer
+      style={{ visibility: message === "" ? "hidden" : "visible" }}
+    >
       <label>{message}</label>
       <StyledButton
         onClick={() => {
@@ -102,7 +116,7 @@ const Invite = ({}) => {
       >
         decline
       </StyledButton>
-    </div>
+    </PopupContainer>
   );
 };
 
