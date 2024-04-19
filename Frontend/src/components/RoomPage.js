@@ -61,6 +61,7 @@ function RoomPage() {
     isGuest,
     setNickname,
     setUserColor,
+    updateAuthContext
   } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   const [puzzle, setPuzzle] = useState(null);
@@ -125,6 +126,7 @@ function RoomPage() {
         if (response.data) {
           setNickname(response.data.nickname);
           setUserColor(response.data.userColor);
+          updateAuthContext(response.data.nickname, response.data.userColor);
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -134,7 +136,7 @@ function RoomPage() {
     };
 
     fetchUserData();
-  }, [userToken, setNickname, setUserColor]);
+  }, [userToken, setNickname, setUserColor, updateAuthContext]);
 
   // Effect to update favColor whenever userColor changes
   useEffect(() => {

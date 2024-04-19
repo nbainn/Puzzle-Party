@@ -51,6 +51,7 @@ function ProfilePage() {
         setUserData(response.data);
         setLocalNickname(response.data.nickname);
         setLocalUserColor(response.data.userColor);
+        updateAuthContext(response.data.nickname, response.data.userColor);
         if (response.data.friends) {
           setFriends(response.data.friends); 
         }// Update requested list
@@ -67,7 +68,7 @@ function ProfilePage() {
     };
 
     fetchUserData();
-  }, [userToken]);
+  }, [userToken, updateAuthContext]);
 
   useEffect(() => {
     if (friendRooms) {
