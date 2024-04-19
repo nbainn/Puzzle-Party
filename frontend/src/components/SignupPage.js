@@ -109,6 +109,7 @@ function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 error={emailError !== ''}
                 helperText={emailError}
+                sx={{ backgroundColor: '#FFFFFF' }}
               />
               <StyledTextField
                 label="Password"
@@ -118,6 +119,7 @@ function SignupPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                sx={{ backgroundColor: '#FFFFFF' }}
               />
               <StyledTextField
                 label="Nickname (optional)"
@@ -125,6 +127,7 @@ function SignupPage() {
                 fullWidth
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
+                sx={{ backgroundColor: '#FFFFFF' }}
               />
               <StyledTextField
                 label="Favorite Color"
@@ -135,6 +138,7 @@ function SignupPage() {
                 error={invalidColorError !== ''}
                 helperText={invalidColorError}
                 type="color"
+                sx={{ backgroundColor: '#FFFFFF' }}
               />
               <SubmitButton
                 type="submit"

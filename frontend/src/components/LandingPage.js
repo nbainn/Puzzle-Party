@@ -78,113 +78,124 @@ function LandingPage() {
   }, [auth.isAuthenticated, navigate]);
 
   return (
-    <Container component="main" maxWidth="xs" sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'auto'
-    }}>
-      <Card sx={{ p: 3 }}>
-        <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Typography component="h1" variant="h5">
-            Welcome to Puzzle Party
-          </Typography>
-          <Typography variant="body2">
-            Don't have an account yet? <Link onClick={handleSignUp} sx={{ cursor: 'pointer' }}>Sign Up</Link>
-          </Typography>
-          <form onSubmit={handleLogin}>
-            <TextField
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              margin="normal"
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              variant="outlined"
-              sx={{ mt: 3 }}
-              error={Boolean(emailError)}
-              helperText={emailError}
-            />
-            <TextField
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              margin="normal"
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              variant="outlined"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              LOGIN
-            </Button>
-            <Box sx={{ width: '100%', mb: 2 }}>
-              <div style={googleButtonStyle}>
-                <GoogleLogin
-                  onSuccess={onGoogleLoginSuccess}
-                  onError={() => console.log('Google login failed')}
-                />
-              </div>
-            </Box>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={handleGuest}
-              sx={{ mb: 2 }}
-            >
-              Play as a Guest
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-      {networkError && (
-        <Snackbar
-          open={Boolean(networkError)}
-          autoHideDuration={6000}
-          onClose={() => setNetworkError('')}
-          message={networkError}
-        />
-      )}
-      {serverError && (
-        <Snackbar
-          open={Boolean(serverError)}
-          autoHideDuration={6000}
-          onClose={() => setServerError('')}
-          message={serverError}
-        />
-      )}
-      {genericError && (
-        <Snackbar
-          open={Boolean(genericError)}
-          autoHideDuration={6000}
-          onClose={() => setGenericError('')}
-          message={genericError}
-        />
-      )}
-      {emailError && (
-        <Snackbar
-          open={Boolean(emailError)}
-          autoHideDuration={6000}
-          onClose={() => setEmailError('')}
-          message={emailError}
-        />
-      )}
-    </Container>
+    <Box
+      sx={{
+        backgroundColor: '#ffad9d',
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Container component="main" maxWidth="xs" sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'auto'
+      }}>
+        <Card sx={{ p: 3, backgroundColor: '#FFF8E2' }}>
+          <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography component="h1" variant="h5">
+              Welcome to Puzzle Party
+            </Typography>
+            <Typography variant="body2">
+              Don't have an account yet? <Link onClick={handleSignUp} sx={{ cursor: 'pointer' }}>Sign Up</Link>
+            </Typography>
+            <form onSubmit={handleLogin}>
+              <TextField
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                margin="normal"
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                variant="outlined"
+                sx={{ mt: 3, backgroundColor: '#FFFFFF' }}
+                error={Boolean(emailError)}
+                helperText={emailError}
+              />
+              <TextField
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                margin="normal"
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                variant="outlined"
+                sx={{ backgroundColor: '#FFFFFF' }}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                LOGIN
+              </Button>
+              <Box sx={{ width: '100%', mb: 2 }}>
+                <div style={googleButtonStyle}>
+                  <GoogleLogin
+                    onSuccess={onGoogleLoginSuccess}
+                    onError={() => console.log('Google login failed')}
+                  />
+                </div>
+              </Box>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={handleGuest}
+                sx={{ mb: 2, backgroundColor: '#FFFFFF' }}
+              >
+                Play as a Guest
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+        {networkError && (
+          <Snackbar
+            open={Boolean(networkError)}
+            autoHideDuration={6000}
+            onClose={() => setNetworkError('')}
+            message={networkError}
+          />
+        )}
+        {serverError && (
+          <Snackbar
+            open={Boolean(serverError)}
+            autoHideDuration={6000}
+            onClose={() => setServerError('')}
+            message={serverError}
+          />
+        )}
+        {genericError && (
+          <Snackbar
+            open={Boolean(genericError)}
+            autoHideDuration={6000}
+            onClose={() => setGenericError('')}
+            message={genericError}
+          />
+        )}
+        {emailError && (
+          <Snackbar
+            open={Boolean(emailError)}
+            autoHideDuration={6000}
+            onClose={() => setEmailError('')}
+            message={emailError}
+          />
+        )}
+      </Container>
+    </Box>
   );
 }
 
