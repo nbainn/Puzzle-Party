@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
 import { createTheme, ThemeProvider  } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
-import CommentIcon from '@mui/icons-material/Comment';
 import Filter from 'bad-words';
 import CommentIcon from '@mui/icons-material/Comment';
 
@@ -246,9 +245,9 @@ function ChatBox({ roomId, userColor, nickname, ablyClient, userId }) {
     </Box>
     )}
     </ThemeProvider>
+      
     </div>
   );
-
 }
 
 export default ChatBox;
