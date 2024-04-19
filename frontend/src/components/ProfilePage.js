@@ -95,11 +95,20 @@ function ProfilePage() {
 
   const renderEditView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center' }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ position: 'absolute', top: 16, left: 16 }}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            color: 'black',
+            backgroundColor: '#FFF8E2',
+            '&:hover': {
+              backgroundColor: 'grey.200',
+            },
+          }}
         >
           Back
         </Button>
@@ -129,7 +138,16 @@ function ProfilePage() {
         <Button
           startIcon={<HomeIcon />}
           onClick={handleBackHome}
-          sx={{ position: 'absolute', top: 16, right: 16 }}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            color: 'black',
+            backgroundColor: '#FFF8E2',
+            '&:hover': {
+              backgroundColor: 'grey.200',
+            },
+          }}
         >
           Home
         </Button>
@@ -139,11 +157,20 @@ function ProfilePage() {
 
   const renderDefaultView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center' }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ position: 'absolute', top: 16, left: 16 }}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            color: 'black',
+            backgroundColor: '#FFF8E2',
+            '&:hover': {
+              backgroundColor: 'grey.200',
+            },
+          }}
         >
           Back
         </Button>
@@ -171,7 +198,16 @@ function ProfilePage() {
         <Button
           startIcon={<HomeIcon />}
           onClick={handleBackHome}
-          sx={{ position: 'absolute', top: 16, right: 16 }}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            color: 'black',
+            backgroundColor: '#FFF8E2',
+            '&:hover': {
+              backgroundColor: 'grey.200',
+            },
+          }}
         >
           Home
         </Button>
@@ -180,15 +216,20 @@ function ProfilePage() {
   );
 
   return (
-    <Container component="main" maxWidth="xs" sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'auto',
-      textAlign: 'center'
-    }}>
+    <Container
+      component="main"
+      maxWidth={false}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffad9d',
+        padding: 0,
+        margin: 0,
+      }}
+    >
       {editing ? renderEditView() : renderDefaultView()}
     </Container>
   );
