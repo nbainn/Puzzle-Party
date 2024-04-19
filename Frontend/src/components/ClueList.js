@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import "./ClueList.css";
-import { styled } from "@mui/material/styles";
-
 function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
   const [downClues, setDown] = useState(["No Down Clues!"]);
   const [acrossClues, setAcross] = useState(["No Across Clues!"]);
   const [channel, setChannel] = useState(null);
-  const Label = styled("div")({
-    position: "absolute",
-    top: "-5px",
-    left: "-5px",
-    backgroundColor: "#7e9eee",
-    color: "white",
-    padding: "4px",
-    borderRadius: "4px",
-    zIndex: "9999",
-    marginTop: "5px",
-    marginLeft: "5px",
-
-  });
-
   const Label = styled("div")({
     position: "absolute",
     top: "-5px",
