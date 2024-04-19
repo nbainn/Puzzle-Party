@@ -87,7 +87,7 @@ User.init({
   isActive : {
     type: DataTypes.BOOLEAN,
     default: false,
-    allowNull: false
+    allowNull: true
   },
   room_code : {
     type: DataTypes.STRING,
