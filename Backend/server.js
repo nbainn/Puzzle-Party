@@ -75,6 +75,7 @@ app.post("/signup", async (req, res) => {
       hashedPassword: password, // Pass the plain password; hashing is handled by the model in sequelize
       nickname,
       userColor,
+      isActive : false,
     });
 
     // Generate a token
@@ -96,7 +97,7 @@ app.post("/signup", async (req, res) => {
       userId: newUser.id, 
       email: newUser.email, 
       nickname: newUser.nickname, 
-      userColor: newUser.userColor 
+      userColor: newUser.userColor
     });
   } catch (error) {
     res.status(500).json({ message: "Error creating new user", error });
