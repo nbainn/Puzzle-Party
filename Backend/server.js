@@ -315,6 +315,9 @@ app.get("/user/profile", authenticateToken, async (req, res) => {
       email: user.email,
       nickname: user.nickname,
       userColor: user.userColor,
+      friends: user.friends,
+      requests: user.requests,
+      pending: user.pending,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -927,6 +930,91 @@ app.post("/search-entry", async (req, res) => {
   }
 });
 
+app.post("/search-friend", async (req, res) => {
+  try {
+    const friendName = req.body.friendName;
+    const userId = req.body.userId;
+    console.log(userId + "is the user id" + friendName + "is the friend name");
+    if (!friendName) {
+      throw new Error("username is missing in the request body");
+    }
+    let foundFriend = await User.findOne({
+      where: { nickname: friendName },
+    });
+    console.log(foundFriend);
+    if (foundFriend) {
+      //console.log("Here");
+      //now add friend to lists
+      let request_list = foundFriend.requests || []; // Initialize to empty array if null
+      request_list.push(userId); // Add the player to the banned list
+      //console.log("REq\n\n", request_list);
+      console.log("fren id:", foundFriend.id);
+      let friend_id = foundFriend.id;
+
+      await User.update(
+        { requests: request_list },
+        { where: { id: friend_id } }
+      );
+      try {
+        let me = await User.findOne({
+          where: { id: userId },
+        });
+        let pending_list = me.pending || []; // Initialize to empty array if null
+        pending_list.push(foundFriend.id); // Add the player to the banned list
+        try {
+          await User.update(
+            { pending: pending_list },
+            { where: { id: userId } }
+          );
+        } catch (error) {
+          console.error("Error in updating pending", error);
+          //res.status(500).send("Error in updating pending");
+        }
+        console.log("pen", pending_list);
+        res.status(200).send(pending_list);
+      } catch (error) {
+        console.error("Error in finding me", error);
+        //res.status(500).send("Error in finding me");
+      }
+      //res.status(200).send(request_list);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/add-friend", async (req, res) => {
+  try {
+    const friendName = req.body.friendName;
+    const userId = req.body.userId;
+    const request_list = req.body.request_list;
+    console.log(
+      userId +
+        "is the user id" +
+        friendName +
+        "is the friend name" +
+        request_list
+    );
+    if (!friendName) {
+      throw new Error("username is missing in the request body");
+    }
+    console.log("fren id:", foundFriend.id);
+    let friend_id = foundFriend.id;
+    /*
+    await User.update(
+      { requests: request_list },
+      { where: { id: friend_id} }
+    );
+    */
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
 app.get("/find-rooms", async (req, res) => {
   try {
     const limit = req.query.limit;
@@ -940,6 +1028,31 @@ app.get("/find-rooms", async (req, res) => {
     if (rooms) {
       console.log(rooms);
       res.status(200).send(rooms);
+    } else {
+      res.status(404).send(null);
+    }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/user-friends", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    console.log(req.body);
+    console.log(userId);
+    if (!userId) {
+      throw new Error("User id missing");
+    }
+    let foundFriends = await User.findOne({
+      where: { id: userId },
+      attributes: ["friends"],
+    });
+    if (foundFriends) {
+      console.log(foundFriends.friends);
+      console.log(foundFriends);
+      res.status(200).send(foundFriends);
     } else {
       res.status(404).send(null);
     }
