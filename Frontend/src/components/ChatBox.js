@@ -11,7 +11,6 @@ const ResizeHandle = styled("div")({
   right: 0,
   height: "5px",
   cursor: "ns-resize",
-  borderTop: "5px solid #000",
   '&:hover': {
     borderTopColor: "#666",
   },

@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import Cell from "./Cell";
 import "./Crossword.css";
+import './Grid.css'
 
 // Styling for the grid container using Material UI
 // Uses CSS grid layout to organize cells, with flexibility to accommodate different grid sizes
