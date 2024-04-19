@@ -63,17 +63,8 @@ const Statistics = () => {
                 <div>
                     <Grid item xs={20}>
                         <Item>Games Played: {stats.gamesPlayed}</Item>
-                    </Grid>
-                    
-                    <Grid item xs={20}>
                         <Item>Games Won: {stats.gamesWon}</Item>
-                    </Grid>
-
-                    <Grid item xs={20}>
                         <Item>Games Lost: {stats.gamesPlayed - stats.gamesWon}</Item>
-                    </Grid>
-
-                    <Grid item xs={20}>
                         <Item>Time Played: {stats.timePlayed} seconds </Item>
                     </Grid>
                 </div>
@@ -87,15 +78,8 @@ const Statistics = () => {
                 <div>
                     <Grid item xs={20}>
                     <Item>Global Games Played: {globalStats.gamesPlayed} </Item>
-                    </Grid>
-                    <Grid item xs={20}>
                     <Item>Global Games Won: {globalStats.gamesWon}</Item>
-                    </Grid>
-
-                    <Grid item xs={20}>
                     <Item>Global Games Lost: {globalStats.gamesPlayed - globalStats.gamesWon}</Item>
-                    </Grid>
-                    <Grid item xs={20}>
                     <Item>Global Time Played: {globalStats.timePlayed} seconds </Item>
                     </Grid>
                 </div>
