@@ -111,7 +111,14 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
         <h3 className="clue-header">Down</h3>
         <ul className="clue-list">
           {downClues.map((clue, index) => (
-            <li key={index}>{clue}</li>
+            <li
+              key={index}
+              onClick={() => {
+                setCurrentClue(clue);
+              }}
+            >
+              {clue}
+            </li>
           ))}
         </ul>
       </div>
