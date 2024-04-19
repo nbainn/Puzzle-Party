@@ -10,6 +10,7 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
 import CatLogo1 from "../assets/CatLogo1.gif";
 import CatLogo2 from "../assets/CatLogo2.gif";
+import Invite from './Invite';
 
 const theme = createTheme({
   typography: {
@@ -78,6 +79,7 @@ function HomePage() {
   return (
     <ThemeProvider theme={theme}>
       <div className="home-page">
+        <Invite/>
         {!isGuest && (
           <div className="profile-dropdown">
             <ProfileDropdown />

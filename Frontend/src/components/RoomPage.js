@@ -432,6 +432,7 @@ function RoomPage() {
         )}
         <div className="settings">
           <RoomSettings
+            userId={userId}
             timer={timer}
             hints={hints}
             guesses={guesses}
@@ -441,6 +442,7 @@ function RoomPage() {
             roomId={roomId}
             ablyClient={ablyClient}
           />
+
         </div>
         <div className="room-header" sx={{ marginBottom: "-15px" }}>
           <h2>Room: {roomId}</h2>
