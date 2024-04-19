@@ -3,6 +3,7 @@ import "./RoomSettings.css";
 import { styled } from "@mui/material/styles";
 import { Button, ButtonGroup } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
+import Invite from './Invite';
 import  axios  from 'axios';
 
 const StyledButton = styled(Button)({
@@ -15,6 +16,7 @@ const StyledButtonGroup = styled(ButtonGroup)({
 });
 
 function RoomSettings({
+  userId,
   timer,
   hints,
   guesses,
@@ -25,6 +27,9 @@ function RoomSettings({
   ablyClient
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenInvite, setIsOpenInvite] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [realPlayers, setRealPlayers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
   const [time, setTime] = useState("00:00")
   const navigate = useNavigate();
@@ -32,12 +37,10 @@ function RoomSettings({
   const handleExitRoom = async (event) => {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     event.preventDefault();
-    //channel.unsubscribe('myEvent', myListener);
-    /* remove the listener registered for all events */
-    //channel.unsubscribe(myListener);
     await channel.detach();
     navigate(`/home`);
   };
+
   useEffect(() => {
     if (timer) {
       const timerId = setTimeout(() => {
@@ -99,6 +102,62 @@ function RoomSettings({
     setIsOpen(!isOpen);
   };
 
+  useEffect(() => {
+    const fetchNicknames = async () => {
+      const realPlayersList = await Promise.all(friends.map(async (friend) => {
+        const integerValue = parseInt(friend);
+        if (!isNaN(integerValue)) {
+          try {
+            const response = await axios.post("/fetch-nickname", { userId: friend });
+            if (response.status === 200) {
+              return response.data;
+            }
+          } catch (error) {
+            console.error("Error fetching nickname for user:", error);
+          }
+        }
+        return friend;
+      }));
+      setRealPlayers(realPlayersList);
+    };
+
+    fetchNicknames();
+  }, [friends]);
+
+  const handleInvite= async () => {
+    setIsOpenInvite(!isOpenInvite);
+    //request friends list from db w invite buttons
+    try {
+      const response = await axios.post('/user-friends', { userId });
+      if (response.data.friends) {
+        setFriends(response.data.friends); 
+      }// Update requested list
+    } catch (error) {
+      console.error("Error fetching nickname for user:", error);
+    }
+  };
+
+  const inviting = async (friend) => {
+    console.log("inviting");
+    //event.preventDefault();
+    if (ablyClient) {
+      const channel = ablyClient.channels.get(`inviting`);
+      try {
+        await channel.publish("invite", {
+          userId: userId,
+          state: "invite",
+          text: friend,
+          room: roomId,
+        });
+        //console.log("Message sent:", kickmes);
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
+      console.log("Ably client not initialized or no message to send.");
+    }
+  };
+
   const handleTimerChange = () => {
     setTimer(!timer);
   };
@@ -113,7 +172,7 @@ function RoomSettings({
 
   return (
     <div className="settings-popup">
-      
+      <Invite/>
       <StyledButtonGroup size="small" variant="text" aria-label="Small button group">
       <StyledButton variant = "text" onClick={togglePopup} className="settings-button">
         ⚙️
@@ -123,6 +182,9 @@ function RoomSettings({
       </StyledButton>
       <StyledButton variant = "text" onClick={handleRoomStatus} className="room-status-button">
       {status === 'public' ? 'Public' : 'Private'}
+      </StyledButton>
+      <StyledButton variant = "text" onClick={handleInvite} className="room-status-button">
+        Invite
       </StyledButton>
       </StyledButtonGroup>
       {isOpen && (
@@ -144,6 +206,27 @@ function RoomSettings({
             />
             Enable Guesses
           </label>
+        </div>
+      )}
+      {isOpenInvite && (
+        <div className="popup-content">
+          <h2>Friends:</h2>
+          {friends.length > 0 ? (
+            <ul>
+              {friends.map((friend, index) => (
+                <div key={friend}>
+                  <li>
+                  {realPlayers[index]}
+                  <StyledButton variant = "text" onClick={() => {inviting(friend);}} className="room-status-button">
+                    Invite
+                  </StyledButton>
+                  </li>
+                </div>
+              ))}
+            </ul>
+          ) : (
+            <p>No friends</p>
+          )}
         </div>
       )}
     </div>

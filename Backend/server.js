@@ -20,6 +20,7 @@ app.use(bodyParser.json());
 const { sq, testDbConnection, fetchWords, User } = require("./sequelize.tsx");
 const { queries } = require("@testing-library/react");
 const { fabClasses } = require("@mui/material");
+const { user } = require("pg/lib/defaults.js");
 const { Room, Word, Puzzle, Statistics } = sq.models;
 // Secret key for JWT signing and encryption
 const jwtSecret = config.JWT_SECRET;
@@ -984,29 +985,82 @@ app.post("/search-friend", async (req, res) => {
   }
 });
 
-app.post("/add-friend", async (req, res) => {
+app.post("/accept-friend", async (req, res) => {
   try {
-    const friendName = req.body.friendName;
     const userId = req.body.userId;
-    const request_list = req.body.request_list;
-    console.log(
-      userId +
-        "is the user id" +
-        friendName +
-        "is the friend name" +
-        request_list
-    );
-    if (!friendName) {
-      throw new Error("username is missing in the request body");
+    const friendId = req.body.friendId;
+    console.log(userId + " is the user id" + friendId);
+    if (!friendId || !userId) {
+      throw new Error("missing request body");
     }
-    console.log("fren id:", foundFriend.id);
-    let friend_id = foundFriend.id;
-    /*
+    console.log("fren id:", friendId);
+    //let friend_id = foundFriend.id;
+    const user1 = await User.findOne({ where: { id: userId } });
+    if (!user1) {
+      throw new Error("Room not found");
+    }
+    let request_list = user1.requests || []; // Initialize to empty array if null
+    console.log("before", request_list);
+    request_list = request_list.filter((item) => item !== friendId);
+    console.log("after", request_list);
+    let friends_list = user1.friends || [];
+    friends_list.push(friendId);
+    console.log("friends_list", friends_list, "request_list", request_list);
     await User.update(
-      { requests: request_list },
-      { where: { id: friend_id} }
+      { requests: request_list, friends: friends_list },
+      { where: { id: userId } }
     );
-    */
+    const friend_room = await User.findOne({ where: { id: friendId } });
+    if (!friend_room) {
+      throw new Error("Room not found");
+    }
+    let pending_list = friend_room.pending || []; // Initialize to empty array if null
+    console.log("before", pending_list);
+    user1_id = "" + userId;
+    pending_list = pending_list.filter((item) => item !== user1_id);
+    console.log("after", pending_list);
+    let friend_friends_list = friend_room.friends || [];
+    friend_friends_list.push(userId);
+    console.log(
+      "friend_friends_list",
+      friend_friends_list,
+      "pen_list",
+      pending_list
+    );
+    await User.update(
+      { pending: pending_list, friends: friend_friends_list },
+      { where: { id: friendId } }
+    );
+    res.status(200).send(null);
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/delete-friend", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const friendId = req.body.friendId;
+    if (!friendId || !userId) {
+      throw new Error("missing request body");
+    }
+    const user1 = await User.findOne({ where: { id: userId } });
+    if (!user1) {
+      throw new Error("Room not found");
+    }
+    let request_list = user1.requests || []; // Initialize to empty array if null
+    request_list = request_list.filter((item) => item !== friendId);
+    await User.update({ requests: request_list }, { where: { id: userId } });
+    const friend_room = await User.findOne({ where: { id: friendId } });
+    if (!friend_room) {
+      throw new Error("Room not found");
+    }
+    let pending_list = friend_room.pending || []; // Initialize to empty array if null
+    user1_id = "" + userId;
+    pending_list = pending_list.filter((item) => item !== user1_id);
+    await User.update({ pending: pending_list }, { where: { id: friendId } });
+    res.status(200).send(null);
   } catch (error) {
     console.error("Error finding field:", error);
     res.status(500).send("Error finding field");
