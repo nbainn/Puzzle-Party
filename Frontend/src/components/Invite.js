@@ -30,11 +30,12 @@ const StyledButton = styled(Button)({
   marginLeft: "5px",
 });
 
-function Invite() {
+const Invite = ({}) => {
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
   const { ablyClient, userId, userColor, nickname, isGuest } = useAuth();
-  
+  const [message, setMessage] = useState("");
+
   const handleInviting = () => {
     // Implement popup logic here
     //createPopup("Inviting friends to join the room");
@@ -49,13 +50,16 @@ function Invite() {
           "Ably client connected, now subscribing to channel:",
           `invite`
         );
-        const channel = ablyClient.channels.get(`invite_channel`);
+        const channel = ablyClient.channels.get(`inviting`);
         const onInvite = (message) => {
-          let str = "" + userId;
-          if (message.data.text === str) {
-            if (message.data.state === "invite") {
-              console.log("Invited to this room:", message.data);
-            }
+          if (message.data.friend == userId) {
+            setRoomCode(message.data.room);
+            let inviteString =
+              message.data.userId +
+              " invited you to join room " +
+              message.data.room;
+            setMessage(inviteString);
+            console.log("Invite received:", message.data);
           }
         };
         channel.subscribe("invite", onInvite);
@@ -71,16 +75,35 @@ function Invite() {
         ablyClient.connection.once("connected", onConnected);
       }
     }
-}, [ablyClient]);
+  }, [ablyClient]);
 
   const createPopup = (message) => {
     // Implement popup logic here
     alert(message);
   };
 
+  // a popup with a label and two buttons: "accept" and "decline"
+  // this is found below
   return (
-    <div>i</div>
+    <div style={{ visibility: message === "" ? "hidden" : "visible" }}>
+      <label>{message}</label>
+      <StyledButton
+        onClick={() => {
+          setMessage("");
+          navigate(`/room/${roomCode}`);
+        }}
+      >
+        accept
+      </StyledButton>
+      <StyledButton
+        onClick={() => {
+          setMessage("");
+        }}
+      >
+        decline
+      </StyledButton>
+    </div>
   );
-}
+};
 
 export default Invite;
