@@ -15,7 +15,7 @@ const GridContainer = styled(Box)(({ size, gridSize }) => ({
   padding: "10px",
   maxWidth: "100%",
   margin: "auto",
-  width: `${size}px`, // Dynamic width based on screen size
+  width: "100%", // Dynamic width based on screen size
 }));
 
 const Grid = ({

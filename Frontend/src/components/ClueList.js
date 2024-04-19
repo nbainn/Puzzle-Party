@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import './ClueList.css';
+import "./ClueList.css";
 
-function ClueList({ablyClient, roomId, puzzle}) {
+function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
+  const [downClues, setDown] = useState(["No Down Clues!"]);
+  const [acrossClues, setAcross] = useState(["No Across Clues!"]);
+  const [channel, setChannel] = useState(null);
 
-  const [downClues, setDown] = useState(['No Down Clues!'])
-  const [acrossClues, setAcross] = useState(['No Across Clues!'])
-  const [channel, setChannel] = useState(null)
-
-    useEffect(() => {
+  useEffect(() => {
     if (ablyClient) {
       console.log("Ably client provided to ClueList", ablyClient);
 
@@ -19,7 +18,7 @@ function ClueList({ablyClient, roomId, puzzle}) {
         const channel = ablyClient.channels.get(`room:${roomId}`);
         const onClue = (clue) => {
           console.log("Clues received:", clue.across);
-          setAcross(clue.data.across)
+          setAcross(clue.data.across);
           setDown(clue.data.down);
         };
         channel.subscribe("clue", onClue);
@@ -40,40 +39,39 @@ function ClueList({ablyClient, roomId, puzzle}) {
 
   useEffect(() => {
     setChannel(ablyClient.channels.get(`room:${roomId}`));
-
-  }, [ablyClient, roomId]); 
+  }, [ablyClient, roomId]);
 
   useEffect(() => {
     if (puzzle) {
       const across = puzzle.puzzle.clues.across;
 
-      const acrossC = across.map(item => `${item.number}. ${item.clue}`);
-      setAcross(acrossC)
+      const acrossC = across.map((item) => `${item.number}. ${item.clue}`);
+      setAcross(acrossC);
 
       const down = puzzle.puzzle.clues.down;
-      const downC = down.map(item => `${item.number}. ${item.clue}`);
-      setDown(downC)
+      const downC = down.map((item) => `${item.number}. ${item.clue}`);
+      setDown(downC);
 
-      const ably = async() => {
+      const ably = async () => {
         if (ablyClient) {
           const channel = ablyClient.channels.get(`room:${roomId}`);
           try {
             await channel.publish("clue", {
               across: acrossC,
-              down: downC
+              down: downC,
             });
             console.log("clues sent:" + acrossC + downC);
           } catch (error) {
             console.error("Error sending clues:", error);
           }
-      } else {
-        console.log("Ably client not initialized.");
-      }
-    }
-    ably()
+        } else {
+          console.log("Ably client not initialized.");
+        }
+      };
+      ably();
     }
   }, [ablyClient, puzzle, roomId]);
-/*   // Example clues for demonstration
+  /*   // Example clues for demonstration
   const acrossClues = [
     '1. A common pet',
     '3. Not day',
@@ -83,7 +81,7 @@ function ClueList({ablyClient, roomId, puzzle}) {
     // Add more clues as needed
   ]; */
 
-/*   const downClues = [
+  /*   const downClues = [
     '2. A place for cooking',
     '4. To perceive sound',
     '6. A type of fruit',
@@ -98,7 +96,14 @@ function ClueList({ablyClient, roomId, puzzle}) {
         <h3 className="clue-header">Across</h3>
         <ul className="clue-list">
           {acrossClues.map((clue, index) => (
-            <li key={index}>{clue}</li>
+            <li
+              key={index}
+              onClick={() => {
+                setCurrentClue(clue);
+              }}
+            >
+              {clue}
+            </li>
           ))}
         </ul>
       </div>

@@ -11,6 +11,15 @@ body, html {
   overflow: auto;
 }
 
+.centerPage{
+  width: 500px;
+}
+
+.centerPage * {
+  display: block;
+  width: 100%;
+}
+
 /* RoomPage container styles */
 .room-page {
   position: relative;

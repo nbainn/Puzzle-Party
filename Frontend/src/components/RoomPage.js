@@ -12,6 +12,7 @@ import CrosswordGrid from "./Crossword";
 import Grid from "./Grid";
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
+import CurrentCLueBox from "./CurrentClueBox";
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
@@ -28,9 +29,9 @@ const theme = createTheme({
   },
 });
 TimeMe.initialize({
-	    currentPageName: "room", // current page
-	    idleTimeoutInSeconds: 30 // seconds
-    });
+  currentPageName: "room", // current page
+  idleTimeoutInSeconds: 30, // seconds
+});
 
 const StyledButton = styled(Button)({
   //background color of button
@@ -65,7 +66,7 @@ function RoomPage() {
   const [favColor, setColor] = React.useState("#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
-  //const [playerList, setPlayerList] = useState([]);
+  const [currentClue, setCurrentClue] = useState("");
 
   const handleColor = (newValue) => {
     setColor(newValue);
@@ -111,21 +112,25 @@ function RoomPage() {
 
   useEffect(() => {
     const fetchNicknames = async () => {
-      const realPlayersList = await Promise.all(players.map(async (player) => {
-        const integerValue = parseInt(player);
-        if (!isNaN(integerValue)) {
-          try {
-            const response = await axios.post("/fetch-nickname", { userId: player });
-            if (response.status === 200) {
-              console.log("Nickname for user", player, "is", response.data);
-              return response.data;
+      const realPlayersList = await Promise.all(
+        players.map(async (player) => {
+          const integerValue = parseInt(player);
+          if (!isNaN(integerValue)) {
+            try {
+              const response = await axios.post("/fetch-nickname", {
+                userId: player,
+              });
+              if (response.status === 200) {
+                console.log("Nickname for user", player, "is", response.data);
+                return response.data;
+              }
+            } catch (error) {
+              console.error("Error fetching nickname for user:", error);
             }
-          } catch (error) {
-            console.error("Error fetching nickname for user:", error);
           }
-        }
-        return player;
-      }));
+          return player;
+        })
+      );
       setRealPlayers(realPlayersList);
     };
 
@@ -182,19 +187,18 @@ function RoomPage() {
   }, [roomId, ablyClient]);
 
   useEffect(() => {
-      const focus = function() {
+    const focus = function () {
       setStartTime(new Date());
-      };
-      const handleBeforeUnload = async function () {
-      if (userId && typeof userId === 'string') {
-          return;
-      } 
+    };
+    const handleBeforeUnload = async function () {
+      if (userId && typeof userId === "string") {
+        return;
+      }
       let endTime = new Date();
       let timeSpent = endTime.getTime() - startTime.getTime();
       console.log("Time spent on page:", timeSpent, "seconds");
 
       try {
-        
         const response = await axios.post("/addTime", {
           userId: userId,
           time: timeSpent,
@@ -383,22 +387,22 @@ function RoomPage() {
               <h2>Player List</h2>
               <ul>
                 {players.map((player, index) => (
-                 <div key={player}>
-                  <li>
-                    {realPlayers[index]}
-                    <StyledButton
-                     onClick={(event) => handleKick(event, roomId, player)}
-                    >
-                    Kick
-                    </StyledButton>
-                    <StyledButton
-                     onClick={(event) => handleBan(event, roomId, player)}
-                    >
-                     Ban
-                    </StyledButton>
-                  </li>
-                 </div>
-                 ))}
+                  <div key={player}>
+                    <li>
+                      {realPlayers[index]}
+                      <StyledButton
+                        onClick={(event) => handleKick(event, roomId, player)}
+                      >
+                        Kick
+                      </StyledButton>
+                      <StyledButton
+                        onClick={(event) => handleBan(event, roomId, player)}
+                      >
+                        Ban
+                      </StyledButton>
+                    </li>
+                  </div>
+                ))}
               </ul>
             </div>
             <RoomSettings
@@ -414,27 +418,35 @@ function RoomPage() {
             <div></div>
             <SuggestionBox />
           </div>
-          <Grid
-            userId={userId}
-            players={players}
-            ablyClient={ablyClient}
-            roomId={roomId}
-            puzzle={puzzle}
-            setPuzzle={setPuzzle}
-            hints={hints}
-            guesses={guesses}
-            revealGrid={revealGrid}
-            setRevealGrid={setRevealGrid}
-            revealHint={revealHint}
-            setRevealHint={setRevealHint}
-            checkWord={checkWord}
-            setCheckWord={setCheckWord}
-            checkGrid={checkGrid}
-            setCheckGrid={setCheckGrid}
-            favColor={favColor}
-          />
+          <div className="centerPage">
+            <CurrentCLueBox currentClue={currentClue} />
+            <Grid
+              userId={userId}
+              players={players}
+              ablyClient={ablyClient}
+              roomId={roomId}
+              puzzle={puzzle}
+              setPuzzle={setPuzzle}
+              hints={hints}
+              guesses={guesses}
+              revealGrid={revealGrid}
+              setRevealGrid={setRevealGrid}
+              revealHint={revealHint}
+              setRevealHint={setRevealHint}
+              checkWord={checkWord}
+              setCheckWord={setCheckWord}
+              checkGrid={checkGrid}
+              setCheckGrid={setCheckGrid}
+              favColor={favColor}
+            />
+          </div>
           <div className="hints-chat-container">
-            <ClueList puzzle={puzzle} ablyClient={ablyClient} roomId={roomId} />
+            <ClueList
+              puzzle={puzzle}
+              ablyClient={ablyClient}
+              roomId={roomId}
+              setCurrentClue={setCurrentClue}
+            />
             <ChatBox
               ablyClient={ablyClient}
               roomId={roomId}
