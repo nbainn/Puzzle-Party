@@ -911,8 +911,10 @@ app.post("/fetch-nickname", async (req, res) => {
 app.post("/user-active", async (req, res) => {
   try {
     const userId = req.body.userId;
+    const roomId = req.body.roomId;
     await User.update(
-      { isActive: true },
+      { isActive: true ,
+        room_code: roomId},
       { where: { id: userId} }
     );
     res.status(200).send(null);

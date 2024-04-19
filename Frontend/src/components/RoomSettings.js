@@ -26,6 +26,7 @@ function RoomSettings({
   roomId,
   ablyClient,
   nickname,
+  setIsActive,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenInvite, setIsOpenInvite] = useState(false);

@@ -402,7 +402,7 @@ function RoomPage() {
     const active = async () => {
     if (isActive) {
       try {
-        const response = await axios.post('/user-active', { userId });
+        const response = await axios.post('/user-active', { userId, roomId });
         if (response.status === 200) {
           //all good
         } else {
