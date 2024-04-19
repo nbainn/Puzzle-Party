@@ -259,6 +259,7 @@ app.post("/googleLogin", async (req, res) => {
         nickname: givenName, // Use the given name as the user's nickname
         userColor: userColor,
         hashedPassword: googleId, // Pass the plain googleId; hashing is handled by the model in sequelize
+        isActive : false,
       });
 
       // Create a token for the new user
@@ -894,6 +895,34 @@ app.post("/fetch-nickname", async (req, res) => {
     } else {
       res.status(404).send(null);
     }
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/user-active", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    await User.update(
+      { isActive: true },
+      { where: { id: userId} }
+    );
+    res.status(200).send(null);
+  } catch (error) {
+    console.error("Error finding field:", error);
+    res.status(500).send("Error finding field");
+  }
+});
+
+app.post("/user-inactive", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    await User.update(
+      { isActive: false },
+      { where: { id: userId} }
+    );
+    res.status(200).send(null);
   } catch (error) {
     console.error("Error finding field:", error);
     res.status(500).send("Error finding field");

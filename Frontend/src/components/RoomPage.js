@@ -65,6 +65,7 @@ function RoomPage() {
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
   const [realPlayers, setRealPlayers] = useState([]);
+  const [isActive, setIsActive] = useState(false);
   const [timer, setTimer] = useState(true);
   const [hints, setHints] = useState(true);
   const [guesses, setGuesses] = useState(true);
@@ -214,6 +215,7 @@ function RoomPage() {
             //console.log(member.clientId, "entered the room");
             //console.log("USER ID: ", userId);
             if (!players.includes(member.clientId)) {
+              //setIsActive(true);
               setPlayers((prevPlayers) => [...prevPlayers, member.clientId]);
             }
             //if query database for clientID if it is an integer and fetch its nickname, otherwise just print clinetID (cuz it is guest)
@@ -223,6 +225,7 @@ function RoomPage() {
           await channel.presence.subscribe("leave", (member) => {
             //console.log(member.clientId, "left the room");
             //if (players.includes(member.clientId)) {
+            //setIsActive(false);
             setPlayers((prevPlayers) =>
               prevPlayers.filter((player) => player !== member.clientId)
             );
@@ -363,6 +366,33 @@ function RoomPage() {
       setIsBanned(false);
     }
   }, [isBanned]);
+
+  useEffect(async () => {
+    /*if (isActive) {
+      try {
+        const response = await axios.post('/user-active', { userId });
+        if (response.status === 200) {
+          //all good
+        } else {
+          console.error("Unexpected response status:", response.status);
+        }
+        } catch (error) {
+        console.error("Error fetching nickname for user:", error);
+        }
+    } else {
+        try {
+        const response = await axios.post('/user-inactive', { userId });
+        if (response.status === 200) {
+          //all good 
+        } else {
+          console.error("Unexpected response status:", response.status);
+        }
+        } catch (error) {
+          console.error("Error fetching nickname for user:", error);
+        }
+    } */
+    console.log(isActive);
+  }, [isActive]);
 
   if (isLoading) {
     return <LoadingScreen message="Loading Room..." />;

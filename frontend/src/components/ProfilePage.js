@@ -82,7 +82,6 @@ function ProfilePage() {
           try {
             const response = await axios.post("/fetch-nickname", { userId: friend });
             if (response.status === 200) {
-              //console.log("Nickname for user", friend, "is", response.data);
               return response.data;
             }
           } catch (error) {
