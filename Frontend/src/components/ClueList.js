@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./ClueList.css";
 import { styled } from "@mui/material/styles";
-function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
+function ClueList({
+  ablyClient,
+  roomId,
+  puzzle,
+  setCurrentClue,
+  acrossCluess,
+  downCluess,
+  userId,
+  setQueuedChange,
+}) {
   const [downClues, setDown] = useState(["No Down Clues!"]);
   const [acrossClues, setAcross] = useState(["No Across Clues!"]);
   const [channel, setChannel] = useState(null);
@@ -16,7 +25,6 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
     zIndex: "9999",
     marginTop: "5px",
     marginLeft: "5px",
-
   });
   useEffect(() => {
     if (ablyClient) {
@@ -57,11 +65,21 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
     if (puzzle) {
       const across = puzzle.puzzle.clues.across;
 
-      const acrossC = across.map((item) => `${item.number}. ${item.clue}`);
+      const acrossC = across.map((item) => ({
+        display: `${item.number}. ${item.clue}`,
+        number: item.number,
+        row: item.row,
+        col: item.column,
+      }));
       setAcross(acrossC);
 
       const down = puzzle.puzzle.clues.down;
-      const downC = down.map((item) => `${item.number}. ${item.clue}`);
+      const downC = down.map((item) => ({
+        display: `${item.number}. ${item.clue}`,
+        number: item.number,
+        row: item.row,
+        col: item.column,
+      }));
       setDown(downC);
 
       const ably = async () => {
@@ -109,12 +127,20 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
         <ul className="clue-list">
           {acrossClues.map((clue, index) => (
             <li
+              style={{ cursor: "pointer" }}
               key={index}
-              onClick={() => {
-                setCurrentClue(clue);
+              onClick={async () => {
+                let currentChange = {
+                  user: userId,
+                  location: [[clue.row, clue.col]],
+                  direction: "across",
+                  value: null,
+                };
+                setQueuedChange(currentChange);
+                setCurrentClue(acrossCluess[clue.number]);
               }}
             >
-              {clue}
+              {clue.display}
             </li>
           ))}
         </ul>
@@ -123,7 +149,23 @@ function ClueList({ ablyClient, roomId, puzzle, setCurrentClue }) {
         <h3 className="clue-header">Down</h3>
         <ul className="clue-list">
           {downClues.map((clue, index) => (
-            <li key={index}>{clue}</li>
+            <li
+              style={{ cursor: "pointer" }}
+              key={index}
+              onClick={() => {
+                setCurrentClue(downCluess[clue.number]);
+                let currentChange = {
+                  user: userId,
+                  location: [[clue.row, clue.col]],
+                  direction: "down",
+                  value: null,
+                };
+                setQueuedChange(currentChange);
+                setCurrentClue(acrossCluess[clue.number]);
+              }}
+            >
+              {clue.display}
+            </li>
           ))}
         </ul>
       </div>
