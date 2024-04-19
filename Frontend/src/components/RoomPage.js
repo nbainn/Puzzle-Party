@@ -10,7 +10,7 @@ import GeneratePuzzleForm from "./GeneratePuzzleForm";
 import Cheating from "./Cheating";
 import CrosswordGrid from "./Crossword";
 import Grid from "./Grid";
-import LoadingScreen from './LoadingScreen';
+import LoadingScreen from "./LoadingScreen";
 import RoomSettings from "./RoomSettings";
 import ProfileDropdown from "./ProfileDropdown";
 import CurrentCLueBox from "./CurrentClueBox";
@@ -51,7 +51,16 @@ const StyledButton = styled(Button)({
 function RoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const { ablyClient, userId, userColor, userToken, nickname, isGuest, setNickname, setUserColor } = useAuth();
+  const {
+    ablyClient,
+    userId,
+    userColor,
+    userToken,
+    nickname,
+    isGuest,
+    setNickname,
+    setUserColor,
+  } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   const [puzzle, setPuzzle] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -67,27 +76,25 @@ function RoomPage() {
   const [favColor, setColor] = useState(userColor || "#e08794");
   const [isKicked, setIsKicked] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
-<<<<<<< Updated upstream
   const [isLoading, setIsLoading] = useState(true);
-=======
   const [timeLeft, setTimeLeft] = useState(0); // Initial time left in seconds
-  const [time, setTime] = useState("00:00")
->>>>>>> Stashed changes
+  const [time, setTime] = useState("00:00");
+  const [currentClue, setCurrentClue] = useState("");
   //const [playerList, setPlayerList] = useState([]);
 
   // Fetch user data whenever the RoomPage component mounts
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/user/profile', {
-          headers: { Authorization: `Bearer ${userToken}` }
+        const response = await axios.get("/user/profile", {
+          headers: { Authorization: `Bearer ${userToken}` },
         });
         if (response.data) {
           setNickname(response.data.nickname);
           setUserColor(response.data.userColor);
         }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
+        console.error("Failed to fetch user data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -170,25 +177,24 @@ function RoomPage() {
     fetchNicknames();
   }, [players]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (timer) {
       const timerId = setTimeout(() => {
         setTimeLeft(timeLeft + 1);
-        
+
         let min = Math.floor(timeLeft / 60);
-        let sec = (timeLeft % 60);
+        let sec = timeLeft % 60;
 
         var minStr = min.toString();
         if (min < 10) {
           minStr = "0" + min.toString();
-        } 
+        }
         var secStr = sec.toString();
         if (sec < 10) {
           secStr = "0" + sec.toString();
         }
 
         setTime(`${minStr}:${secStr}`);
-        
       }, 1000);
 
       return () => {
@@ -424,25 +430,26 @@ function RoomPage() {
             <ProfileDropdown />
           </div>
         )}
-        <div className="settings">        
-        <RoomSettings
-          timer={timer}
-          hints={hints}
-          guesses={guesses}
-          setTimer={setTimer}
-          setHints={setHints}
-          setGuesses={setGuesses}
-          roomId={roomId}
-          ablyClient={ablyClient}
-        /></div>
-        <div className="room-header" sx = {{marginBottom: "-15px"}}>
+        <div className="settings">
+          <RoomSettings
+            timer={timer}
+            hints={hints}
+            guesses={guesses}
+            setTimer={setTimer}
+            setHints={setHints}
+            setGuesses={setGuesses}
+            roomId={roomId}
+            ablyClient={ablyClient}
+          />
+        </div>
+        <div className="room-header" sx={{ marginBottom: "-15px" }}>
           <h2>Room: {roomId}</h2>
         </div>
 
         <div className="game-container">
           <div className="players-list">
-                  <label>{timer && <h3>Time spent: {time}</h3>}</label>
-                  <hr></hr>
+            <label>{timer && <h3>Time spent: {time}</h3>}</label>
+            <hr></hr>
             <GeneratePuzzleForm setPuzzle={setPuzzle} userId={userId} />
             <hr></hr>
             <div className="color-picker">
