@@ -502,8 +502,8 @@ function RoomPage() {
             setGuesses={setGuesses}
             roomId={roomId}
             ablyClient={ablyClient}
+            nickname={nickname}
           />
-
         </div>
         <div className="room-header" sx={{ marginBottom: "-15px" }}>
           <h2>Room: {roomId}</h2>
