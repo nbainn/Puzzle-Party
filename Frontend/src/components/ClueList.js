@@ -10,6 +10,7 @@ function ClueList({
   downCluess,
   userId,
   setQueuedChange,
+  setSelectGrid,
 }) {
   const [downClues, setDown] = useState(["No Down Clues!"]);
   const [acrossClues, setAcross] = useState(["No Across Clues!"]);
@@ -136,8 +137,10 @@ function ClueList({
                   direction: "across",
                   value: null,
                 };
+                setSelectGrid(true);
+                console.log("set select grid to true");
                 setQueuedChange(currentChange);
-                setCurrentClue(acrossCluess[clue.number]);
+                //setCurrentClue(acrossCluess[clue.number]);
               }}
             >
               {clue.display}
@@ -160,8 +163,9 @@ function ClueList({
                   direction: "down",
                   value: null,
                 };
+                setSelectGrid(true);
+                console.log("set select grid to true");
                 setQueuedChange(currentChange);
-                setCurrentClue(acrossCluess[clue.number]);
               }}
             >
               {clue.display}

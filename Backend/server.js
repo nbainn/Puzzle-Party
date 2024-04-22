@@ -259,7 +259,7 @@ app.post("/googleLogin", async (req, res) => {
         nickname: givenName, // Use the given name as the user's nickname
         userColor: userColor,
         hashedPassword: googleId, // Pass the plain googleId; hashing is handled by the model in sequelize
-        isActive : false,
+        isActive: false,
       });
 
       // Create a token for the new user
@@ -436,6 +436,7 @@ app.post("/suggestion", async (req, res) => {
       return;
     }
   });
+  res.status(200).send("Suggestion received");
 });
 
 // ***PUZZLE GENERATION****************************************************
@@ -919,7 +920,7 @@ app.post("/fetch-friend-room", async (req, res) => {
       console.log("user_status", user.isActive);
       if (user.isActive) {
         console.log("Im here");
-        let roomCode = user.room_code
+        let roomCode = user.room_code;
         let room = await Room.findOne({
           where: { room_code: roomCode },
         });
@@ -948,9 +949,8 @@ app.post("/user-active", async (req, res) => {
     const userId = req.body.userId;
     const roomId = req.body.roomId;
     await User.update(
-      { isActive: true ,
-        room_code: roomId},
-      { where: { id: userId} }
+      { isActive: true, room_code: roomId },
+      { where: { id: userId } }
     );
     res.status(200).send(null);
   } catch (error) {
@@ -962,10 +962,7 @@ app.post("/user-active", async (req, res) => {
 app.post("/user-inactive", async (req, res) => {
   try {
     const userId = req.body.userId;
-    await User.update(
-      { isActive: false },
-      { where: { id: userId} }
-    );
+    await User.update({ isActive: false }, { where: { id: userId } });
     res.status(200).send(null);
   } catch (error) {
     console.error("Error finding field:", error);

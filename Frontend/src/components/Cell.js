@@ -126,15 +126,17 @@ const Cell = React.memo(
       >
         <InputWrapper>
           <StyledInput
+            autoComplete="off"
             fontsize={numRows === 15 ? 1.3 : numRows === 10 ? 1.7 : 3.2}
+            id={`${rowIndex}-${colIndex}`}
             key={`${rowIndex}-${colIndex}`}
             value={cell.value}
             onClick={() => {
               //setLocation(rowIndex, colIndex);
               //setRefresh(!refresh);
               handleCellClick(rowIndex, colIndex);
+              document.getElementById("input-controller").focus();
             }}
-            onKeyDown={(event) => handleKeyPress(event, rowIndex, colIndex)}
             maxLength={1}
             style={{
               cursor: "pointer",

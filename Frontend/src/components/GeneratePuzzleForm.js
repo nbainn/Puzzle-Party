@@ -8,7 +8,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  ButtonGroup
+  ButtonGroup,
 } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 //import {fetchHost} from '../sequelize.tsx';
@@ -85,35 +85,34 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
       }
     }
   };
-   useEffect(() => {
-     try {
-        const handleNewPuzzle = async () => {
-            try {
-              const response = await axios.post("/addPlay", {
-                userId: userId,
-              });
-              if (response.status === 200) {
-                console.log("game played added!");
-              } else if (response.status === 404) {
-                console.log("User", userId, "not found");
-                console.log("Error", response.data);
-              } else {
-                console.error("Unexpected response status:", response.status);
-              }
-            } catch (error) {
-              console.error("Error contacting server", error);
-              console.log("error");
-            }
-        };
-        if (typeof userId !== "string") {
-          handleNewPuzzle();
+  useEffect(() => {
+    try {
+      const handleNewPuzzle = async () => {
+        try {
+          const response = await axios.post("/addPlay", {
+            userId: userId,
+          });
+          if (response.status === 200) {
+            console.log("game played added!");
+          } else if (response.status === 404) {
+            console.log("User", userId, "not found");
+            console.log("Error", response.data);
+          } else {
+            console.error("Unexpected response status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error contacting server", error);
+          console.log("error");
         }
-      } catch (error) {
-        console.error("Error contacting server", error);
-        console.log("error");
+      };
+      if (typeof userId !== "string") {
+        handleNewPuzzle();
       }
+    } catch (error) {
+      console.error("Error contacting server", error);
+      console.log("error");
+    }
   }, [seed, size, userId]);
-  
 
   const generateRandomNumber = () => {
     // Generate a random number between 0 and 9999999999
@@ -136,12 +135,21 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
             min="0"
             max="9999999999"
             className="generate-puzzle-input"
+            sx={{
+              width: "128px",
+              "& input": {
+                height: "30px",
+                padding: "0px 12px", // Adjust padding for better visual alignment
+                fontSize: "1rem", // Adjust font size for better text alignment
+              },
+            }}
           />
           <StyledSelect
             id="sizeDropdown"
             value={size}
             label="Size"
             onChange={handleSizeChange}
+            sx={{ height: "30px" }}
           >
             <StyledMenuItem value={"small"}>Small</StyledMenuItem>
             <StyledMenuItem value={"medium"}>Medium</StyledMenuItem>
@@ -149,14 +157,21 @@ function GeneratePuzzleForm({ setPuzzle, setAcross, setDown, userId }) {
           </StyledSelect>
 
           <ButtonGroup
-          sx={{ display: "flex", justifyContent: "center", marginTop: "5px", marginLeft: "-5px"}}>
-            <StyledButton onClick={generateRandomNumber}>Randomize</StyledButton>
+            sx={{
+              display: "flex",
+              justifyContent: "left",
+              marginTop: "5px",
+              marginLeft: "16px",
+            }}
+          >
+            <StyledButton onClick={generateRandomNumber}>
+              Randomize
+            </StyledButton>
             <StyledButton type="submit" className="generate-puzzle-button">
               Generate
             </StyledButton>
           </ButtonGroup>
         </form>
-       
       </div>
     </ThemeProvider>
   );

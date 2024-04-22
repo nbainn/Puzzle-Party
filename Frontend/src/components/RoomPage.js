@@ -21,7 +21,6 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button, ButtonGroup } from "@mui/material";
 import "./RoomPage.css";
 import { useNavigate } from "react-router-dom";
-import catSleep from "../assets/PartyCatSleep.gif";
 import { MuiColorInput } from "mui-color-input";
 import TimeMe from "timeme.js";
 
@@ -61,7 +60,7 @@ function RoomPage() {
     isGuest,
     setNickname,
     setUserColor,
-    updateAuthContext
+    updateAuthContext,
   } = useAuth();
   const [ablyReady, setAblyReady] = useState(false);
   const [puzzle, setPuzzle] = useState(null);
@@ -86,6 +85,7 @@ function RoomPage() {
   const [acrossClues, setAcrossClues] = useState(null);
   const [downClues, setDownClues] = useState(null);
   const [queuedChange, setQueuedChange] = useState(null);
+  const [selectGrid, setSelectGrid] = useState(false);
 
   useEffect(() => {
     if (puzzle) {
@@ -588,9 +588,14 @@ function RoomPage() {
               setCurrentClue={setCurrentClue}
               queuedChange={queuedChange}
               setQueuedChange={setQueuedChange}
+              selectGrid={selectGrid}
+              setSelectGrid={setSelectGrid}
             />
           </div>
-          <div className="hints-chat-container">
+          <div
+            className="hints-chat-container"
+            style={{ marginTop: "-80px", marginBottom: "0px", width: "500px" }}
+          >
             <CurrentCLueBox currentClue={currentClue} />
             <ClueList
               puzzle={puzzle}
@@ -601,16 +606,19 @@ function RoomPage() {
               downCluess={downClues}
               userId={userId}
               setQueuedChange={setQueuedChange}
-            />
-            <ChatBox
-              ablyClient={ablyClient}
-              roomId={roomId}
-              userId={userId}
-              userColor={userColor}
-              nickname={nickname}
+              selectGrid={selectGrid}
+              setSelectGrid={setSelectGrid}
             />
           </div>
         </div>
+        <ChatBox
+          className="chat-box"
+          ablyClient={ablyClient}
+          roomId={roomId}
+          userId={userId}
+          userColor={userColor}
+          nickname={nickname}
+        />
       </div>
     </ThemeProvider>
   );
