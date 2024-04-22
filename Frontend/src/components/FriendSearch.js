@@ -16,16 +16,15 @@ const theme = createTheme({
 });
 
 const StyledButton = styled(Button)({
-  //background color of button
+  // Background color of button
   backgroundColor: "#ffcaca",
   border: "1px solid #ca8f8f",
   color: "black",
-  //size of button
-  fontSize: "1.5rem",
+  // Size of button
+  fontSize: "1rem", // Set font size smaller
   fontFamily: "inherit",
-  lineHeight: 1.2,
-  minWidth: "50px",
-  width: "120px",
+  lineHeight: 1.5,
+  width: "175px", // Set width to match the TextField
   padding: "15px 10px",
   marginLeft: "5px",
 });
@@ -81,6 +80,8 @@ function FriendSearch( object) {
         <TextField
           style={{
             width: "175px",
+            //padding: "15px 10px", // Match padding of the button
+            lineHeight: 1.2, // Match lineHeight of the button
           }}
           type="text"
           placeholder="Enter a nickname"

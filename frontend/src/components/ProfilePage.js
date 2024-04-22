@@ -258,7 +258,7 @@ function ProfilePage() {
 
   const renderEditView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2',  width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
@@ -320,7 +320,7 @@ function ProfilePage() {
 
   const renderDefaultView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2' }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2', width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
@@ -405,10 +405,14 @@ function ProfilePage() {
         padding: 0,
         margin: 0,
       }}
-    >
+     >
+       <div style={{ display: 'flex', flexDirection: 'row' }}>
       {editing ? renderEditView() : renderDefaultView()}
-    </Container>
-    <h2>Friends:</h2>
+      <div style={{ width: '40px' }} /> 
+      <CardContent sx={{ paddingTop: "40px", textAlign: 'center', borderRadius: "4px", boxShadow: "0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)", backgroundColor: '#FFF8E2', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  <div style={{ display: 'flex', flexDirection: 'row' }}>
+    <div style={{ marginRight: '40px' , marginLeft: '40px'}}>  
+      <h2>Friends:</h2>
      {friends.length > 0 ? (
      <ul>
      {friends.map((friend, index) => (
@@ -429,6 +433,9 @@ function ProfilePage() {
      ) : (
       <p>No friends</p>
      )}
+     
+    </div>
+    <div style={{ marginRight: '40px'}}>
      {/* Existing profile rendering code */}
     <h2>Pending Requests:</h2>
     {pending.length > 0 ? (
@@ -440,7 +447,8 @@ function ProfilePage() {
     ) : (
       <p>No pending requests</p>
     )}
-
+    </div>
+    <div style={{ marginRight: '40px' }}>
     <h2>Friend Requests:</h2>
     {requested.length > 0 ? (
       <ul>
@@ -462,13 +470,16 @@ function ProfilePage() {
     ) : (
       <p>No friend requests</p>
     )}
+    </div>
+    </div>
      <FriendSearch
       friends={realPlayers}
       pending={realPending}
       requested={realRequested}
-      //onPendingUpdate={handlePendingUpdate} // Pass a function to handle pending list updates
-      //onRequestUpdate={handleRequestUpdate} // Pass a function to handle request list updates
-     />
+    />
+    </CardContent>
+    </div>
+    </Container>
    </div>
   );
 }
