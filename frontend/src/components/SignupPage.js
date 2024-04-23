@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(3),
-  backgroundColor: '#FFF8E2'
+  backgroundColor: '#FFE3E8',
 }));
 
 const Title = styled(Typography)({
@@ -80,7 +80,7 @@ function SignupPage() {
   return (
     <Box
       sx={{
-        backgroundColor: '#ffad9d',
+        backgroundColor: '#4a4159',
         width: '100vw',
         height: '100vh',
         display: 'flex',

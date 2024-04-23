@@ -12,8 +12,8 @@ import { styled } from "@mui/material/styles";
 
 const StyledButton = styled(Button)({
   //background color of button
-  backgroundColor: "#ffcaca",
-  border: "1px solid #ca8f8f",
+  backgroundColor: "#DDE4FF",
+  border: "1px solid #7D9CCE",
   color: "black",
   //size of button
   width: "50px",
@@ -98,7 +98,19 @@ function ProfilePage() {
           try {
             const response = await axios.post("/fetch-friend-room", { userId: friend });
             if (response.status === 200) {
-              return response.data;
+              let str = "" + userId;
+              if (!response.data.banned_players) {
+                return response.data.room_code;
+              } else if (response.data.banned_players.includes(str)) {
+                //console.log(response.data.banned_players.includes(str));
+                //createPopup(
+                //  "You are banned from this room. Please enter a different room."
+                //);
+                return "You have been banned from this friends room";
+              } else {
+                //navigate(`/room/${roomCode}`);
+                return response.data.room_code;
+              }
             } else {
               return null;
             }
@@ -214,7 +226,11 @@ function ProfilePage() {
   };
 
   const renderJoinButton = (roomNumber) => {
-    navigate(`/room/${roomNumber}`);
+    if (roomNumber === "You have been banned from this friends room") {
+      createPopup("You have been banned from this friends room");
+    } else {
+      navigate(`/room/${roomNumber}`);
+    }
   };
 
   
@@ -257,8 +273,9 @@ function ProfilePage() {
   };
 
   const renderEditView = () => (
+    
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2',  width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFE6FD',  width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
@@ -267,7 +284,7 @@ function ProfilePage() {
             top: 16,
             left: 16,
             color: 'black',
-            backgroundColor: '#FFF8E2',
+            backgroundColor: '#FFE6FD',
             '&:hover': {
               backgroundColor: 'grey.200',
             },
@@ -306,7 +323,7 @@ function ProfilePage() {
             top: 16,
             right: 16,
             color: 'black',
-            backgroundColor: '#FFF8E2',
+            backgroundColor: '#DDE4FF',
             '&:hover': {
               backgroundColor: 'grey.200',
             },
@@ -320,7 +337,7 @@ function ProfilePage() {
 
   const renderDefaultView = () => (
     <Card>
-      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFF8E2', width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
+      <CardContent sx={{ textAlign: 'center', backgroundColor: '#FFE6FD', width: "300px", paddingTop: "15px", paddingBottom: "15px" }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
@@ -329,7 +346,7 @@ function ProfilePage() {
             top: 16,
             left: 16,
             color: 'black',
-            backgroundColor: '#FFF8E2',
+            backgroundColor: '#DDE4FF',
             '&:hover': {
               backgroundColor: 'grey.200',
             },
@@ -378,7 +395,7 @@ function ProfilePage() {
             top: 16,
             right: 16,
             color: 'black',
-            backgroundColor: '#FFF8E2',
+            backgroundColor: '#DDE4FF',
             '&:hover': {
               backgroundColor: 'grey.200',
             },
@@ -391,7 +408,7 @@ function ProfilePage() {
   );
 
   return (
-    <div>
+    <div style = {{ backgroundColor: "#29284D"}}>
      <Container
       component="main"
       maxWidth={false}
@@ -401,7 +418,7 @@ function ProfilePage() {
         minHeight: '100vh',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffad9d',
+        backgroundColor: "#29284D",
         padding: 0,
         margin: 0,
       }}
@@ -409,7 +426,7 @@ function ProfilePage() {
        <div style={{ display: 'flex', flexDirection: 'row' }}>
       {editing ? renderEditView() : renderDefaultView()}
       <div style={{ width: '40px' }} /> 
-      <CardContent sx={{ paddingTop: "40px", textAlign: 'center', borderRadius: "4px", boxShadow: "0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)", backgroundColor: '#FFF8E2', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <CardContent sx={{ paddingTop: "40px", textAlign: 'center', borderRadius: "4px", boxShadow: "0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)", backgroundColor: '#FFE6FD', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
   <div style={{ display: 'flex', flexDirection: 'row' }}>
     <div style={{ marginRight: '40px' , marginLeft: '40px'}}>  
       <h2>Friends:</h2>

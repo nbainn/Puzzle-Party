@@ -55,10 +55,11 @@ function PublicRooms() {
                 key={room.id}
                 disablePadding
                 sx={{
-                  border: "1px solid #ca8f8f",
+                  border: "1px solid #BD7784",
                   marginLeft: "3rem",
                   width: "20rem",
                   padding: "1%",
+                  borderRadius: "4px",
                 }}
               >
                 <ListItemButton onClick={() => handleJoin(room.room_code)}>
