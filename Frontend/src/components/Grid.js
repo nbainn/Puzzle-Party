@@ -132,12 +132,14 @@ const Grid = ({
   }, [queuedChange]);
 
   useEffect(() => {
-    console.log("Select grid:", selectGrid);
-    if (selectGrid) {
-      console.log("Selecting grid");
-      document.getElementById("input-controller").focus();
-      setSelectGrid(false);
-      console.log("ASDGDS");
+    if (puzzle) {
+      console.log("Select grid:", selectGrid);
+      if (selectGrid) {
+        console.log("Selecting grid");
+        document.getElementById("input-controller").focus();
+        setSelectGrid(false);
+        console.log("ASDGDS");
+      }
     }
   }, [selectGrid]);
 
@@ -285,7 +287,7 @@ const Grid = ({
   }, [puzzle]);
 
   useEffect(() => {
-    if (revealGrid) {
+    if (revealGrid && puzzle) {
       let tempGrid = [];
       numRows = puzzle.puzzle.size.rows;
       numCols = puzzle.puzzle.size.columns;
@@ -323,7 +325,7 @@ const Grid = ({
   }, [revealGrid]);
 
   useEffect(() => {
-    if (hints) {
+    if (hints && puzzle) {
       if (revealHint) {
         /*const resetGrid = grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
@@ -359,7 +361,7 @@ const Grid = ({
   }, [revealHint]);
 
   useEffect(() => {
-    if (guesses) {
+    if (guesses && puzzle) {
       if (checkWord) {
         console.log("CHECKinggggg");
         const resetGrid = grid.map((row, rowIndex) =>

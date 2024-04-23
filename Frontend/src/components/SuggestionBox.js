@@ -55,27 +55,27 @@ function SuggestionBox() {
     <ThemeProvider theme={theme}>
       <div>
         <h2>Submit Suggestion</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autocomplete="off">
           <div>
             <label htmlFor="wordInput">Word:</label>
             <br></br>
             <TextField
+              autocomplete="off"
               id="wordInput"
               type="text"
               value={word}
               onChange={(event) => setWord(event.target.value)}
-              autocomplete="off"
             />
           </div>
           <div>
             <label htmlFor="descriptionInput">Description:</label>
             <br></br>
             <TextField
+              autocomplete="off"
               id="descriptionInput"
               type="text"
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              autocomplete="off"
             />
           </div>
           <StyledButton type="submit">Submit Suggestion</StyledButton>
