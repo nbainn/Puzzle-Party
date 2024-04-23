@@ -31,7 +31,7 @@ const CurrentClueBox = ({ currentClue }) => {
   const CatGif = styled("img")({
     position: "absolute",
     top: "0px",
-    right: "50px",
+    right: "65px",
     zIndex: "998",
   });
 
