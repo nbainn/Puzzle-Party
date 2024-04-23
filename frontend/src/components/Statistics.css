@@ -26,3 +26,8 @@
     padding-left:20px;
     margin:5px;
 }
+
+.stat-image {
+  position: absolute;
+  Right: 0;
+}

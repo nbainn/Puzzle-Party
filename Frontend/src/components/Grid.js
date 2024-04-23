@@ -42,6 +42,9 @@ const Grid = ({
   setCurrentClue,
   queuedChange,
   setQueuedChange,
+  selectGrid,
+  setSelectGrid,
+  setSelectChat,
 }) => {
   //User always stores the userId of the player who made the change
   //Location[0] stores the primary location of the cursor (needs to be updated if direction stores "continue")
@@ -127,6 +130,16 @@ const Grid = ({
       setQueuedChange(null);
     }
   }, [queuedChange]);
+
+  useEffect(() => {
+    console.log("Select grid:", selectGrid);
+    if (selectGrid) {
+      console.log("Selecting grid");
+      document.getElementById("input-controller").focus();
+      setSelectGrid(false);
+      console.log("ASDGDS");
+    }
+  }, [selectGrid]);
 
   useEffect(() => {
     if (ablyClient) {
@@ -312,7 +325,7 @@ const Grid = ({
   useEffect(() => {
     if (hints) {
       if (revealHint) {
-        const resetGrid = grid.map((row, rowIndex) =>
+        /*const resetGrid = grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
             if (
               !cell.hidden &&
@@ -330,10 +343,19 @@ const Grid = ({
             }
           })
         );
-        setGrid(resetGrid);
+        setGrid(resetGrid);*/
+        queueChange(
+          userId,
+          [[0, 0]],
+          "continue",
+          puzzle.puzzle.grid[lastChange[userId].location[0][0]][
+            lastChange[userId].location[0][1]
+          ]
+        );
       }
     }
     setRevealHint(false);
+    document.getElementById("input-controller").focus();
   }, [revealHint]);
 
   useEffect(() => {
@@ -368,6 +390,7 @@ const Grid = ({
       console.log("Guesses is not enabled!");
     }
     setCheckWord(false);
+    document.getElementById("input-controller").focus();
   }, [checkWord]);
 
   useEffect(() => {
@@ -424,7 +447,7 @@ const Grid = ({
       }
       setCheckGrid(false);
     }
-
+    document.getElementById("input-controller").focus();
     fetchData();
   }, [checkGrid]);
 
@@ -635,21 +658,23 @@ const Grid = ({
           lastChange[currentChange.user].location[0][1]
         ].value = currentChange.value;
       }
-      setCurrentClue(() => {
-        if (currentChange.direction === "across") {
-          let clueNumber =
-            puzzle.puzzle.clueGrids.across[currentChange.location[0][0]][
-              currentChange.location[0][1]
-            ];
-          return acrossClues[clueNumber];
-        } else if (currentChange.direction === "down") {
-          let clueNumber =
-            puzzle.puzzle.clueGrids.down[currentChange.location[0][0]][
-              currentChange.location[0][1]
-            ];
-          return downClues[clueNumber];
-        }
-      });
+      if (currentChange.user === userId) {
+        setCurrentClue(() => {
+          if (currentChange.direction === "across") {
+            let clueNumber =
+              puzzle.puzzle.clueGrids.across[currentChange.location[0][0]][
+                currentChange.location[0][1]
+              ];
+            return acrossClues[clueNumber];
+          } else if (currentChange.direction === "down") {
+            let clueNumber =
+              puzzle.puzzle.clueGrids.down[currentChange.location[0][0]][
+                currentChange.location[0][1]
+              ];
+            return downClues[clueNumber];
+          }
+        });
+      }
       setLastChange((prev) => ({
         ...prev,
         [currentChange.user]: currentChange,
@@ -680,13 +705,19 @@ const Grid = ({
   }, [currentChange]);
 
   //useEffect(() => {
-  const handleKeyPress = async (event, rowIndex, colIndex) => {
-    if (event.keyCode === 32) {
+  const handleKeyPress = async (event) => {
+    console.log("keycode: " + event.keyCode);
+    if (event.keyCode === 13) {
+      //enter key pressed
+      console.log("ENTER PRESSED");
+      setSelectChat(true);
+      event.preventDefault();
+    } else if (event.keyCode === 32) {
       // Spacebar key
       console.log("SPACEBAR PRESSED");
       //setCurrentDirection(currentDirection === "across" ? "down" : "across");
       //setLocation([rowIndex, colIndex]);
-      queueChange(userId, [[rowIndex, colIndex]], "switch", null);
+      queueChange(userId, [[0, 0]], "switch", null);
       //location[0] = rowIndex;
       //location[1] = colIndex;
       event.preventDefault();
@@ -721,7 +752,7 @@ const Grid = ({
       //updatedGrid[rowIndex][colIndex].flagged = false;
       //setGrid(updatedGrid);
       //setHeavyRefresh(updatedGrid);
-      queueChange(userId, [[rowIndex, colIndex]], "continue", tempValue);
+      queueChange(userId, [[0, 0]], "continue", tempValue);
       console.log("UPDATED GRID");
       /*if (ablyClient) {
         const channel = ablyClient.channels.get(`room:${roomId}`);
@@ -747,7 +778,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "upp", null);
+      queueChange(userId, [[0, 0]], "upp", null);
     } else if (event.keyCode === 40) {
       // Arrow Down pressed
       /*rowIndex =
@@ -760,7 +791,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "downn", null);
+      queueChange(userId, [[0, 0]], "downn", null);
     } else if (event.keyCode === 37) {
       // Arrow Left pressed
       /*colIndex =
@@ -772,7 +803,7 @@ const Grid = ({
       //location[1] = colIndex;
       document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       setRefresh(1);*/
-      queueChange(userId, [[rowIndex, colIndex]], "leftt", null);
+      queueChange(userId, [[0, 0]], "leftt", null);
     } else if (event.keyCode === 39) {
       // Arrow Right pressed
       /*colIndex =
@@ -785,7 +816,7 @@ const Grid = ({
       //location[1] = colIndex;
       //document.getElementById(`cell-${rowIndex}-${colIndex}`).focus();
       //setRefresh(1);
-      queueChange(userId, [[rowIndex, colIndex]], "rightt", null);
+      queueChange(userId, [[0, 0]], "rightt", null);
     } else if (event.keyCode !== 8 && event.keyCode !== 46) {
       event.preventDefault();
     } else {
@@ -809,7 +840,7 @@ const Grid = ({
         puzzle.puzzle.grid[rowIndex][colIndex - 1] != " "
           ? colIndex - 1
           : colIndex;*/
-      queueChange(userId, [[rowIndex, colIndex]], "backtrack", "");
+      queueChange(userId, [[0, 0]], "backtrack", "");
       //setLocation([rowIndex, colIndex]);
       //location[0] = rowIndex;
       //location[1] = colIndex;
@@ -859,6 +890,23 @@ const Grid = ({
 
   return (
     <div className="crossword-grid">
+      <input
+        id="input-controller"
+        type="text"
+        style={{
+          width: "1px",
+          height: "1px",
+          padding: "0",
+          margin: "0",
+          border: "none",
+          opacity: "0",
+          overflow: "hidden",
+          position: "absolute",
+          left: "-9999px",
+        }}
+        placeholder="Super Tiny Input Box"
+        onKeyDown={(event) => handleKeyPress(event)}
+      ></input>
       <GridContainer size={size} gridSize={numRows}>
         {grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => (

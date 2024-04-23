@@ -1,23 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, TextField, IconButton, List, ListItem, Typography, styled } from "@mui/material";
-import { createTheme, ThemeProvider  } from "@mui/material/styles";
+import {
+  Box,
+  TextField,
+  IconButton,
+  List,
+  ListItem,
+  Typography,
+  styled,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
-import Filter from 'bad-words';
-import CommentIcon from '@mui/icons-material/Comment';
-import axios from 'axios';
+import Filter from "bad-words";
+import CommentIcon from "@mui/icons-material/Comment";
+import "./ChatBox.css";
+import axios from "axios";
 
-const ResizeHandle = styled("div")({
+/*const ResizeHandle = styled("div")({
   position: "absolute",
   top: 0,
   left: 0,
   right: 0,
   height: "5px",
   cursor: "ns-resize",
-  '&:hover': {
+  "&:hover": {
     borderTopColor: "#666",
   },
   zIndex: 10,
-});
+});*/
 const theme = createTheme({
   typography: {
     fontFamily: "C&C Red Alert [INET]",
@@ -26,16 +35,30 @@ const theme = createTheme({
 
 const filter = new Filter();
 
-function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, roomId, userColor, nickname, ablyClient, userId }) {
+function ChatBox({
+  userToken,
+  updateAuthContext,
+  setUserColor,
+  setNickname,
+  roomId,
+  userColor,
+  nickname,
+  ablyClient,
+  userId,
+  favColor,
+  setSelectGrid,
+  selectChat,
+  setSelectChat,
+}) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [chatHeight, setChatHeight] = useState(300);
+  const [chatHeight, setChatHeight] = useState(165);
   const messagesEndRef = useRef(null);
   const defaultColor = "#aaff69";
   const chatBoxRef = useRef(null);
   const [showChatBox, setShowChatBox] = useState(false);
   //const [players, setPlayers] = useState([]); // State variable to store unique nicknames
-  
+
   useEffect(() => {
     if (ablyClient) {
       console.log("Ably client provided to ChatBox", ablyClient);
@@ -68,11 +91,19 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
   }, [ablyClient, roomId]);
 
   useEffect(() => {
+    if (selectChat) {
+      document.getElementById("chat-input").focus();
+      console.log("ChatBox focused");
+      setSelectChat(false);
+    }
+  }, [selectChat]);
+
+  useEffect(() => {
     // Function to fetch user data
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/user/profile', {
-          headers: { Authorization: `Bearer ${userToken}` }
+        const response = await axios.get("/user/profile", {
+          headers: { Authorization: `Bearer ${userToken}` },
         });
         if (response.data) {
           // Update the auth context with the latest data
@@ -81,7 +112,7 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
           updateAuthContext(response.data.nickname, response.data.userColor);
         }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
+        console.error("Failed to fetch user data:", error);
       }
     };
 
@@ -93,6 +124,7 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
   }, [messages]);
 
   const handleSendMessage = async (event) => {
+    setSelectGrid(true);
     event.preventDefault();
     if (ablyClient && newMessage.trim() !== "") {
       const safeMessage = filter.clean(newMessage);
@@ -103,7 +135,7 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
           userId: userId,
           nickname: nickname,
           text: safeMessage,
-          color: userColor || defaultColor,
+          color: favColor || defaultColor,
         });
         console.log("Message sent:", safeMessage);
         setNewMessage("");
@@ -120,11 +152,12 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
     const bubbleColor = message.color;
     return {
       bgcolor: bubbleColor,
-      margin: "10px",
+      margin: "2px",
       maxWidth: "80%",
       alignSelf: message.userId === userId ? "flex-end" : "flex-start",
       textAlign: "left",
-      padding: "10px",
+      padding: "0px",
+      paddingLeft: "4px",
       borderRadius: "4px",
       color: getContrastYIQ(bubbleColor),
       boxShadow: "0 2px 2px rgba(0,0,0,0.2)",
@@ -150,13 +183,13 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
     const handleMouseMove = (moveEvent) => {
       // Calculate the new height
       let newHeight = startHeight - (moveEvent.clientY - startY);
-      
+
       // Calculate the maximum allowable height
       const maxAvailableHeight = chatBoxRef.current.offsetTop;
 
       // Clamp new height within the minimum and maximum limits
       newHeight = Math.max(newHeight, 100); // Minimum 100px
-      newHeight = Math.min(newHeight, maxAvailableHeight); 
+      newHeight = Math.min(newHeight, maxAvailableHeight);
 
       setChatHeight(newHeight);
     };
@@ -168,7 +201,7 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
-};
+  };
 
   const chatBoxStyles = {
     display: "flex",
@@ -176,7 +209,11 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
     justifyContent: "flex-end",
     height: `${chatHeight}px`,
     position: "relative",
-    width: "100%",
+    width: "24%",
+    marginTop: "-165px",
+    marginBottom: "4px",
+    marginLeft: "4px",
+    padding: "0px",
     right: 0,
     left: 0,
     bgcolor: "#D7E8EF",
@@ -184,9 +221,13 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
     borderRadius: "4px",
     overflow: "hidden",
     fontFamily: "inherit",
+    "& .MuiBox-root": {
+      padding: "0px",
+    },
   };
 
   const chatInputStyles = {
+    padding: "0px 12px",
     "& .MuiOutlinedInput-root": {
       backgroundColor: "#F9EAFF",
       borderRadius: "4px",
@@ -198,6 +239,10 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
     },
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
+    },
+    "& input": {
+      height: "3px", // Adjust padding for better visual alignment
+      fontSize: "1rem", // Adjust font size for better text alignment
     },
   };
 
@@ -215,59 +260,55 @@ function ChatBox({ userToken, updateAuthContext, setUserColor, setNickname, room
   };
 
   return (
-    <div className = "shit">
-    <ThemeProvider theme={theme}>
-    <IconButton variant="outlined" onClick={() => setShowChatBox(!showChatBox)}>
-      <CommentIcon />
-    </IconButton>
-    {showChatBox && (
-    <Box ref={chatBoxRef} sx={chatBoxStyles}>
-      <ResizeHandle onMouseDown={handleMouseDown} />
-      <List
-        sx={{
-          overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-          p: 1,
-          flexGrow: 1,
-        }}
-      >
-        {messages.map((message, index) => (
-          <ListItem key={index} sx={getMessageBubbleStyles(message)}>
-            <Typography
-              variant="body1"
-              sx={{
-                //fontFamily: "Bubblegum Sans",
-              }}
-            >
-              {message.nickname !== nickname ? `${message.nickname}: ` : null}
-              {message.text}
-            </Typography>
-          </ListItem>
-        ))}
-        <div ref={messagesEndRef} />
-      </List>
-      <Box
-        component="form"
-        onSubmit={handleSendMessage}
-        sx={{ display: "flex", alignItems: "center", p: 1 }}
-      >
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Type here..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          sx={chatInputStyles}
-        />
-        <IconButton type="submit" sx={sendButtonStyles}>
-          <SendIcon />
-        </IconButton>
-      </Box>
-    </Box>
-    )}
-    </ThemeProvider>
-      
+    <div className="shit">
+      <ThemeProvider theme={theme}>
+        <Box ref={chatBoxRef} sx={chatBoxStyles}>
+          <List
+            sx={{
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              p: 1,
+              flexGrow: 1,
+            }}
+          >
+            {messages.map((message, index) => (
+              <ListItem
+                key={index}
+                className="chat-mes"
+                sx={getMessageBubbleStyles(message)}
+              >
+                <Typography variant="body1" sx={{ lineHeight: "0.8" }}>
+                  {message.nickname !== nickname
+                    ? `${message.nickname}: `
+                    : null}
+                  {message.text}
+                </Typography>
+              </ListItem>
+            ))}
+            <div ref={messagesEndRef} />
+          </List>
+          <Box
+            component="form"
+            onSubmit={handleSendMessage}
+            sx={{ display: "flex", alignItems: "center", p: 1 }}
+          >
+            <TextField
+              id="chat-input"
+              fullWidth
+              variant="outlined"
+              placeholder="Type here..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              sx={chatInputStyles}
+              autoComplete="off"
+            />
+            <IconButton type="submit" sx={sendButtonStyles}>
+              <SendIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </ThemeProvider>
     </div>
   );
 }
