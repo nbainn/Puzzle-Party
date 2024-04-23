@@ -86,6 +86,7 @@ function RoomPage() {
   const [downClues, setDownClues] = useState(null);
   const [queuedChange, setQueuedChange] = useState(null);
   const [selectGrid, setSelectGrid] = useState(false);
+  const [selectChat, setSelectChat] = useState(false);
 
   useEffect(() => {
     if (puzzle) {
@@ -590,6 +591,7 @@ function RoomPage() {
               setQueuedChange={setQueuedChange}
               selectGrid={selectGrid}
               setSelectGrid={setSelectGrid}
+              setSelectChat={setSelectChat}
             />
           </div>
           <div
@@ -618,6 +620,10 @@ function RoomPage() {
           userId={userId}
           userColor={userColor}
           nickname={nickname}
+          favColor={favColor}
+          setSelectGrid={setSelectGrid}
+          selectChat={selectChat}
+          setSelectChat={setSelectChat}
         />
       </div>
     </ThemeProvider>

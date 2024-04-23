@@ -45,10 +45,14 @@ function ChatBox({
   nickname,
   ablyClient,
   userId,
+  favColor,
+  setSelectGrid,
+  selectChat,
+  setSelectChat,
 }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [chatHeight, setChatHeight] = useState(155);
+  const [chatHeight, setChatHeight] = useState(165);
   const messagesEndRef = useRef(null);
   const defaultColor = "#aaff69";
   const chatBoxRef = useRef(null);
@@ -87,6 +91,14 @@ function ChatBox({
   }, [ablyClient, roomId]);
 
   useEffect(() => {
+    if (selectChat) {
+      document.getElementById("chat-input").focus();
+      console.log("ChatBox focused");
+      setSelectChat(false);
+    }
+  }, [selectChat]);
+
+  useEffect(() => {
     // Function to fetch user data
     const fetchUserData = async () => {
       try {
@@ -112,6 +124,7 @@ function ChatBox({
   }, [messages]);
 
   const handleSendMessage = async (event) => {
+    setSelectGrid(true);
     event.preventDefault();
     if (ablyClient && newMessage.trim() !== "") {
       const safeMessage = filter.clean(newMessage);
@@ -122,7 +135,7 @@ function ChatBox({
           userId: userId,
           nickname: nickname,
           text: safeMessage,
-          color: userColor || defaultColor,
+          color: favColor || defaultColor,
         });
         console.log("Message sent:", safeMessage);
         setNewMessage("");
@@ -197,7 +210,7 @@ function ChatBox({
     height: `${chatHeight}px`,
     position: "relative",
     width: "24%",
-    marginTop: "-155px",
+    marginTop: "-165px",
     marginBottom: "4px",
     marginLeft: "4px",
     padding: "0px",
@@ -281,6 +294,7 @@ function ChatBox({
             sx={{ display: "flex", alignItems: "center", p: 1 }}
           >
             <TextField
+              id="chat-input"
               fullWidth
               variant="outlined"
               placeholder="Type here..."

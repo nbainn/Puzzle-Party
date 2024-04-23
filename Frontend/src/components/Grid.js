@@ -44,6 +44,7 @@ const Grid = ({
   setQueuedChange,
   selectGrid,
   setSelectGrid,
+  setSelectChat,
 }) => {
   //User always stores the userId of the player who made the change
   //Location[0] stores the primary location of the cursor (needs to be updated if direction stores "continue")
@@ -705,7 +706,13 @@ const Grid = ({
 
   //useEffect(() => {
   const handleKeyPress = async (event) => {
-    if (event.keyCode === 32) {
+    console.log("keycode: " + event.keyCode);
+    if (event.keyCode === 13) {
+      //enter key pressed
+      console.log("ENTER PRESSED");
+      setSelectChat(true);
+      event.preventDefault();
+    } else if (event.keyCode === 32) {
       // Spacebar key
       console.log("SPACEBAR PRESSED");
       //setCurrentDirection(currentDirection === "across" ? "down" : "across");
