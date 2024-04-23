@@ -64,7 +64,6 @@ function ClueList({
 
   useEffect(() => {
     if (puzzle) {
-      if (puzzle.puzzle.clue.across.length != 0) {
         console.log("what?");
         const across = puzzle.puzzle.clues.across;
 
@@ -102,7 +101,7 @@ function ClueList({
           }
         };
         ably();
-      }
+      
     }
   }, [ablyClient, puzzle, roomId]);
   /*   // Example clues for demonstration
