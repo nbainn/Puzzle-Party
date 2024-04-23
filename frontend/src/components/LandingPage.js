@@ -80,7 +80,7 @@ function LandingPage() {
   return (
     <Box
       sx={{
-        backgroundColor: '#ffad9d',
+        backgroundColor: '#4a4159',
         width: '100vw',
         height: '100vh',
         display: 'flex',
@@ -95,7 +95,7 @@ function LandingPage() {
         alignItems: 'center',
         overflow: 'auto'
       }}>
-        <Card sx={{ p: 3, backgroundColor: '#FFF8E2' }}>
+        <Card sx={{ p: 3, backgroundColor: '#FFE3E8' }}>
           <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography component="h1" variant="h5">
               Welcome to Puzzle Party

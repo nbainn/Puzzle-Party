@@ -13,7 +13,7 @@ const LoadingScreen = ({ message }) => {
       justifyContent="center"
       style={{
         height: "100vh",
-        backgroundColor: "#ffad9d",
+        backgroundColor: '#ffcad4',
         //fontFamily: "'Bubblegum Sans', cursive"
       }}
     >

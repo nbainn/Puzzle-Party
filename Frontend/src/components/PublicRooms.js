@@ -4,10 +4,9 @@ import ChatBox from "./ChatBox";
 import "./PublicRooms.css"; // Importing CSS for PublicRooms
 import { join } from "path-browserify";
 import axios from "axios";
-import cat from '../assets/public_cat.png';
+import cat from "../assets/CatMeow1.gif";
 import { List, ListItem, ListItemButton } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
-
 
 function PublicRooms() {
   //createHost();
@@ -24,9 +23,9 @@ function PublicRooms() {
             limit: 10,
           },
         });
-        console.log('Got rooms:', response.data);
-        let str = '' + userId;
-        const filteredRooms = response.data.filter(room => { 
+        console.log("Got rooms:", response.data);
+        let str = "" + userId;
+        const filteredRooms = response.data.filter((room) => {
           return !room.banned_players || !room.banned_players.includes(str);
         });
         setRooms(filteredRooms);
@@ -50,16 +49,30 @@ function PublicRooms() {
       <div className="room-list">
         {/* Render the list of rooms */}
         <div style={{ display: "flex" }}>
-        <List>
-          {rooms.map((room) => (
-            <ListItem key={room.id} disablePadding sx = {{ border: "1px solid #ca8f8f", marginLeft: "3rem", width: "20rem", padding: "1%"}}>
-              <ListItemButton onClick = {() => handleJoin(room.room_code)}>
-                Room Code: {room.room_code}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <img src = {cat} alt = "cat" style = {{width: "50%", height: "50%", marginLeft: "20rem"}}/>
+          <List>
+            {rooms.map((room) => (
+              <ListItem
+                key={room.id}
+                disablePadding
+                sx={{
+                  border: "1px solid #BD7784",
+                  marginLeft: "3rem",
+                  width: "20rem",
+                  padding: "1%",
+                  borderRadius: "4px",
+                }}
+              >
+                <ListItemButton onClick={() => handleJoin(room.room_code)}>
+                  Room Code: {room.room_code}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <img
+            src={cat}
+            alt="cat"
+            style={{ width: "50%", height: "50%", marginLeft: "20rem" }}
+          />
         </div>
       </div>
     </div>

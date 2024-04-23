@@ -20,8 +20,8 @@ const theme = createTheme({
 
 const StyledButton = styled(Button)({
   //background color of button
-  backgroundColor: "#ffcaca",
-  border: "1px solid #ca8f8f",
+  backgroundColor: "#EDEEFF",
+  border: "1px solid #7D9CCE",
   color: "black",
   //size of button
   fontSize: "2rem",

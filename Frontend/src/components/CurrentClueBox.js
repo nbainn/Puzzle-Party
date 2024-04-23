@@ -13,7 +13,7 @@ const CurrentClueBox = ({ currentClue }) => {
     borderRadius: "4px",
     border: "2px solid #000",
     marginTop: "85px",
-    marginLeft: "5px",
+    marginLeft: "0px",
     overflow: "visible",
   });
   const Label = styled("div")({
@@ -31,7 +31,7 @@ const CurrentClueBox = ({ currentClue }) => {
   const CatGif = styled("img")({
     position: "absolute",
     top: "0px",
-    right: "65px",
+    right: "85px",
     zIndex: "998",
   });
 
