@@ -11,7 +11,7 @@
     align-items: center; /* Center items vertically */
     justify-content: center; /* Center items horizontally */
     height: 100vh;
-    background-color: #ffad9d;
+    background-color: #ffcad4;
   }
 
   .home-title {
@@ -24,8 +24,8 @@
   .create-room-button {
     /*padding: 15px 30px;*/
     font-size: 1.5rem;
-    background-color: #ffffff;
-    color: #ffad9d; 
+    background-color: #EDEEFF;
+    color: #ffcad4; 
     border: 2px solid #000;
     border-radius: 8px;
     margin-bottom: 20px;

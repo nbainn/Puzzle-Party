@@ -216,7 +216,7 @@ function ChatBox({
     padding: "0px",
     right: 0,
     left: 0,
-    bgcolor: "#D7E8EF",
+    bgcolor: "#DDE4FF",
     border: "2px solid #000",
     borderRadius: "4px",
     overflow: "hidden",

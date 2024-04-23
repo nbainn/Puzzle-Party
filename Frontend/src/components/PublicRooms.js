@@ -52,7 +52,7 @@ function PublicRooms() {
         <div style={{ display: "flex" }}>
         <List>
           {rooms.map((room) => (
-            <ListItem key={room.id} disablePadding sx = {{ border: "1px solid #ca8f8f", marginLeft: "3rem", width: "20rem", padding: "1%"}}>
+            <ListItem key={room.id} disablePadding sx = {{ border: "1px solid #BD7784", marginLeft: "3rem", width: "20rem", padding: "1%", borderRadius: "4px"}}>
               <ListItemButton onClick = {() => handleJoin(room.room_code)}>
                 Room Code: {room.room_code}
               </ListItemButton>
