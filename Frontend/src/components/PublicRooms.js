@@ -54,7 +54,7 @@ function PublicRooms() {
           {rooms.map((room) => (
             <ListItem key={room.id} disablePadding sx = {{ border: "1px solid #ca8f8f", marginLeft: "3rem", width: "20rem", padding: "1%"}}>
               <ListItemButton onClick = {() => handleJoin(room.room_code)}>
-                Room Code: {room.room_code} Host: {room.host}
+                Room Code: {room.room_code}
               </ListItemButton>
             </ListItem>
           ))}

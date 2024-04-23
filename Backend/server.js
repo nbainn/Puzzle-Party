@@ -927,7 +927,11 @@ app.post("/fetch-friend-room", async (req, res) => {
         let status = room.public_status;
         if (status) {
           console.log("Im here");
-          res.status(200).send(room.room_code);
+          //check if banned
+          res.status(200).send({
+            room_code: room.room_code,
+            banned_players: room.banned_players
+          });
         } else {
           res.status(404).send(null);
         }

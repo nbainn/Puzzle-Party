@@ -98,7 +98,19 @@ function ProfilePage() {
           try {
             const response = await axios.post("/fetch-friend-room", { userId: friend });
             if (response.status === 200) {
-              return response.data;
+              let str = "" + userId;
+              if (!response.data.banned_players) {
+                return response.data.room_code;
+              } else if (response.data.banned_players.includes(str)) {
+                //console.log(response.data.banned_players.includes(str));
+                //createPopup(
+                //  "You are banned from this room. Please enter a different room."
+                //);
+                return "You have been banned from this friends room";
+              } else {
+                //navigate(`/room/${roomCode}`);
+                return response.data.room_code;
+              }
             } else {
               return null;
             }
@@ -214,7 +226,11 @@ function ProfilePage() {
   };
 
   const renderJoinButton = (roomNumber) => {
-    navigate(`/room/${roomNumber}`);
+    if (roomNumber === "You have been banned from this friends room") {
+      createPopup("You have been banned from this friends room");
+    } else {
+      navigate(`/room/${roomNumber}`);
+    }
   };
 
   
