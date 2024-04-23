@@ -383,10 +383,10 @@ function ProfilePage() {
           />
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleEditClick} sx={{ marginBottom: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleEditClick} sx={{ marginBottom: 2, font: "inherit" }}>
             Edit Profile
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleLogoutClick}>
+          <Button variant="contained" color="secondary" onClick={handleLogoutClick} sx={{ font: "inherit" }}>
             Logout
           </Button>
         </Box>
