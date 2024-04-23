@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Button, ButtonGroup } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { PermDeviceInformationTwoTone } from "@mui/icons-material";
 
 const StyledButton = styled(Button)({
   fontSize: "1rem",
@@ -145,6 +146,30 @@ function RoomSettings({
   const inviting = async (friend) => {
     console.log("inviting");
     //event.preventDefault();
+    console.log("roomId", roomId);
+    let roomCode = roomId;
+    try {
+      const response = await axios.post("/search-entry", { roomCode });
+      if (response.status === 200) {
+        console.log("Found room:", response.data);
+        let str = "" + friend;
+        if (!response.data.banned_players) {
+          //move on
+        } else if (response.data.banned_players.includes(str)) {
+          //console.log(response.data.banned_players.includes(str));
+          createPopup(
+            "This friend is banned from this room. Invite not sent."
+          );
+          return;
+        }
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error finding room:", error);
+      console.log("error");
+      createPopup("Room not found. Please enter an existing room.");
+    }
     if (ablyClient) {
       const channel = ablyClient.channels.get(`inviting`);
       try {
@@ -164,6 +189,11 @@ function RoomSettings({
 
   const handleTimerChange = () => {
     setTimer(!timer);
+  };
+
+  const createPopup = (message) => {
+    // Implement popup logic here
+    alert(message);
   };
 
   const handleHintsChange = () => {

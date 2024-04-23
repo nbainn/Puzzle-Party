@@ -260,7 +260,9 @@ function RoomPage() {
           await channel.presence.subscribe("leave", (member) => {
             //console.log(member.clientId, "left the room");
             //if (players.includes(member.clientId)) {
-            setIsActive(false);
+            if (member.clientId == userId) {
+              setIsActive(false);
+            }
             setPlayers((prevPlayers) =>
               prevPlayers.filter((player) => player !== member.clientId)
             );
@@ -440,6 +442,7 @@ function RoomPage() {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     createPopup("You have been kicked from the room");
     await channel.detach();
+    setIsActive(false);
     navigate(`/home`);
   };
 
@@ -447,6 +450,7 @@ function RoomPage() {
     const channel = ablyClient.channels.get(`room:${roomId}`);
     createPopup("You have been banned from the room");
     await channel.detach();
+    setIsActive(false);
     navigate(`/home`);
   };
 
