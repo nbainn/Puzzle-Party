@@ -64,42 +64,45 @@ function ClueList({
 
   useEffect(() => {
     if (puzzle) {
-      const across = puzzle.puzzle.clues.across;
+      if (puzzle.puzzle.clue.across.length != 0) {
+        console.log("what?");
+        const across = puzzle.puzzle.clues.across;
 
-      const acrossC = across.map((item) => ({
-        display: `${item.number}. ${item.clue}`,
-        number: item.number,
-        row: item.row,
-        col: item.column,
-      }));
-      setAcross(acrossC);
+        const acrossC = across.map((item) => ({
+          display: `${item.number}. ${item.clue}`,
+          number: item.number,
+          row: item.row,
+          col: item.column,
+        }));
+        setAcross(acrossC);
 
-      const down = puzzle.puzzle.clues.down;
-      const downC = down.map((item) => ({
-        display: `${item.number}. ${item.clue}`,
-        number: item.number,
-        row: item.row,
-        col: item.column,
-      }));
-      setDown(downC);
+        const down = puzzle.puzzle.clues.down;
+        const downC = down.map((item) => ({
+          display: `${item.number}. ${item.clue}`,
+          number: item.number,
+          row: item.row,
+          col: item.column,
+        }));
+        setDown(downC);
 
-      const ably = async () => {
-        if (ablyClient) {
-          const channel = ablyClient.channels.get(`room:${roomId}`);
-          try {
-            await channel.publish("clue", {
-              across: acrossC,
-              down: downC,
-            });
-            console.log("clues sent:" + acrossC + downC);
-          } catch (error) {
-            console.error("Error sending clues:", error);
+        const ably = async () => {
+          if (ablyClient) {
+            const channel = ablyClient.channels.get(`room:${roomId}`);
+            try {
+              await channel.publish("clue", {
+                across: acrossC,
+                down: downC,
+              });
+              console.log("clues sent:" + acrossC + downC);
+            } catch (error) {
+              console.error("Error sending clues:", error);
+            }
+          } else {
+            console.log("Ably client not initialized.");
           }
-        } else {
-          console.log("Ably client not initialized.");
-        }
-      };
-      ably();
+        };
+        ably();
+      }
     }
   }, [ablyClient, puzzle, roomId]);
   /*   // Example clues for demonstration
@@ -143,7 +146,7 @@ function ClueList({
                 //setCurrentClue(acrossCluess[clue.number]);
               }}
             >
-              {clue.display}
+              {puzzle ? clue.display : "No Across Clues!"}
             </li>
           ))}
         </ul>
@@ -168,7 +171,7 @@ function ClueList({
                 setQueuedChange(currentChange);
               }}
             >
-              {clue.display}
+              {puzzle ? clue.display : "No Down Clues!"}
             </li>
           ))}
         </ul>

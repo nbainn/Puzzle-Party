@@ -11,6 +11,10 @@ body, html {
   overflow: auto;
 }
 
+.player-li * {
+  margin-left: -20px;
+}
+
 .centerPage{
   width: 46%;
   margin-top: -32px;

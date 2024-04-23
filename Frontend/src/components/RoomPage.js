@@ -544,7 +544,7 @@ function RoomPage() {
               <h2>Player List</h2>
               <ul>
                 {players.map((player, index) => (
-                  <div key={player}>
+                  <div key={player} className="player-li">
                     <li>
                       {realPlayers[index]}
                       <StyledButton
