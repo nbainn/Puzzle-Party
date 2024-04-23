@@ -280,6 +280,7 @@ function ProfilePage() {
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
           sx={{
+            font: "inherit",
             position: 'absolute',
             top: 16,
             left: 16,
@@ -393,6 +394,7 @@ function ProfilePage() {
           startIcon={<HomeIcon />}
           onClick={handleBackHome}
           sx={{
+            font: "inherit",
             position: 'absolute',
             top: 16,
             right: 16,
